@@ -1,0 +1,17 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+
+:root {
+  font-family: Inter, system-ui;
+  background-color: #171717;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --app-height: 500vh;
+}
+
+body {
+  margin: 0;
+}
