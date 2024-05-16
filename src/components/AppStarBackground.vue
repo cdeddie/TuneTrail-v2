@@ -18,7 +18,6 @@
   right: 0;
   bottom: 0;
   background: radial-gradient(ellipse at bottom, #1b352b 0%, #090a0f 100%);
-  overflow: hidden;
   z-index: -1;
 }
 

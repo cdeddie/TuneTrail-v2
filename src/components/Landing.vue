@@ -1,17 +1,13 @@
 <script setup lang="ts">
-const emit = defineEmits(['scroll']);
+const emit = defineEmits(['scroll-down']);
 
-const scrollDown = (): void => {
-  console.log("Emitting scroll");
-  emit('scroll');
-};
 </script>
 
 <template>
   <div class="landing-root">
     <span class="title">TuneTrail</span>
 
-    <span class="dropdown" @click="scrollDown"><i class="bi bi-chevron-down"></i></span>
+    <span class="dropdown" @click="emit('scroll-down');"><i class="bi bi-chevron-down"></i></span>
   </div>
 </template>
 
@@ -35,6 +31,11 @@ const scrollDown = (): void => {
   display: flex;
   justify-content: center;
   margin-top: auto;
+}
+
+.bi-chevron-down {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @keyframes jump {
