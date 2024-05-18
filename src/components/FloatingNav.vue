@@ -59,8 +59,11 @@ onUnmounted((): void => {
 .floating-container {
   position: fixed;
   bottom: 20px;
-  left: 35%;
-  right: 35%;
+  max-width: 30vw;
+  left: 25%;
+  right: 25%;
+  margin-left: auto;
+  margin-right: auto;
   background-color: rgba(17, 17, 17, 0.85);
   color: white;
   border-radius: .75vw;

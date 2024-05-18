@@ -66,7 +66,7 @@ const formatDate = computed(() => {
 .title-container {
   display: flex;
   flex-direction: column;
-  font-size: 40px;
+  font-size: 2rem;
   font-weight: 650;
   margin-bottom: 60px;
 }
@@ -76,7 +76,7 @@ const formatDate = computed(() => {
 }
 
 #subtitle {
-  font-size: 36px;
+  font-size: 1.9rem;
   color: var(--secondary-color-a);
 }
 
