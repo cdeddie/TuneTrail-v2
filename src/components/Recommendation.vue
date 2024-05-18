@@ -4,7 +4,7 @@
 
 <template>
   <div class="recommendation-root">
-    <span class="title">Recommendations</span>
+    <div class="title">Recommendations</div>
   </div>
 
 </template>
@@ -15,11 +15,10 @@
 }
 
 .title {
-  font-size: 8vw;
+  font-size: 5vw;
   font-weight: 700;
   color: rgba(43, 233, 157, 0.576);
   display: flex;
   justify-content: center;
-  padding-top: 10%;
 }
 </style>

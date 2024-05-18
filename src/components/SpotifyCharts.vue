@@ -1,6 +1,8 @@
 <script setup>
 import { onMounted } from 'vue';
 
+import GlobalChartContainer from './GlobalChartContainer.vue';
+
 onMounted(() => {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
@@ -22,7 +24,7 @@ onMounted(() => {
     <div class="title">What's Charting?</div>
 
     <section class="hidden">
-      <p>Wow!</p>
+      <GlobalChartContainer />
     </section>
 
     <section class="hidden">
@@ -50,7 +52,7 @@ section {
   filter: blur(5px);
   transform: translateX(-100%);
   transition: all 2s;
-  margin-bottom: 10vh;
+  margin: 5vh;
 }
 
 .show {

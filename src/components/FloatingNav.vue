@@ -63,7 +63,7 @@ onUnmounted((): void => {
   right: 35%;
   background-color: rgba(17, 17, 17, 0.85);
   color: white;
-  border-radius: 1vw;
+  border-radius: .75vw;
   opacity: 0;
   transition: opacity .75s ease;
   z-index: 9999;

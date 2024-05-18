@@ -6,6 +6,7 @@ import Landing from './components/Landing.vue';
 import SpotifyCharts from './components/SpotifyCharts.vue';
 import FloatingNav from './components/FloatingNav.vue';
 import Recommendation from './components/Recommendation.vue';
+import ChartCard from './components/ChartCard.vue';
 
 const scrollTargetRef = ref<HTMLElement | null>(null);            // Target Ref for down chevron scroll button on Landing page
 
@@ -15,7 +16,6 @@ const activeSection = ref<string>('Landing');
 const observerCallback = (entries: IntersectionObserverEntry[]) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
-      console.log(entry.target.id);
       activeSection.value = entry.target.id;
     }
   });

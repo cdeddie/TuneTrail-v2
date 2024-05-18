@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Other
+Preview.vue
+
+/cypress
+*.cy*
+cypress.config*
