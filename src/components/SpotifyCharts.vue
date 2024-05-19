@@ -28,11 +28,7 @@ onMounted(() => {
     </section>
 
     <section class="hidden">
-      <p>Australia!</p>
-    </section>
-
-    <section class="hidden">
-      <p>Another one!</p>
+      
     </section>
   </div>
 </template>
@@ -64,7 +60,7 @@ section {
 .charts-root {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .title {

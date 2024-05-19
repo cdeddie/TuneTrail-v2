@@ -63,6 +63,17 @@ import ChartCard from './ChartCard.vue';
       pSecondaryColourA="rgba(255,255,255, 0.5)"
     />
 
+    <ChartCard 
+      class="chart-card"
+      :pRank="3"
+      pImgSrc="https://i.scdn.co/image/ab67616d0000b273659cd4673230913b3918e0d5"
+      pLocation="Global"
+      pSongTitle="Espresso"
+      pSongArtist="Sabrina Carpenter"
+      pPrimaryColour="rgba(36, 66, 60,0.8)"
+      pSecondaryColour="rgb(245, 239, 236)"
+      pSecondaryColourA="rgba(245, 239, 236, 0.8)"
+    />
   </div>
 
 
@@ -78,4 +89,4 @@ import ChartCard from './ChartCard.vue';
 .cards-container > * {
   margin: 0px 10px;
 }
-</style>
+</style>  

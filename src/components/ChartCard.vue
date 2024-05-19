@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps<{
   pRank: number;
@@ -12,6 +12,7 @@ const props = defineProps<{
   pSecondaryColourA: string;
 }>();
 
+// Converts date object to 3 letter month
 const formatDate = computed(() => {
   const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
   const currentDate = new Date();
@@ -48,6 +49,8 @@ const formatDate = computed(() => {
 }
 
 .card-container {
+  font-size: 1.5vw;
+  max-width: 25vw;
   font-family: 'Trebuchet MS';
   display: flex;
   flex-direction: column;
@@ -58,7 +61,7 @@ const formatDate = computed(() => {
 }
 
 .card-container:hover {
-  box-shadow: 0 5px 20px rgba(129, 129, 129, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 5px 20px rgba(129, 129, 129, 0.19), 0 6px 6px rgba(126, 126, 126, 0.23);
   transform: scale(1.005);
   cursor: pointer;
 }
@@ -66,9 +69,8 @@ const formatDate = computed(() => {
 .title-container {
   display: flex;
   flex-direction: column;
-  font-size: 2rem;
   font-weight: 650;
-  margin-bottom: 60px;
+  margin-bottom: 4vh;
 }
 
 .title-container span {
@@ -82,6 +84,8 @@ const formatDate = computed(() => {
 
 img {
   width: 120px;
+  max-width: 100%;
+  object-fit: contain;
 }
 
 .song-container {
@@ -93,7 +97,6 @@ img {
   display: flex;
   flex-direction: column;
   margin-left: 12px;
-  font-size: 1.5rem;
 }
 
 .song-description span {
@@ -108,7 +111,6 @@ img {
   padding: 2px;
   padding-top: 0;
   color: var(--primary-color);
-  font-size: 1.3rem;
   width: 10vw;
 }
 
