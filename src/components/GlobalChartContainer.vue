@@ -20,9 +20,6 @@ const updateCardDimensions = (): void => {
     }
   });
 
-  console.log(maxWidth.value);
-  console.log(maxHeight.value);
-
   cards.forEach((card) => {
     (card as HTMLElement).style.width = `${maxWidth.value}px`;
     (card as HTMLElement).style.height = `${maxHeight.value}px`;
@@ -32,6 +29,20 @@ const updateCardDimensions = (): void => {
 onMounted((): void => {
   updateCardDimensions();
   window.addEventListener('resize', updateCardDimensions);
+
+  // Transition observer
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+      } else {
+        entry.target.classList.remove('show');
+      }
+    });
+  });
+
+  const hiddenElements = document.querySelectorAll('.hidden');
+  hiddenElements.forEach((el) => observer.observe(el));
 });
 
 import ChartCard from './ChartCard.vue';
@@ -40,7 +51,7 @@ import ChartCard from './ChartCard.vue';
 <template>
   <div class="cards-container">
     <ChartCard
-      class="chart-card"
+      class="chart-card hidden"
       :pRank="1"
       pImgSrc="https://i.scdn.co/image/ab67616d00001e02ce31aff39a003828576d3930"
       pLocation="Global"
@@ -52,7 +63,7 @@ import ChartCard from './ChartCard.vue';
     />
 
     <ChartCard 
-      class="chart-card"
+      class="chart-card hidden"
       :pRank="2"
       pImgSrc="https://i.scdn.co/image/ab67616100005174e672b5f553298dcdccb0e676"
       pLocation="Global"
@@ -64,7 +75,7 @@ import ChartCard from './ChartCard.vue';
     />
 
     <ChartCard 
-      class="chart-card"
+      class="chart-card hidden"
       :pRank="3"
       pImgSrc="https://i.scdn.co/image/ab67616d0000b273659cd4673230913b3918e0d5"
       pLocation="Global"
@@ -88,5 +99,37 @@ import ChartCard from './ChartCard.vue';
 
 .cards-container > * {
   margin: 0px 10px;
+}
+
+.hidden {
+  opacity: 0;
+  filter: blur(3px);
+  transform: translateX(-100%);
+  transition: all 2s;
+  margin: 5vh;
+}
+
+.show {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion) {
+  .hidden {
+    transition: none;
+  }
+}
+
+.chart-card:nth-child(2) {
+  transition-delay: 200ms;
+}
+
+.chart-card:nth-child(3) {
+  transition-delay: 400ms;
+}
+
+.chart-card:nth-child(4) {
+  transition-delay: 600ms;
 }
 </style>  

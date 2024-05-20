@@ -4,32 +4,15 @@ import { onMounted } from 'vue';
 import GlobalChartContainer from './GlobalChartContainer.vue';
 
 onMounted(() => {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('show');
-      } else {
-        entry.target.classList.remove('show');
-      }
-    });
-  });
 
-  const hiddenElements = document.querySelectorAll('.hidden');
-  hiddenElements.forEach((el) => observer.observe(el));
 });
 </script>
 
 <template>
   <div class="charts-root">
     <div class="title">What's Charting?</div>
+    <GlobalChartContainer />
 
-    <section class="hidden">
-      <GlobalChartContainer />
-    </section>
-
-    <section class="hidden">
-      
-    </section>
   </div>
 </template>
 
@@ -41,20 +24,6 @@ section {
   font-size: 30px;
   font-weight: 700;
   color: white;
-}
-
-.hidden {
-  opacity: 0;
-  filter: blur(5px);
-  transform: translateX(-100%);
-  transition: all 2s;
-  margin: 5vh;
-}
-
-.show {
-  opacity: 1;
-  filter: blur(0);
-  transform: translateX(0);
 }
 
 .charts-root {

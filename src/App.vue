@@ -91,7 +91,7 @@ onUnmounted((): void => {
         <SpotifyCharts />
       </section>
 
-      <section id="Recommendation">
+      <section id="Discover">
         <Recommendation />
       </section>
     </div>

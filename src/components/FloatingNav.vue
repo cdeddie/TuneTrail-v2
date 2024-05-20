@@ -6,7 +6,7 @@ const props = defineProps<{ pActiveSection: string }>();
 
 const windowPosition = ref<number>(0);      // Window position Y value
 const activeIndex = ref<number>(-1);        // Starting with no active index
-const items: string[] = ['Landing', 'Charts', 'Recommendation', 'Personal'];
+const items: string[] = ['Landing', 'Charts', 'Discover', 'Personal'];
 
 watch(activeIndex, (newIndex) => {
   if (activeIndex.value > -1 && newIndex < items.length) {
@@ -93,17 +93,26 @@ onUnmounted((): void => {
 }
 
 .navbar span {
+  font-size: .8vw;
   font-family: Circular;
   text-align: center;
   border: 1px rgba(17, 17, 17, 0.595);
   transition: border-color 0.5s ease-in-out;
-  padding: 20px 15px;
+  padding: 20px 5px;
   border: 1px solid rgba(188, 188, 188, 0.097);
   border-radius: .5vw;
   box-sizing: border-box;
   flex-grow: 1;
   margin: 0px 2px;
   font-weight: 650;
+}
+
+@media (max-width: 1200px) {
+  .navbar span {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 1vw;
+  }
 }
 
 .navbar span:hover {
