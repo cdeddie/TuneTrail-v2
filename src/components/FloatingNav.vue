@@ -6,7 +6,7 @@ const props = defineProps<{ pActiveSection: string }>();
 
 const windowPosition = ref<number>(0);      // Window position Y value
 const activeIndex = ref<number>(-1);        // Starting with no active index
-const items: string[] = ['Landing', 'Charts', 'Discover', 'Personal'];
+const items: string[] = ['Landing', 'Discover', 'Charts', 'Personal'];
 
 watch(activeIndex, (newIndex) => {
   if (activeIndex.value > -1 && newIndex < items.length) {

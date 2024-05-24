@@ -7,7 +7,8 @@ import SpotifyCharts from './components/SpotifyCharts.vue';
 import FloatingNav from './components/FloatingNav.vue';
 import Recommendation from './components/Recommendation.vue';
 
-const scrollTargetRef = ref<HTMLElement | null>(null);            // Target Ref for down chevron scroll button on Landing page
+// Target Ref for down chevron scroll button on Landing page
+const scrollTargetRef = ref<HTMLElement | null>(null);
 
 // Observer for current section. Note that the activeSection ref can be null (due to observers)
 const activeSection = ref<string>('Landing');
@@ -33,12 +34,13 @@ const handleScrollDown = (): void => {
   if (scrollTargetRef.value) {
     observer?.disconnect();
     scrollTargetRef.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
     setTimeout(() => {
       const sections = document.querySelectorAll('section');
       sections.forEach((section) => {
         observer?.observe(section);
       });
-    }, 500);
+    }, 750);
   }
 };
 
@@ -49,6 +51,7 @@ const handleNavScroll = (section: string): void => {
   if (sectionElement) {
     observer?.disconnect();
     sectionElement.scrollIntoView({ behavior: 'smooth' });
+
     setTimeout(() => {
       const sections = document.querySelectorAll('section');
       sections.forEach((section) => {
@@ -87,12 +90,12 @@ onUnmounted((): void => {
         <Landing @scroll-down="handleScrollDown" />
       </section>
 
-      <section id="Charts" ref="scrollTargetRef">
-        <SpotifyCharts />
+      <section id="Discover" ref="scrollTargetRef">
+        <Recommendation />
       </section>
 
-      <section id="Discover">
-        <Recommendation />
+      <section id="Charts">
+        <SpotifyCharts />
       </section>
     </div>
   </div>

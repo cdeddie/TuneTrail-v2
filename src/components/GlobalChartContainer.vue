@@ -97,6 +97,10 @@ import ChartCard from './ChartCard.vue';
   justify-content: space-evenly;
 }
 
+.chart-card {
+  
+}
+
 .cards-container > * {
   margin: 0px 10px;
 }
