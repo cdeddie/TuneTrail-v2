@@ -4,7 +4,7 @@ import { ref, onMounted } from 'vue';
 const items = ref<HTMLElement[]>([]);
 const active = ref(3);
 
-// Js source: https://codepen.io/hoanghodev/pen/eYxWjyW
+// JS source: https://codepen.io/hoanghodev/pen/eYxWjyW
 const loadShow = () => {
   items.value[active.value].style.transform = 'none';
   items.value[active.value].style.zIndex = '1';
@@ -104,10 +104,11 @@ onMounted(() => {
 .item {
   width: 30vw;
   position: absolute;
-  text-align: justify;
   background-color: rgba(60, 123, 168, 0.745);
   transition:  0.5s;
   left: calc(50% - 15vw);
+  padding: 2%;
+  text-align: center;
 }
 
 #next {
@@ -129,5 +130,9 @@ onMounted(() => {
   font-weight: bold;
   opacity: 0.5;
   transition: opacity 0.5s;
+}
+
+button:hover {
+  cursor: pointer;
 }
 </style>

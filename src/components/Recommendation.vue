@@ -1,10 +1,12 @@
 <script setup lang="ts">
-
+import SearchSpotify from './SearchSpotify.vue';
 </script>
 
 <template>
   <div class="recommendation-root">
     <div class="title">Recommendations</div>
+
+    <SearchSpotify />
   </div>
 
 </template>
