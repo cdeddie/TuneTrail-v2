@@ -66,22 +66,24 @@ onMounted(() => {
       </div>
 
       <div class="item">
-        <h1>Slide 3</h1>
-        Ipsum
-      </div>
-
-      <div class="item">
         <h1>Slide 4</h1>
-        Lorem
+        Ipsum
       </div>
 
       <div class="item">
         <h1>Slide 5</h1>
+        Lorem
+      </div>
+
+      <div class="item">
+        <h1>Slide 6</h1>
         Ipsum
       </div>
 
-      <button id="next" @click="nextSlide">></button>
-      <button id="prev" @click="prevSlide"><</button>
+      <div class="button-container">
+        <button id="next" @click="nextSlide">></button>
+        <button id="prev" @click="prevSlide"><</button>
+      </div>
     </div>
   </div>
 </template>
@@ -96,43 +98,69 @@ onMounted(() => {
 .slider {
   position: relative;
   width: 100%;
-  margin-top: 100px;
-  height: 50vh;
+  height: 70vh;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .item {
-  width: 30vw;
+  margin-bottom: 20vh;
+  width: 26vh;
+  height: 26vh;
   position: absolute;
   background-color: rgba(60, 123, 168, 0.745);
   transition:  0.5s;
-  left: calc(50% - 15vw);
   padding: 2%;
   text-align: center;
 }
 
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+
 #next {
-  right: 40vw;
+  margin-left: 3rem;
 }
 
 #prev {
-  left: 40vw;
+  margin-right: 3rem;
 }
 
 #next, #prev {
   position: absolute;
-  top: 40%;
-  color: #323232;
+  top: 60%;
+  color: #d2d2d2;
   background: none;
   border: none;
   font-size: xxx-large;
   font-family: monospace;
   font-weight: bold;
-  opacity: 0.5;
-  transition: opacity 0.5s;
+  opacity: 0.8;
 }
 
 button:hover {
   cursor: pointer;
 }
+
+@media (min-width: 2000px) {
+  .slider {
+    height: 40vh;
+  }
+  .item {
+    margin-top: 10vh;
+    height: 15vh;
+    width: 15vh;
+  }
+
+  #next {
+    margin-top: 50px;
+  }
+
+  #prev {
+    margin-top: 50px;
+  }
+} 
 </style>

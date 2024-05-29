@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import { Tag, createTag } from '../types/SearchResult';
+import { Tag, createTag } from '../types/TagType';
 import debounce from 'debounce';
 
 const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BASE_URL;

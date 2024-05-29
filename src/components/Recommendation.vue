@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import SearchSpotify from './SearchSpotify.vue';
+import RecommendationFilters from './RecommendationFilters.vue';
+import CardSlider from './CardSlider.vue';
 </script>
 
 <template>
@@ -7,6 +9,8 @@ import SearchSpotify from './SearchSpotify.vue';
     <div class="title">Recommendations</div>
 
     <SearchSpotify />
+    <RecommendationFilters />
+    <!-- <CardSlider /> -->
   </div>
 
 </template>
