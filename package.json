@@ -14,6 +14,7 @@
     "@vue-hero-icons/solid": "^1.7.2",
     "bootstrap-icons": "^1.11.3",
     "debounce": "^2.0.0",
+    "fast-average-color": "^9.4.0",
     "primeicons": "^7.0.0",
     "vue": "^3.4.21"
   },

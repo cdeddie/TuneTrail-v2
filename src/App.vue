@@ -95,7 +95,7 @@ onUnmounted((): void => {
       </section>
 
       <section id="Charts">
-        <SpotifyCharts />
+        <!-- <SpotifyCharts /> -->
       </section>
     </div>
   </div>
@@ -103,6 +103,7 @@ onUnmounted((): void => {
 
 <style scoped>
 .root {
+  max-width: 100vw;
   position: relative;
   min-height: var(--app-height);
 }

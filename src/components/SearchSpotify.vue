@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, watchEffect } from 'vue';
 import { Tag, createTag } from '../types/TagType';
 import debounce from 'debounce';
 
@@ -14,11 +14,20 @@ const query = ref<string>('');
 const searchResults = ref<any>(null);
 const isLoading = ref<boolean>(true);
 
-const emit = defineEmits<{ (event: 'update-tags', tags: Tag[]): void; }>();
+const emit = defineEmits<{ 
+  (event: 'update-tags', tags: Tag[]): void; 
+  (event: 'search-focused', inputFocused: boolean): void;
+}>();
+
+const props = defineProps<{ pTags: Tag[] }>();
 
 const changeCategory = (newCategory: string) => {
   searchCategory.value = newCategory;
 }
+
+watchEffect(() => {
+  tags.value = props.pTags;
+});
 
 watch(tags, () => {
   emit('update-tags', tags.value);
@@ -57,8 +66,8 @@ const handleBlur = () => {
   }, 100);
 };
 
-const addTag = (item: any) => {
-  const tag = createTag(item);
+const addTag = async(item: any) => {
+  const tag = await createTag(item);
 
   if (tags.value.some((t) => t.id === tag.id)) {
     return;
@@ -83,6 +92,10 @@ watch(searchCategory, () => {
   searchResults.value = null;
   query.value = '';
   tags.value = [];
+});
+
+watch(inputFocused, () => {
+  emit('search-focused', inputFocused.value);
 });
 </script>
 
@@ -151,13 +164,13 @@ watch(searchCategory, () => {
       </div>  
     </div> 
     
-    <div class="tags-group">
+    <!-- <div class="tags-group">
       <div v-for="(tag) in tags" :key="tag.id" class="tag-container">
         <img v-if="tag.image" :src="tag.image">
         <span>{{ tag.name }}</span>
         <i class="fa fa-times-circle remove-tag" aria-hidden="true" @click="removeTag(tag)"></i>
       </div>
-    </div>
+    </div> -->
   </div>
 
   <div class="overlay" v-show="inputFocused"></div>
@@ -313,6 +326,20 @@ watch(searchCategory, () => {
   font-size: 44px;
   margin-right: 4px;
   margin-bottom: 2px;
+}
+
+@media (max-width: 1100px) {
+  .input-bar {
+    font-size: 1rem;
+  }
+
+  .search-bar span {
+    font-size: 1rem;
+  }
+  
+  .search-results {
+    font-size: .8rem;
+  }
 }
 
 </style>
