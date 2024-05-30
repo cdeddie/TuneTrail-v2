@@ -2,10 +2,11 @@
 import { ref } from 'vue';
 import SearchSpotify from './SearchSpotify.vue';
 import { Tag } from '../types/TagType';
-import RecommendationFilters from './RecommendationFilters.vue';
+import RecommendationFilters, { SliderItem } from './RecommendationFilters.vue';
 import CardSlider from './CardSlider.vue';
 
 const tags = ref<Tag[]>([]);
+const filters = ref<SliderItem[]>([]);
 const searchFocused = ref<boolean>(false);
 
 const handleUpdateTags = (newTags: Tag[]) => {
@@ -15,6 +16,10 @@ const handleUpdateTags = (newTags: Tag[]) => {
 const handleSearchFocused = (inputFocused: boolean) => {
   searchFocused.value = inputFocused;
 };
+
+const handleUpdateFilters = (newFilters: SliderItem[]) => {
+  filters.value = newFilters;
+};
 </script>
 
 <template>
@@ -22,7 +27,12 @@ const handleSearchFocused = (inputFocused: boolean) => {
     <div class="title">Recommendations</div>
 
     <SearchSpotify @update-tags="handleUpdateTags" :pTags="tags" @search-focused="handleSearchFocused" />
-    <RecommendationFilters v-model:pTags="tags" :pSearchFocused="searchFocused" @update-tags="handleUpdateTags" />
+    <RecommendationFilters 
+      v-model:pTags="tags" 
+      :pSearchFocused="searchFocused" 
+      @update-tags="handleUpdateTags" 
+      @update-filters="handleUpdateFilters"
+    />
     <!-- <CardSlider /> -->
     
   </div>

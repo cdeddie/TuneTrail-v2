@@ -20,7 +20,82 @@ body {
   margin: 0;
 }
 
+/* Regular */
 @font-face {
   font-family: 'Circular';
-  src: url('/src/assets/EuclidCircularA-Regular.ttf');
+  src: url('/src/assets/Euclid Circular A Regular.ttf');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Italic */
+@font-face {
+  font-family: 'Circular';
+  src: url('/src/assets/Euclid Circular A Italic.ttf');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Light */
+@font-face {
+  font-family: 'Circular';
+  src: url('/src/assets/Euclid Circular A Light.ttf');
+  font-weight: 300;
+  font-style: normal;
+}
+
+/* Light Italic */
+@font-face {
+  font-family: 'Circular';
+  src: url('/src/assets/Euclid Circular A Light Italic.ttf');
+  font-weight: 300;
+  font-style: italic;
+}
+
+/* Medium */
+@font-face {
+  font-family: 'Circular';
+  src: url('/src/assets/Euclid Circular A Medium.ttf');
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* Medium Italic */
+@font-face {
+  font-family: 'Circular';
+  src: url('/src/assets/Euclid Circular A Medium Italic.ttf');
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* SemiBold */
+@font-face {
+  font-family: 'Circular';
+  src: url('/src/assets/Euclid Circular A SemiBold.ttf');
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* SemiBold Italic */
+@font-face {
+  font-family: 'Circular';
+  src: url('/src/assets/Euclid Circular A SemiBold Italic.ttf');
+  font-weight: 600;
+  font-style: italic;
+}
+
+/* Bold */
+@font-face {
+  font-family: 'Circular';
+  src: url('/src/assets/Euclid Circular A Bold.ttf');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Bold Italic */
+@font-face {
+  font-family: 'Circular';
+  src: url('/src/assets/Euclid Circular A Bold Italic.ttf');
+  font-weight: 700;
+  font-style: italic;
 }

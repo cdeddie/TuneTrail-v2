@@ -1,29 +1,31 @@
 <script setup lang="ts">
 import { ref, watchEffect, computed, watch } from 'vue';
 import { Tag } from '../types/TagType';
+import { Slider } from '@/components/ui/slider';
+import debounce from 'debounce';
 
 type SliderItem = {
   name: string;
-  value: number;
+  value: number[];
 };
 
 const toggleSidebar = ref<boolean>(false);
 
 const sliders = ref<SliderItem[]>([
-  { name: 'acousticness', value: 0 },
-  { name: 'danceability', value: 0 },
-  { name: 'energy', value: 0 },
-  { name: 'instrumentalness', value: 0 },
-  { name: 'liveness', value: 0 },
-  { name: 'loudness', value: 0 },
-  { name: 'popularity', value: 0 },
-  { name: 'speechiness', value: 0 },
-  { name: 'tempo', value: 0 },
-  { name: 'valence', value: 0 },
+  { name: 'acousticness', value: [0] },
+  { name: 'danceability', value: [0] },
+  { name: 'energy', value: [0] },
+  { name: 'instrumentalness', value: [0] },
+  { name: 'liveness', value: [0] },
+  { name: 'loudness', value: [0] },
+  { name: 'popularity', value: [0] },
+  { name: 'speechiness', value: [0] },
+  { name: 'tempo', value: [0] },
+  { name: 'valence', value: [0] },
 ]);
 
 const emit = defineEmits<{ 
-  (event: 'update-filters', filters: Record<string, number>): void 
+  (event: 'update-filters', filters: SliderItem[]): void 
   (event: 'update-tags', tags: Tag[]): void
 }>();
 
@@ -44,15 +46,10 @@ const tagsTitle = computed(() => {
 });
 
 // We're looking into this very strongly
-// Returns 
-watchEffect(() => {
-  const values = sliders.value.reduce((obj, slider) => {
-    obj[slider.name] = slider.value;
-    return obj;
-  }, {} as Record<string, number>);
-
-  emit('update-filters', values);
-});
+// Emitting recommendations
+watch(sliders.value, debounce(() => {
+  emit('update-filters', sliders.value);
+}, 500));
 
 watch(modifiedTags, () => {
   const items = document.querySelectorAll('.tag');
@@ -77,11 +74,9 @@ watch(() => props.pSearchFocused, () => {
   <div class="sidebar-container">
     <div class="sidebar" :class="{ 'open': toggleSidebar }">
       <div class="sidebar-content">
-        <div class="title-container">
-          <h2>Filters</h2>
-        </div>
+        <div class="title">Filters</div>
         <div>
-          <h3 class="filter-title">{{ tagsTitle }}</h3>
+          <div class="filter-title">{{ tagsTitle }}</div>
           <div class="tag-container">
             <div v-for="tag in modifiedTags" :key="tag.id" class="tag" :style="{ backgroundColor: tag.colour }">
               <img :src="tag.image" class="tag-image" />
@@ -94,15 +89,37 @@ watch(() => props.pSearchFocused, () => {
             </div>
           </div>
         </div>
+
+        <div class="filter-title text-right">Filters</div>
+        <div class="filters-container">
+          <div v-for="slider in sliders" class="slider-container">
+            <span class="slider-title align-top" style="font-family: 'Circular';">{{ slider.name }}</span>
+            <Slider v-model="slider.value" />
+          </div>
+        </div>
+
       </div>
     </div>
+
     <div class="sidebar-toggle" @click="toggleSidebar = !toggleSidebar" :class="{ 'open': toggleSidebar }">
       <i class="fa fa-caret-left" :class="{ 'open': toggleSidebar }" aria-hidden="true"></i>
     </div>
   </div>
+
+  <div class="overlay" v-show="toggleSidebar"></div>
 </template>
 
 <style scoped>
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 999;
+}
+
 .sidebar-container {
   position: fixed;
   top: 0;
@@ -128,7 +145,7 @@ watch(() => props.pSearchFocused, () => {
 }
 
 .sidebar-toggle.open {
-  right: 25vw;
+  right: 22vw;
 }
 
 .sidebar-toggle i {
@@ -142,8 +159,8 @@ watch(() => props.pSearchFocused, () => {
 .sidebar {
   position: fixed;
   top: 0;
-  right: -25vw;
-  width: 25vw;
+  right: -22vw;
+  width: 22vw;
   height: 100vh;
   transition: right 0.3s ease;
   overflow: hidden;
@@ -163,19 +180,25 @@ watch(() => props.pSearchFocused, () => {
 }
 
 .filter-title {
+  font-family: 'Circular';
   color: whitesmoke;
-  padding: 0 5.5vw;
-  text-decoration: underline;
+  padding: 1vh 5vw;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
-.title-container {
+.title {
   background-color: rgba(44, 44, 44, 0.586);
-}
-
-h2 {
   color: whitesmoke;
   margin-top: 0;
   padding: 20px 5vw;
+  font-size: 1.4rem;
+  font-family: 'Circular';
+  font-weight: 700;
+}
+
+.filters-container {
+  padding: 0 5vw;
 }
 
 /* ---------- Tag styling ---------- */
@@ -215,9 +238,13 @@ h2 {
   margin-right: 5px;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
+  .title {
+    display: none;
+  }
+
   .filter-title {
-    padding: 0 3vw;
+    padding: 1.5vh 3vw 0 3vw;
     font-size: 1rem;
   }
 
@@ -234,11 +261,12 @@ h2 {
     font-size: .75rem;
   }
 
-  h2 {
-    display: none;
-    font-size: 1.2rem;
-    padding: 10px 3vw;
-    margin: 0;
+  .filters-container {
+    padding: 0 3vw;
+  }
+
+  span.slider-title {
+    font-size: .9rem;
   }
 }
 
@@ -256,7 +284,6 @@ h2 {
   margin-left: auto;
   margin-right: 5%;
   padding-left: 5%;
-  mix-blend-mode: difference;
 }
 
 .remove-tag:hover {
@@ -281,4 +308,15 @@ h2 {
   display: block;
 }
 
+/* Slider styles */
+.slider-container {
+  color: white;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+span.slider-title {
+  margin-left: auto;
+}
 </style>

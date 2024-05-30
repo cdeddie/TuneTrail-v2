@@ -104,7 +104,6 @@ onUnmounted((): void => {
   box-sizing: border-box;
   flex-grow: 1;
   margin: 0px 2px;
-  font-weight: 650;
 }
 
 @media (max-width: 1200px) {
