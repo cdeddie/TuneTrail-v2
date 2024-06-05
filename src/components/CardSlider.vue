@@ -1,15 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
+import { getAverageColour } from '@/types/TagType';
+import { pickBWTextColour } from '@/utils/colourStyle';
+import RecommendationCard from './RecommendationCard.vue';
 
 const items = ref<HTMLElement[]>([]);
-const active = ref(3);
+const active = ref<number>(0);
+
+const props = defineProps<{ 
+  pRecommendations: any;
+  pIsLoading: boolean;
+ }>();
 
 // JS source: https://codepen.io/hoanghodev/pen/eYxWjyW
-const loadShow = () => {
+const loadShow = async () => {
+  if (items.value.length === 0 || !props.pRecommendations.tracks[active.value]) {
+    return;
+  }
+  
+  const backgroundColour = await getAverageColour(props.pRecommendations.tracks[active.value].album.images[0].url);
+  console.log(backgroundColour);
   items.value[active.value].style.transform = 'none';
   items.value[active.value].style.zIndex = '1';
   items.value[active.value].style.filter = 'none';
-  items.value[active.value].style.opacity = '1';
+  items.value[active.value].style.opacity = '0.8';
+  items.value[active.value].style.color = pickBWTextColour(backgroundColour);
+  items.value[active.value].style.backgroundColor = backgroundColour;
 
   let stt = 0;
   for (let i = active.value + 1; i < items.value.length; i++) {
@@ -30,54 +46,43 @@ const loadShow = () => {
   }
 };
 
-const nextSlide = () => {
+const nextSlide = async() => {
   active.value = active.value + 1 < items.value.length ? active.value + 1 : active.value;
-  loadShow();
+  await loadShow();
 };
 
-const prevSlide = () => {
+const prevSlide = async() => {
   active.value = active.value - 1 >= 0 ? active.value - 1 : active.value;
-  loadShow();
+  await loadShow();
 };
 
-onMounted(() => {
+onMounted(async () => {
+  await nextTick();
   items.value = Array.from(document.querySelectorAll('.slider .item')) as HTMLElement[];
-  loadShow();
+  if (props.pRecommendations && !props.pIsLoading) {
+    await loadShow();
+  }
 });
 
+watch(() => [props.pRecommendations, props.pIsLoading],
+  async ([newRecommendations, newIsLoading]) => {
+    active.value = 0;
+    if (newRecommendations && !newIsLoading) {
+      await nextTick();
+      items.value = Array.from(document.querySelectorAll('.slider .item')) as HTMLElement[];
+      await loadShow();
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
-  <div class="slider-container">
+  <!-- <div class="slider-container" v-if="props.pRecommendations" >
     <div class="slider">
-      <div class="item">
-        <h1>Slide 1</h1>
-        Lorem
-      </div>
-
-      <div class="item">
-        <h1>Slide 2</h1>
-        Ipsum
-      </div>
-
-      <div class="item">
-        <h1>Slide 3</h1>
-        Lorem
-      </div>
-
-      <div class="item">
-        <h1>Slide 4</h1>
-        Ipsum
-      </div>
-
-      <div class="item">
-        <h1>Slide 5</h1>
-        Lorem
-      </div>
-
-      <div class="item">
-        <h1>Slide 6</h1>
-        Ipsum
+      <div v-for="item in props.pRecommendations.tracks" class="item" >
+        <img class="card-img" :src="item.album.images[0].url">
+        <span>{{ item.name }}</span>
       </div>
 
       <div class="button-container">
@@ -85,7 +90,9 @@ onMounted(() => {
         <button id="prev" @click="prevSlide"><</button>
       </div>
     </div>
-  </div>
+  </div> -->
+  
+  <RecommendationCard :p-recommendation-item="props.pRecommendations?.tracks[0]" style="margin-top: 20%;"/>
 </template>
 
 <style scoped>
@@ -106,17 +113,18 @@ onMounted(() => {
 }
 
 .item {
-  margin-bottom: 20vh;
-  width: 26vh;
-  height: 26vh;
+  margin-bottom: 15vh;
+  width: 26v;
+  height: 40vh;
   position: absolute;
-  background-color: rgba(60, 123, 168, 0.745);
   transition:  0.5s;
   padding: 2%;
   text-align: center;
+  border-radius: 1rem;
 }
 
 .button-container {
+  margin-top: 5vh;
   display: flex;
   justify-content: center;
 }
@@ -131,7 +139,7 @@ onMounted(() => {
 
 #next, #prev {
   position: absolute;
-  top: 60%;
+  top: 75%;
   color: #d2d2d2;
   background: none;
   border: none;
@@ -163,4 +171,10 @@ button:hover {
     margin-top: 50px;
   }
 } 
+
+.card-img {
+  border-radius: 1rem;
+  max-height: 90%;
+}
+
 </style>

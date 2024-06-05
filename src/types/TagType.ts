@@ -10,10 +10,9 @@ export type Tag = {
   colour: string;
 };
 
-const getAverageColour = async(imgUrl: string) => {
+export const getAverageColour = async(imgUrl: string) => {
   const response = await fac.getColorAsync(imgUrl);
-  console.log(response.rgba);
-  return response.rgba;
+  return response.rgb;
 };
 
 export const createTag = async(item: any): Promise<Tag> => {

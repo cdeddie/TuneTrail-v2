@@ -2,9 +2,10 @@
 import { ref, watchEffect, computed, watch } from 'vue';
 import { Tag } from '../types/TagType';
 import { Slider } from '@/components/ui/slider';
+import { pickBWTextColour } from '@/utils/colourStyle';
 import debounce from 'debounce';
 
-type SliderItem = {
+export type SliderItem = {
   name: string;
   value: number[];
 };
@@ -82,9 +83,14 @@ watch(() => props.pSearchFocused, () => {
               <img :src="tag.image" class="tag-image" />
               <div class="tag-details">
                 <div class="tag-name-container">
-                  <span class="tag-name">{{ tag.name }}</span>
+                  <span class="tag-name" :style="{ color: pickBWTextColour(tag.colour) }">{{ tag.name }}</span>
                 </div>
-                <i class="fa fa-times-circle remove-tag" aria-hidden="true" @click="removeTag(tag)"></i>
+                <i 
+                  class="fa fa-times-circle remove-tag" 
+                  aria-hidden="true" 
+                  @click="removeTag(tag)" 
+                  :style="{ color: pickBWTextColour(tag.colour) }"
+                ></i>
               </div>
             </div>
           </div>
@@ -302,8 +308,6 @@ watch(() => props.pSearchFocused, () => {
 .tag-name {
   font-size: 14px;
   white-space: nowrap;
-  mix-blend-mode: difference;
-  color: white;
   font-family: 'Circular';
   display: block;
 }

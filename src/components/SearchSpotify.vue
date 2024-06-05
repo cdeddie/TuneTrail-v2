@@ -42,7 +42,6 @@ const fetchSearch = async() => {
     const sanitizedQuery = encodeURIComponent(query.value?.toLowerCase());
     // TODO: Handle user login (future). Also value needs to be between Songs and Artists
     const url = `${baseUrl}/public-search?query=${sanitizedQuery}&type=${searchCategory.value?.toLowerCase().slice(0, -1)}`;
-    console.log(url);
     const response = await fetch(url, { credentials: 'include' });
 
     if (!response.ok) {
