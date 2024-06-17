@@ -177,7 +177,6 @@ watch(inputFocused, () => {
 
 <style scoped>
 .input-container {
-  position: absolute;
   color: white;
   margin-left: 28.75%;
   margin-right: 28.75%;

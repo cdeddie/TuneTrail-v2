@@ -92,7 +92,7 @@ watch(() => [props.pRecommendations, props.pIsLoading],
     </div>
   </div> -->
   
-  <RecommendationCard :p-recommendation-item="props.pRecommendations?.tracks[0]" style="margin-top: 20%;"/>
+  <!-- <RecommendationCard :p-recommendation-item="props.pRecommendations?.tracks[0]" style="margin-top: 20%;"/> -->
 </template>
 
 <style scoped>

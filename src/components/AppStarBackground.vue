@@ -19,6 +19,7 @@
   bottom: 0;
   background: radial-gradient(ellipse at bottom, #1b352b 0%, #090a0f 100%);
   z-index: -1;
+  max-height: 100vh;
 }
 
 #stars {
@@ -32,7 +33,7 @@
 #stars:after {
   content: " ";
   position: absolute;
-  top: 2000px;
+  top: 100vh;
   width: 1px;
   height: 1px;
   background: transparent;
@@ -50,7 +51,7 @@
 #stars2:after {
   content: " ";
   position: absolute;
-  top: 2000px;
+  top: 100vh;
   width: 2px;
   height: 2px;
   background: transparent;
@@ -68,7 +69,7 @@
 #stars3:after {
   content: " ";
   position: absolute;
-  top: 2000px;
+  top: 100vh;
   width: 3px;
   height: 3px;
   background: transparent;
@@ -80,7 +81,7 @@
     transform: translateY(0px);
   }
   to {
-    transform: translateY(-2000px);
+    transform: translateY(-100vh);
   }
 }
 </style>
