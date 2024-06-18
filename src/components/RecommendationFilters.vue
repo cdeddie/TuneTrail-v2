@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { Tag } from '../types/TagType';
 import { Slider } from '@/components/ui/slider';
 import { pickBWTextColour } from '@/utils/colourStyle';
@@ -11,6 +11,7 @@ export type SliderItem = {
 };
 
 const toggleSidebar = ref<boolean>(false);
+const sidebarRef = ref<HTMLElement | null>(null);
 
 const sliders = ref<SliderItem[]>([
   { name: 'acousticness', value: [0] },
@@ -69,11 +70,29 @@ watch(() => props.pSearchFocused, () => {
     toggleSidebar.value = true;
   }
 });
+
+const handleOutsideClick = (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
+
+
+  if (sidebarRef.value && !sidebarRef.value.contains(target) 
+      && !target.closest('.input-bar') && !target.closest('.sidebar-toggle')) {
+    toggleSidebar.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleOutsideClick);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleOutsideClick);
+});
 </script>
 
 <template>
   <div class="sidebar-container">
-    <div class="sidebar" :class="{ 'open': toggleSidebar }">
+    <div class="sidebar" ref="sidebarRef" :class="{ 'open': toggleSidebar }">
       <div class="sidebar-content">
         <div class="title">Filters</div>
         <div>
@@ -140,9 +159,9 @@ watch(() => props.pSearchFocused, () => {
   right: 0;
   transform: translateY(-50%);
   font-family: 'Circular';
-  color: white;
+  color: rgb(36,48,94);
   user-select: none;
-  background-color: rgb(35, 35, 35);
+  background-color: rgb(255,207,122);
   border-radius: 5px 0 0 5px;
   padding: 10px;
   cursor: pointer;
@@ -170,7 +189,7 @@ watch(() => props.pSearchFocused, () => {
   height: 100vh;
   transition: right 0.3s ease;
   overflow: hidden;
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(45,39,63);
   opacity: 0.8;
 }
 
@@ -194,8 +213,8 @@ watch(() => props.pSearchFocused, () => {
 }
 
 .title {
-  background-color: rgba(44, 44, 44, 0.586);
-  color: whitesmoke;
+  background-color: rgb(255,207,122);
+  color: rgb(36,48,94);
   margin-top: 0;
   padding: 20px 5vw;
   font-size: 1.4rem;

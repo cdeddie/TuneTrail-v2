@@ -101,7 +101,7 @@ watch(inputFocused, () => {
 <template>
   <div class="input-container">
     <div class="search-bar">
-      <input 
+      <input
         class="input-bar" 
         v-model="query" 
         :placeholder="tags.length >= 5 ? 
@@ -184,7 +184,6 @@ watch(inputFocused, () => {
 }
 
 .input-bar {
-  color: rgba(255, 255, 255, 0.8);
   font-family: 'Circular', Arial;
   background: none;
   outline: none;
@@ -195,6 +194,10 @@ watch(inputFocused, () => {
   width: 42.5vw;
   box-sizing: border-box;
   width: 100%;
+}
+
+.input-bar::placeholder {
+  color: white;
 }
 
 .search-bar {
@@ -277,7 +280,7 @@ watch(inputFocused, () => {
 }
 
 .search-results-dropdown {
-  background-color: rgba(69, 184, 69, 0.315);
+  background-color: rgba(255,207,122,0.5);
   font-family: 'Circular', Arial;
   box-shadow: 0 8px 16px rgba(66, 66, 66, 0.2);
   z-index: 1000;

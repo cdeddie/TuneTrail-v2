@@ -97,9 +97,10 @@ const publicFetchRecommendations = async() => {
 .title {
   font-size: 7em; 
   font-weight: bold;
-  color: rgba(43, 233, 157, 0.576);
   text-align: center;
   line-height: 0.9;
+
+  color: rgb(74,113,253);
 }
 
 .subtitle {
@@ -123,6 +124,8 @@ const publicFetchRecommendations = async() => {
   height: 1.4em;
   font-size: 1.4em;
   min-width: calc(1.6em * 2.4);
+
+  filter: hue-rotate(100deg);
 }
 
 .subtitle span {
