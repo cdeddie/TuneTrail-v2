@@ -18,11 +18,11 @@
     "clsx": "^2.1.1",
     "debounce": "^2.0.0",
     "fast-average-color": "^9.4.0",
-    "primeicons": "^7.0.0",
     "radix-vue": "^1.8.2",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.3"
   },
   "devDependencies": {
     "@types/node": "^20.12.13",

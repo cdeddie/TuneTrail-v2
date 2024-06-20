@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, watchEffect } from 'vue';
 import { Tag, createTag } from '../types/TagType';
+import { fetchSearch } from '../utils/fetchSpotifySearch';
 import debounce from 'debounce';
-
-const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BASE_URL;
 
 const searchCategory = ref<string>('Artists');
 const tags = ref<Tag[]>([]);
@@ -33,25 +32,14 @@ watch(tags, () => {
   emit('update-tags', tags.value);
 }, { deep: true });
 
-const fetchSearch = async() => {
-  if (query.value.trim().length === 0) {
-    return;
-  }
+const handleSearch = async (query: string, searchCategory: string) => {
+  isLoading.value = true;
 
   try {
-    const sanitizedQuery = encodeURIComponent(query.value?.toLowerCase());
-    // TODO: Handle user login (future). Also value needs to be between Songs and Artists
-    const url = `${baseUrl}/public-search?query=${sanitizedQuery}&type=${searchCategory.value?.toLowerCase().slice(0, -1)}`;
-    const response = await fetch(url, { credentials: 'include' });
-
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-
-    const data: any = await response.json();
+    const data = await fetchSearch(query, searchCategory);
     searchResults.value = data;
   } catch (error) {
-    console.error("Failed to fetch data:", error);
+    console.error('Failed to fetch data:', error);
   } finally {
     isLoading.value = false;
   }
@@ -101,18 +89,7 @@ watch(inputFocused, () => {
 <template>
   <div class="input-container">
     <div class="search-bar">
-      <input
-        class="input-bar" 
-        v-model="query" 
-        :placeholder="tags.length >= 5 ? 
-                      `Maximum number of ${searchCategory?.toLowerCase()} reached` : 
-                      `Add up to 5 ${searchCategory?.toLowerCase().slice(0, -1)}s...`"
-        type="text" 
-        @keyup.enter="fetchSearch" 
-        @focus="showDropdown = true; inputFocused = true;" 
-        @blur="handleBlur"
-        :disabled="tags.length >= 5"
-      >
+      
       <div class="switch-container">
         <span 
           @click="changeCategory('Artists')" 
@@ -178,8 +155,7 @@ watch(inputFocused, () => {
 <style scoped>
 .input-container {
   color: white;
-  margin-left: 28.75%;
-  margin-right: 28.75%;
+  width: 60vw;
   z-index: 1000;
 }
 
@@ -191,7 +167,6 @@ watch(inputFocused, () => {
   border: none;
   display: flex;
   font-size: 20px;
-  width: 42.5vw;
   box-sizing: border-box;
   width: 100%;
 }
@@ -225,7 +200,6 @@ watch(inputFocused, () => {
 }
 
 .divider {
-  width: 42.5vw;
   margin-top: 3px;
   border-top: 2px solid rgba(255, 255, 255, 0.8);
 }
