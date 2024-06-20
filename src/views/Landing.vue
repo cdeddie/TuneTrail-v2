@@ -1,20 +1,26 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import LandingSearch from '@/components/LandingSearch.vue';
-import { fetchSearch } from '@/utils/fetchSpotifySearch';
+import LandingSearch from '@/components/FloatingLabelSearch.vue';
 
 const landingTitleVisible = ref<boolean>(true);
 
 const handleFirstSearch = () => {
   landingTitleVisible.value = !landingTitleVisible.value;
 };
+
+
 </script>
 
 <template>
   <main class="landing-root">
     <h1>TuneTrail</h1>
     <div class="search-content">
-      <LandingSearch />
+      <LandingSearch 
+        :placeholder="'Search for a song to discover more'" 
+        :background-colour="'#4A71FD'" 
+        :search-category="'tracks'"
+        style="width: 70%;"
+      />
 
       <div class="search-results">
         <div class="landing-result">

@@ -1,5 +1,6 @@
 const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BASE_URL;
 
+// searchCategory must be either 'artists' or 'tracks' (not case sensitive)
 export const fetchSearch = async(query: string, searchCategory: string) => {
   if (query.trim().length === 0) {
     return;

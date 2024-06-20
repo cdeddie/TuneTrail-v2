@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, watchEffect } from 'vue';
 import { Tag, createTag } from '../types/TagType';
-import { fetchSearch } from '../utils/fetchSpotifySearch';
 import debounce from 'debounce';
 
 const searchCategory = ref<string>('Artists');

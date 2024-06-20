@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import Landing from '@/views/Landing.vue';
+
 
 
 </script>
 
 <template>
-  <Landing />
+  <main>
+    <RouterView />
+  </main>
 </template>
 
 <style scoped>
