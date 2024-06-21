@@ -15,6 +15,18 @@ const emit = defineEmits<{
   (event: 'search-focused', searchFocused: boolean): void
 }>();
 
+const handleBlur = () => {
+  setTimeout(() => {
+    emit('search-focused', false)
+  }, 100)
+}
+
+const clearSearchQuery = () => searchQuery.value = '';
+
+defineExpose({
+  clearSearchQuery
+});
+
 // Spotify Searching
 const searchLoading = ref<boolean>(false);
 const searchQuery = ref<string>('');
@@ -59,7 +71,7 @@ watch(searchLoading, async () => {
       required
       v-model="searchQuery"
       @focus="emit('search-focused', true);"
-      @blur="emit('search-focused', false);"
+      @blur="handleBlur"
     >
     <label for="">
       <i class="bi bi-search"></i>

@@ -1,58 +1,75 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import LandingSearch from '@/components/FloatingLabelSearch.vue';
+import importedImages from '@/utils/importImages';
 
 const landingTitleVisible = ref<boolean>(true);
 
 const handleFirstSearch = () => {
   landingTitleVisible.value = !landingTitleVisible.value;
 };
-
-
 </script>
 
 <template>
   <main class="landing-root">
-    <h1>TuneTrail</h1>
-    <div class="search-content">
-      <LandingSearch 
-        :placeholder="'Search for a song to discover more'" 
-        :background-colour="'#4A71FD'" 
-        :search-category="'tracks'"
-        style="width: 70%;"
-      />
+    <div class="landing-content">
+      <h1>TuneTrail</h1>
+      <div class="search-content">
+        <LandingSearch 
+          :placeholder="'Search for a song to discover more'" 
+          :background-colour="'#4A71FD'" 
+          :search-category="'tracks'"
+          style="width: 70%;"
+        />
 
-      <div class="search-results">
-        <div class="landing-result">
-          <div class="animated-title">
-            <div class="text-top" :class="{ 'loading-animation': !landingTitleVisible }">
-              <div :class="{ 'top-animation': !landingTitleVisible }">
-                <span>discover new tunes</span>
-                <span>with the help</span>
+        <div class="search-results">
+          <div class="landing-result">
+            <div class="animated-title">
+              <div class="text-top" :class="{ 'loading-animation': !landingTitleVisible }">
+                <div :class="{ 'top-animation': !landingTitleVisible }">
+                  <span>discover new tunes</span>
+                  <span>with the help of</span>
+                </div>
               </div>
-            </div>
-            <div class="text-bottom">
-              <div :class="{ 'bottom-animation': !landingTitleVisible }">old favourites!</div>
+              <div class="text-bottom">
+                <div :class="{ 'bottom-animation': !landingTitleVisible }">old favourites!</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="spotify-logo"><i class="bi bi-spotify" @click="handleFirstSearch"></i></div>
+        <div class="spotify-logo"><i class="bi bi-spotify" @click="handleFirstSearch"></i></div>
+      </div>
     </div>
 
+    <div class="album-covers">
+      <div class="album-slide">
+        <img v-for="(src) in importedImages" :src="src">
+      </div>
+
+      <div class="album-slide">
+        <img v-for="(src) in importedImages" :src="src">
+      </div>
+    </div>
+    
   </main>
 
-  <div class="album-cover-slider">
-
-
-  </div>
 
 </template>
 
 <style scoped>
 .landing-root {
   padding: 5%;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 100vh;
+}
+
+.landing-content {
+  padding-top: 5%;
 }
 
 h1 {
@@ -167,6 +184,36 @@ h1 {
   animation-fill-mode: forwards;
   top: 0;
   transform: translate(0, 0);
+}
+
+/* ----- Album Img Slider ----- */
+@keyframes slide {
+  from {
+    transform: translateY(0);
+  } to {
+    transform: translateY(-100%);
+  }
+}
+
+.album-covers {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.album-slide {
+  display: inline-block;
+  animation: 45s slide infinite linear;
+}
+
+.album-slide img {
+  width: 25vw;
+  padding: 2vw;
+}
+
+.album-covers:hover .album-slide {
+  animation-play-state: paused;
 }
 
 /* ----- RESPONSIVENESS ----- */

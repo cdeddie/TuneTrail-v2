@@ -1,24 +1,82 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import DiscoverSearch from '@/components/FloatingLabelSearch.vue';
 import SwitchButton from '@/components/SwitchButton.vue';
+import { Tag, createTag, getProminentColour } from '@/types/TagType';
+import { pickBWTextColour } from '@/utils/colourStyle';
 
 const searchCategory = ref<string>('Tracks');
 const searchResults = ref<any>();
 const searchLoading = ref<boolean>(false);
 const searchFocused = ref<boolean>(false);
 
-const handleUpdateActive = (activeValue: string) => {
-  
-  searchCategory.value = activeValue;
+const searchElement = ref<InstanceType<typeof DiscoverSearch> | null>(null);
+const searchElementPos = ref<DOMRect | undefined>();
+
+// Results element positioning
+const updateElementPosition = () => {
+  if (searchElement.value) {
+    const el = searchElement.value.$el as HTMLElement;
+    searchElementPos.value = el.getBoundingClientRect();
+
+    document.documentElement.style.setProperty('--search-element-left', `${searchElementPos.value.left}px`);
+    document.documentElement.style.setProperty('--search-element-width', `${searchElementPos.value.width}px`);
+  }
 };
+
+onMounted(() => {
+  updateElementPosition();
+  window.addEventListener('resize', updateElementPosition);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateElementPosition);
+});
+
+// Switch button handling
+const handleUpdateActive = (activeValue: string) => {
+  searchElement.value?.clearSearchQuery();
+  searchCategory.value = activeValue;
+  tags.value.length = 0;
+};
+
+// Tag handling
+const tags = ref<Tag[]>([]);
+
+const addTag = async(item: any) => {
+  const tag = await createTag(item);
+
+  if (tags.value.some((t) => t.id === tag.id)) {
+    return;
+  }
+
+  tags.value.push(tag);
+};
+
+const removeTag = (tag: Tag) => {
+  tags.value = tags.value.filter((t) => t.id !== tag.id);
+};
+
+// Utils
+const truncateString = (input: string) => {
+  if (input.length > 35) {
+    return input.substring(0, 35) + '...';
+  } else {
+    return input;
+  }
+};
+
+const convertRgbToRgba = (rgb: string, opacity: number): string => {
+  const [r, g, b] = rgb.slice(4, -1).split(',').map(Number);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
 </script>
 
 <template>
-  {{ searchFocused }}
   <div class="discover-root">
     <div class="search-container">
       <DiscoverSearch 
+        ref="searchElement"
         :placeholder="`Add up to 5 ${searchCategory.toLocaleLowerCase()}`" 
         :background-colour="'#2D283E'"
         :search-category="searchCategory"
@@ -28,6 +86,7 @@ const handleUpdateActive = (activeValue: string) => {
         style="width: 100%"
       />
       <SwitchButton 
+        ref="switchElement"
         :left="'Tracks'" 
         :right="'Artists'" 
         class="search-category-button" 
@@ -37,24 +96,57 @@ const handleUpdateActive = (activeValue: string) => {
   
     <div class="search-results" v-if="searchResults && searchFocused">
       <div class="tracks-results" v-if="searchResults?.tracks">
-        <div class="track-card" v-for="(track, index) in searchResults.tracks?.items">
-          <img :src="track.album.images[1]?.url" class="track-img">
-          <div class="track-info">
-            <span class="track-title">{{ track.name }}</span>
-            <span class="track-artist">
+        <div 
+          class="search-result-card" 
+          v-for="(track) in searchResults.tracks?.items"
+          @click="addTag(track)"
+        >
+          <img :src="track.album.images[1]?.url" class="card-img">
+          <div class="card-info">
+            <span class="result-title">{{ track.name }}</span>
+            <span class="result-subtitle">
               <i 
                 v-if="track.explicit"
                 class="bi bi-explicit-fill"
                 style="margin-right: 2px;"
               ></i>
-              {{ track.artists[0].name }}
+              {{ truncateString(track.artists[0].name) }}
             </span>
           </div>
         </div>
       </div>
 
       <div class="artists-results" v-else-if="searchResults?.artists">
+        <div 
+          class="search-result-card" 
+          v-for="(artist) in searchResults.artists?.items"
+          @click="addTag(artist)"
+        >
+          <img v-if="artist.images[0]" :src="artist.images[1]?.url" class="card-img">
+          <i v-else class="bi bi-person-fill img-alt"></i>
+          <div class="card-info">
+            <span class="result-title">{{ truncateString(artist.name) }}</span>
+            <span class="result-subtitle">{{ artist.genres[0] }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <div class="tag-parent">
+      <div 
+        v-for="(tag) in tags" 
+        :key="tag.id" 
+        class="tag-container" 
+        :style="{ backgroundColor: convertRgbToRgba(tag.colour, 0.5) }"
+      >
+        <img v-if="tag.image" :src="tag.image">
+        <span :style="{ color: pickBWTextColour(tag.colour) }">{{ tag.name }}</span>
+        <i 
+          class="fa fa-times-circle"
+          aria-hidden="true" 
+          @click="removeTag(tag)"
+          :style="{ color: pickBWTextColour(tag.colour) }"
+        ></i>
       </div>
     </div>
   </div>
@@ -79,8 +171,9 @@ const handleUpdateActive = (activeValue: string) => {
 .search-results {
   background-color: white;
   margin-top: 10px;
-  margin-left: 35vw;
-  margin-right: 35vw;
+  position: absolute;
+  left: var(--search-element-left);
+  width: var(--search-element-width);
 
   border-radius: 1rem;
   z-index: 1111;
@@ -98,7 +191,7 @@ const handleUpdateActive = (activeValue: string) => {
   }
 }
 
-.track-card {
+.search-result-card {
   height: 7.5vh;
   display: flex;
   flex-direction: row;
@@ -111,38 +204,81 @@ const handleUpdateActive = (activeValue: string) => {
   transition: transform 0.3s ease;
 }
 
-.track-card:hover {
+.search-result-card:hover {
   transform: scale(1.01);
   cursor: pointer;
 }
 
-.track-card:first-child {
+.search-result-card:first-child {
   padding-top: 10px;
 }
 
-.track-card:last-child {
+.search-result-card:last-child {
   padding-bottom: 10px;
 }
 
-.track-img {
+.card-img {
   height: 4.5vh;
   margin-left: 25px; 
 }
 
-.track-info {
+.img-alt {
+  font-size: 2.5rem;
+  margin-left: 25px;
+}
+
+.card-info {
   display: flex;
   flex-direction: column;
   margin-left: 10px;
   color: var(--primary-colour);
 }
 
-.track-title {
+.result-title {
   font-weight: 700;
   font-size: 1rem;
 }
 
-.track-artist {
+.result-subtitle {
   font-size: .75rem;
   font-weight: 550;
+}
+
+/* Tag styling */
+.tag-parent {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  left: var(--search-element-left);
+}
+
+.tag-container {
+  max-height: 5vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: .5rem;
+  margin-right: 12px;
+}
+
+.tag-container img {
+  height: 5vh;
+  border-radius: .5rem 0 0 .5rem;
+}
+
+.tag-container span {
+  padding: 20px;
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+.tag-container i {
+  margin-right: 10px;
+}
+
+.tag-container i:hover {
+  cursor: pointer;
 }
 </style>
