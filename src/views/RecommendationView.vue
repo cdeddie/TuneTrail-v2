@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import DiscoverSearch from '@/components/FloatingLabelSearch.vue';
 import SwitchButton from '@/components/SwitchButton.vue';
+import UserFlow from '@/components/UserFlow.vue';
 import { Tag, createTag, getProminentColour } from '@/types/TagType';
 import { pickBWTextColour } from '@/utils/colourStyle';
 
@@ -9,6 +10,7 @@ const searchCategory = ref<string>('Tracks');
 const searchResults = ref<any>();
 const searchLoading = ref<boolean>(false);
 const searchFocused = ref<boolean>(false);
+const searchDisabled = ref<boolean>(false);
 
 const searchElement = ref<InstanceType<typeof DiscoverSearch> | null>(null);
 const searchElementPos = ref<DOMRect | undefined>();
@@ -57,6 +59,10 @@ const removeTag = (tag: Tag) => {
   tags.value = tags.value.filter((t) => t.id !== tag.id);
 };
 
+watch(tags, (newTags) => {
+  searchDisabled.value = newTags.length >= 5;
+}, { immediate: true, deep: true });
+
 // Utils
 const truncateString = (input: string) => {
   if (input.length > 35) {
@@ -77,9 +83,12 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
     <div class="search-container">
       <DiscoverSearch 
         ref="searchElement"
-        :placeholder="`Add up to 5 ${searchCategory.toLocaleLowerCase()}`" 
+        :placeholder="searchDisabled ? 
+                      'Maximum number reached' 
+                      : `Add up to 5 ${searchCategory.toLowerCase()}`"
         :background-colour="'#2D283E'"
         :search-category="searchCategory"
+        :search-disabled="searchDisabled"
         @search-results="(newSearchResults: any) => searchResults = newSearchResults"
         @search-results-loading="(newSearchLoading: boolean) => searchLoading = newSearchLoading"
         @search-focused="(newSearchFocused: boolean) => searchFocused = newSearchFocused"
@@ -139,8 +148,9 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
         class="tag-container" 
         :style="{ backgroundColor: convertRgbToRgba(tag.colour, 0.5) }"
       >
-        <img v-if="tag.image" :src="tag.image">
-        <span :style="{ color: pickBWTextColour(tag.colour) }">{{ tag.name }}</span>
+        <img v-if="tag.image != ''" :src="tag.image">
+        <span v-if="tag.image != ''" :style="{ color: pickBWTextColour(tag.colour) }">{{ tag.name }}</span>
+        <i v-else class="bi bi-person-fill img-alt"></i>
         <i 
           class="fa fa-times-circle"
           aria-hidden="true" 
@@ -149,6 +159,8 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
         ></i>
       </div>
     </div>
+
+    <UserFlow />
   </div>
 
 </template>
@@ -261,6 +273,21 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
   justify-content: center;
   border-radius: .5rem;
   margin-right: 12px;
+
+  animation: popout 1s ease;
+  -webkit-animation: popout 1s ease;
+}
+
+@keyframes popout {
+  from{transform:scale(0)}
+  80%{transform:scale(1.2)}
+  to{transform:scale(1)}
+}
+
+@-webkit-keyframes popout {
+  from{-webkit-transform:scale(0)}
+  80%{-webkit-transform:scale(1.2)}
+  to{-webkit-transform:scale(1)}
 }
 
 .tag-container img {

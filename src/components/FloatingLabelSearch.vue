@@ -3,10 +3,12 @@ import { ref, watch } from 'vue';
 import { fetchSearch } from '../utils/fetchSpotifySearch';
 import debounce from 'debounce';
 
+// Search flow with other components
 const props = defineProps<{
   placeholder: string,
   backgroundColour: string,
   searchCategory: string,
+  searchDisabled: boolean,
 }>();
 
 const emit = defineEmits<{
@@ -62,6 +64,10 @@ watch(searchResults, async (newResults, oldResults) => {
 watch(searchLoading, async () => {
   emit('search-results-loading', searchLoading.value);
 });
+
+watch(() => props.searchDisabled, () => {
+  clearSearchQuery();
+});
 </script>
 
 <template>
@@ -72,8 +78,9 @@ watch(searchLoading, async () => {
       v-model="searchQuery"
       @focus="emit('search-focused', true);"
       @blur="handleBlur"
+      :disabled="searchDisabled"
     >
-    <label for="">
+    <label for="" :class="{ 'disabled-input': searchDisabled }">
       <i class="bi bi-search"></i>
       <span>{{ props.placeholder }}</span>
     </label>
@@ -95,6 +102,14 @@ watch(searchLoading, async () => {
   margin: 0 40px;
   display: flex;
   flex-direction: row;
+}
+
+.input-group .disabled-input {
+  color: grey;
+}
+
+.disabled-input i {
+  color: grey;
 }
 
 .input-group label {

@@ -1,5 +1,4 @@
 import { FastAverageColor } from 'fast-average-color';
-import { prominent, average } from 'color.js';
 import Vibrant from 'node-vibrant/lib/bundle.js'
 
 const fac = new FastAverageColor();
@@ -29,20 +28,22 @@ export const getProminentColour = async (imgUrl: string): Promise<string> => {
 export const createTag = async(item: any): Promise<Tag> => {
   // Only artists have genres
   if ('genres' in item) {
+    const imageUrl = item.images?.[2]?.url || item.images?.[1]?.url || '';
     return {
       type: 'Artist',
       id: item.id || '',
       name: item.name || '',
       image: item.images?.[1]?.url || '',
-      colour: await getProminentColour(item.images?.[2]?.url),
+      colour: imageUrl ? await getProminentColour(imageUrl) : '',
     };
   } else {
+    const imageUrl = item.album?.images?.[1]?.url || '';
     return {
       type: 'Track',
       id: item.id,
       name: item.name,
-      image: item.album.images[1]?.url || '',
-      colour: await getProminentColour(item.album.images[1]?.url)
+      image: imageUrl,
+      colour: imageUrl ? await getProminentColour(imageUrl) : '',
     };
   }
 };
