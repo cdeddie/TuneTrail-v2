@@ -7,13 +7,17 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (event: 'update-active-value', activeValue: string): void
+  (event: 'update-active-value', activeValue: string | null): void
 }>();
 
-const activeValue = ref<string>(props.left);
+const activeValue = ref<string | null>(null);
 
 const setActive = (value: string) => {
-  activeValue.value = value;
+  if (activeValue.value === value) {
+    activeValue.value = null;
+  } else {
+    activeValue.value = value;
+  }
   emit('update-active-value', activeValue.value);
 };
 
@@ -36,12 +40,15 @@ watch(() => props.right, (newValue) => {
     <button 
       @click="setActive(left)"
       :class="{ active: activeValue === left }"
+      style="margin-right: 2px;"
     >
       {{ left }}
     </button>
+    <span style="color: white; align-items: center;">|</span>
     <button 
       @click="setActive(right)"
       :class="{ active: activeValue === right }"
+      style="margin-left: 2px;"
     >
       {{ right }}
     </button>
@@ -52,18 +59,19 @@ watch(() => props.right, (newValue) => {
 .toggle-container {
   display: flex;
   border: 1.5px solid white;
-  border-radius: 1rem;
+  border-radius: .3rem;
   padding: 3px;
   width: fit-content;
-  min-height: 5vh;
+  background-color: black;
 }
 
 button {
-  padding: 10px 20px;
+  padding: 2.5px 2vw;
   border: none;
   background-color: transparent;
   color: white;
-  font-size: 16px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   position: relative;
   z-index: 1;
@@ -76,8 +84,8 @@ button.active::before {
   left: 2px;
   right: 2px;
   bottom: 2px;
-  background-color: var(--secondary-colour);
-  border-radius: .8rem;
+  background-color: rgba(170, 170, 170, 0.606);
+  border-radius: .2rem;
   z-index: -1;
 }
 </style>

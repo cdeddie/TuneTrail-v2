@@ -97,7 +97,7 @@ watch(() => props.searchDisabled, () => {
 
 .input-group {
   z-index: 1111;
-  height: 7vh;
+  min-height: 5vh;
   position: relative;
   margin: 0 40px;
   display: flex;

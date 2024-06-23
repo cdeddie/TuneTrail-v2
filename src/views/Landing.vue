@@ -19,7 +19,8 @@ const handleFirstSearch = () => {
           :placeholder="'Search for a song to discover more'" 
           :background-colour="'#4A71FD'" 
           :search-category="'tracks'"
-          style="width: 70%;"
+          :search-disabled="false"
+          style="width: 70%; height: 7vh;"
         />
 
         <div class="search-results">

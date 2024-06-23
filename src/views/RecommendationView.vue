@@ -3,14 +3,17 @@ import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import DiscoverSearch from '@/components/FloatingLabelSearch.vue';
 import SwitchButton from '@/components/SwitchButton.vue';
 import UserFlow from '@/components/UserFlow.vue';
-import { Tag, createTag, getProminentColour } from '@/types/TagType';
+import { Tag, createTag } from '@/types/TagType';
 import { pickBWTextColour } from '@/utils/colourStyle';
+import { RecommendationFilter } from '@/types/recommendationType';
 
 const searchCategory = ref<string>('Tracks');
 const searchResults = ref<any>();
 const searchLoading = ref<boolean>(false);
 const searchFocused = ref<boolean>(false);
 const searchDisabled = ref<boolean>(false);
+
+const recommendationFilters = ref<RecommendationFilter>();
 
 const searchElement = ref<InstanceType<typeof DiscoverSearch> | null>(null);
 const searchElementPos = ref<DOMRect | undefined>();
@@ -23,6 +26,8 @@ const updateElementPosition = () => {
 
     document.documentElement.style.setProperty('--search-element-left', `${searchElementPos.value.left}px`);
     document.documentElement.style.setProperty('--search-element-width', `${searchElementPos.value.width}px`);
+    document.documentElement.style.setProperty('--search-element-top', `${searchElementPos.value.top}px`);
+    document.documentElement.style.setProperty('--search-element-height', `${searchElementPos.value.height}px`);
   }
 };
 
@@ -62,6 +67,11 @@ const removeTag = (tag: Tag) => {
 watch(tags, (newTags) => {
   searchDisabled.value = newTags.length >= 5;
 }, { immediate: true, deep: true });
+
+// Recommendation handling
+const handleFilterUpdate = (state: RecommendationFilter) => {
+  recommendationFilters.value = state;
+};
 
 // Utils
 const truncateString = (input: string) => {
@@ -160,7 +170,7 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
       </div>
     </div>
 
-    <UserFlow />
+    <UserFlow class="user-flow-parent" @filter-update="handleFilterUpdate" />
   </div>
 
 </template>
@@ -307,5 +317,14 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
 
 .tag-container i:hover {
   cursor: pointer;
+}
+
+/* User flow styles */
+.user-flow-parent {
+  position: absolute;
+  left: 87%;
+  top: var(--search-element-top);
+  height: var(--search-element-height);
+  align-items: center;
 }
 </style>
