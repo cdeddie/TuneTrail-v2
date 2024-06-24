@@ -6,14 +6,13 @@ import UserFlow from '@/components/UserFlow.vue';
 import { Tag, createTag } from '@/types/TagType';
 import { pickBWTextColour } from '@/utils/colourStyle';
 import { RecommendationFilter } from '@/types/recommendationType';
+import { fetchRecommendations } from '@/utils/fetchSpotifyRecommendations';
 
 const searchCategory = ref<string>('Tracks');
 const searchResults = ref<any>();
 const searchLoading = ref<boolean>(false);
 const searchFocused = ref<boolean>(false);
 const searchDisabled = ref<boolean>(false);
-
-const recommendationFilters = ref<RecommendationFilter>();
 
 const searchElement = ref<InstanceType<typeof DiscoverSearch> | null>(null);
 const searchElementPos = ref<DOMRect | undefined>();
@@ -69,9 +68,17 @@ watch(tags, (newTags) => {
 }, { immediate: true, deep: true });
 
 // Recommendation handling
+const recommendationFilters = ref<RecommendationFilter>();
+
+const recommendationResults = ref<any>();
+
 const handleFilterUpdate = (state: RecommendationFilter) => {
   recommendationFilters.value = state;
 };
+
+watch(tags.value, async (newTags) => {
+  recommendationResults.value = await fetchRecommendations(newTags, recommendationFilters.value);
+});
 
 // Utils
 const truncateString = (input: string) => {
