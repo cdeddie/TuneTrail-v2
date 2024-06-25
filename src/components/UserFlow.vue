@@ -58,7 +58,7 @@ onUnmounted(() => {
 
 <style scoped>
 .user-root {
-  background: rgb(162,156,184);
+  background: var(--secondary-colour);
   border: 1px solid white;
   display: flex;
   flex-direction: row;
@@ -93,6 +93,7 @@ onUnmounted(() => {
 i {
   font-size: 1.5rem;
   margin: 0 3vw;
+  color: white;
 }
 
 .dropdown {

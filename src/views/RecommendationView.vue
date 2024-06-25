@@ -3,10 +3,12 @@ import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import DiscoverSearch from '@/components/FloatingLabelSearch.vue';
 import SwitchButton from '@/components/SwitchButton.vue';
 import UserFlow from '@/components/UserFlow.vue';
+import RecommendationResults from '@/components/RecommendationResults.vue'
 import { Tag, createTag } from '@/types/TagType';
 import { pickBWTextColour } from '@/utils/colourStyle';
 import { RecommendationFilter } from '@/types/recommendationType';
 import { fetchRecommendations } from '@/utils/fetchSpotifyRecommendations';
+import { truncateString } from '@/utils/stringProcessing';
 
 const searchCategory = ref<string>('Tracks');
 const searchResults = ref<any>();
@@ -81,14 +83,6 @@ watch(tags.value, async (newTags) => {
 });
 
 // Utils
-const truncateString = (input: string) => {
-  if (input.length > 35) {
-    return input.substring(0, 35) + '...';
-  } else {
-    return input;
-  }
-};
-
 const convertRgbToRgba = (rgb: string, opacity: number): string => {
   const [r, g, b] = rgb.slice(4, -1).split(',').map(Number);
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
@@ -178,6 +172,9 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
     </div>
 
     <UserFlow class="user-flow-parent" @filter-update="handleFilterUpdate" />
+    <RecommendationResults 
+      :recommendation-data="recommendationResults" 
+    />
   </div>
 
 </template>
@@ -278,8 +275,7 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
   margin-top: 10px;
   display: flex;
   flex-direction: row;
-  position: absolute;
-  left: var(--search-element-left);
+  margin-left: var(--search-element-left);
 }
 
 .tag-container {
@@ -333,5 +329,14 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
   top: var(--search-element-top);
   height: var(--search-element-height);
   align-items: center;
+}
+
+
+@media (max-width: 1300px) {
+  .search-container {
+    margin-top: 3vh;
+    margin-left: 17vw;
+    margin-right: 17vw;
+  }
 }
 </style>
