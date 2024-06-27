@@ -80,7 +80,7 @@ const handleFilterUpdate = (state: RecommendationFilter) => {
 
 watch(tags.value, async (newTags) => {
   recommendationResults.value = await fetchRecommendations(newTags, recommendationFilters.value);
-});
+}, { deep: true });
 
 // Utils
 const convertRgbToRgba = (rgb: string, opacity: number): string => {
