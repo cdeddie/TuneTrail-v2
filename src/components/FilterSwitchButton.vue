@@ -1,56 +1,50 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import type { RecommendationFilter } from '@/types/recommendationType';
+import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
+
+const store = useRecommendationFilterStore();
+const { filterState } = storeToRefs(store);
 
 const props = defineProps<{
-  left: string,
-  right: string,
+  label: keyof RecommendationFilter,
 }>();
 
-const emit = defineEmits<{
-  (event: 'update-active-value', activeValue: string | null): void
-}>();
-
-const activeValue = ref<string | null>(null);
-
-const setActive = (value: string) => {
-  if (activeValue.value === value) {
-    activeValue.value = null;
-  } else {
-    activeValue.value = value;
+const activeValue = computed({
+  get: () => {
+    const value = filterState.value[props.label];
+    if (value === 80) return 'High';
+    if (value === 20) return 'Low';
+    return null;
+  },
+  set: (newValue: 'High' | 'Low' | null) => {
+    store.updateFilterValue(props.label, newValue);
   }
-  emit('update-active-value', activeValue.value);
+});
+
+const setActive = (value: 'High' | 'Low') => {
+  activeValue.value = activeValue.value === value ? null : value;
 };
-
-// Watch for prop changes and update activeValue if needed
-watch(() => props.left, (newValue) => {
-  if (activeValue.value === props.right) return;
-  activeValue.value = newValue;
-  emit('update-active-value', newValue);
-});
-
-watch(() => props.right, (newValue) => {
-  if (activeValue.value === props.left) return;
-  activeValue.value = newValue;
-  emit('update-active-value', newValue);
-});
 </script>
 
 <template>
+  <!-- <div style="color: white;">{{ label }}{{ activeValue }}</div> -->
   <div class="toggle-container">
     <button 
-      @click="setActive(left)"
-      :class="{ active: activeValue === left }"
+      @click="setActive('High')"
+      :class="{ active: activeValue === 'High' }"
       style="margin-right: 2px;"
     >
-      {{ left }}
+      High
     </button>
     <span style="color: white; align-items: center;">|</span>
     <button 
-      @click="setActive(right)"
-      :class="{ active: activeValue === right }"
+      @click="setActive('Low')"
+      :class="{ active: activeValue === 'Low' }"
       style="margin-left: 2px;"
     >
-      {{ right }}
+      Low
     </button>
   </div>
 </template>

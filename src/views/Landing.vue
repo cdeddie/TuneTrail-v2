@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref } from 'vue';
 import LandingSearch from '@/components/FloatingLabelSearch.vue';
 import importedImages from '@/utils/importImages';
 

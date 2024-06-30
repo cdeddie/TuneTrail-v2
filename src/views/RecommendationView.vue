@@ -6,7 +6,7 @@ import UserFlow from '@/components/UserFlow.vue';
 import RecommendationResults from '@/components/RecommendationResults.vue'
 import { Tag, createTag } from '@/types/TagType';
 import { pickBWTextColour } from '@/utils/colourStyle';
-import { RecommendationFilter } from '@/types/recommendationType';
+import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
 import { fetchRecommendations } from '@/utils/fetchSpotifyRecommendations';
 import { truncateString } from '@/utils/stringProcessing';
 
@@ -70,16 +70,17 @@ watch(tags, (newTags) => {
 }, { immediate: true, deep: true });
 
 // Recommendation handling
-const recommendationFilters = ref<RecommendationFilter>();
+const store = useRecommendationFilterStore();
+const filterState = store.filterState;
 
 const recommendationResults = ref<any>();
 
-const handleFilterUpdate = (state: RecommendationFilter) => {
-  recommendationFilters.value = state;
-};
+watch(() => [...tags.value], async (newTags) => {
+  recommendationResults.value = await fetchRecommendations(newTags, filterState);
+}, { deep: true });
 
-watch(tags.value, async (newTags) => {
-  recommendationResults.value = await fetchRecommendations(newTags, recommendationFilters.value);
+watch(filterState, async () => {
+  recommendationResults.value = await fetchRecommendations(tags.value, filterState);
 }, { deep: true });
 
 // Utils
@@ -90,6 +91,7 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
 </script>
 
 <template>
+  {{ filterState }}
   <div class="discover-root">
     <div class="search-container">
       <DiscoverSearch 
@@ -171,10 +173,8 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
       </div>
     </div>
 
-    <UserFlow class="user-flow-parent" @filter-update="handleFilterUpdate" />
-    <RecommendationResults 
-      :recommendation-data="recommendationResults" 
-    />
+    <UserFlow class="user-flow-parent" />
+    <RecommendationResults :recommendation-data="recommendationResults" />
   </div>
 
 </template>

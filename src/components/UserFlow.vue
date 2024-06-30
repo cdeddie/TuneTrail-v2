@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import FilterDropdown from './FilterDropdown.vue';
-import { RecommendationFilter } from '@/types/recommendationType';
 
-const emit = defineEmits<{
-  (event: 'filter-update', state: RecommendationFilter): void
-}>();
-
-const emitFilterState = (state: RecommendationFilter) => {
-  emit('filter-update', state);
-};
+// The logic for this component is contained within the child components. 
+// This component simply provides a frontend for the user flow portion
 
 const activeDropdown = ref<string | null>(null);
 
@@ -49,7 +43,7 @@ onUnmounted(() => {
       </div>
       <transition name="fade">
         <div v-if="activeDropdown === item" class="dropdown">
-          <FilterDropdown v-if="item === 'filters'" @filter-update="emitFilterState"/>
+          <FilterDropdown v-if="item === 'filters'" />
         </div>
       </transition>
     </div>

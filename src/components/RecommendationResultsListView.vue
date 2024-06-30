@@ -1,0 +1,138 @@
+<script setup lang="ts">
+import { ref, watch, nextTick, onUnmounted } from 'vue';
+import { truncateString } from '@/utils/stringProcessing';
+
+const props = defineProps<{
+  recommendationData: any,
+}>();
+
+// Intersection observer logic
+const cardRefs = ref<HTMLElement[]>([]);
+
+watch(() => props.recommendationData, () => {
+  cardRefs.value = [];
+});
+
+const observer: IntersectionObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+});
+
+watch(() => props.recommendationData, () => {
+  // Clear existing refs
+  cardRefs.value = [];
+  
+  // Use nextTick to ensure the DOM has updated
+  nextTick(() => {
+    cardRefs.value.forEach((card) => {
+      if (card) {
+        observer.observe(card);
+      }
+    });
+  });
+}, { immediate: true });
+
+onUnmounted(() => {
+  observer.disconnect();
+});
+</script>
+
+<template>
+  <div class="list-view">
+    <a
+      class="result-card" 
+      v-for="(track, index) in recommendationData?.tracks"
+      :key="track.id"
+      :ref="(el) => { if (el) cardRefs[index] = el as HTMLElement }"
+      :href="track.external_urls.spotify"
+      target="_blank"
+    >
+      <img :src="track.album.images[1]?.url" class="card-img">
+      <div class="card-info">
+        <span class="result-title">{{ track.name }}</span>
+        <span class="result-subtitle">
+          <i 
+            v-if="track.explicit"
+            class="bi bi-explicit-fill"
+            style="margin-right: 2px;"
+          ></i>
+          {{ truncateString(track.artists[0].name) }}
+        </span>
+      </div>
+    </a>
+  </div>
+</template>
+
+<style scoped>
+.result-card {
+  display: flex;
+  flex-direction: row;
+  padding: 5px 0;
+  align-items: center;
+  background-clip: content-box;
+  
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.result-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.result-card:hover {
+  transform: scale(1.01);
+  cursor: pointer;
+}
+
+.result-card:first-child {
+  padding-top: 10px;
+}
+
+.result-card:last-child {
+  padding-bottom: 10px;
+}
+
+.card-img {
+  height: 10vh;
+  border-radius: .2rem;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  color: white;
+}
+
+.result-title {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: white;
+}
+
+.result-subtitle {
+  font-size: 1rem;
+  font-weight: 550;
+  color: #c1c1c1;
+}
+
+@media (max-width: 1300px) {
+  .results-root {
+    margin-left: calc(17vw + 40px);
+    margin-right: 17vw;
+  }
+
+  .result-title {
+    font-size: 1.2rem;
+  }
+
+  .result-subtitle {
+    font-size: .9rem;
+  }
+}
+</style>
