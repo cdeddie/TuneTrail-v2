@@ -5,11 +5,13 @@
 </script>
 
 <template>
-  <main>
+  <main class="app-root">
     <RouterView />
   </main>
 </template>
 
 <style scoped>
-
+.app-root {
+  height: 100vh;
+}
 </style>

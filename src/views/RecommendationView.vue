@@ -17,29 +17,6 @@ const searchFocused = ref<boolean>(false);
 const searchDisabled = ref<boolean>(false);
 
 const searchElement = ref<InstanceType<typeof DiscoverSearch> | null>(null);
-const searchElementPos = ref<DOMRect | undefined>();
-
-// Results element positioning
-const updateElementPosition = () => {
-  if (searchElement.value) {
-    const el = searchElement.value.$el as HTMLElement;
-    searchElementPos.value = el.getBoundingClientRect();
-
-    document.documentElement.style.setProperty('--search-element-left', `${searchElementPos.value.left}px`);
-    document.documentElement.style.setProperty('--search-element-width', `${searchElementPos.value.width}px`);
-    document.documentElement.style.setProperty('--search-element-top', `${searchElementPos.value.top}px`);
-    document.documentElement.style.setProperty('--search-element-height', `${searchElementPos.value.height}px`);
-  }
-};
-
-onMounted(() => {
-  updateElementPosition();
-  window.addEventListener('resize', updateElementPosition);
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', updateElementPosition);
-});
 
 // Switch button handling
 const handleUpdateActive = (activeValue: string) => {
@@ -91,7 +68,6 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
 </script>
 
 <template>
-  {{ filterState }}
   <div class="discover-root">
     <div class="search-container">
       <DiscoverSearch 
@@ -176,19 +152,19 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
     <UserFlow class="user-flow-parent" />
     <RecommendationResults :recommendation-data="recommendationResults" />
   </div>
-
 </template>
 
 <style scoped>
 .discover-root {
-
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 .search-container {
-  margin-top: 3vh;
   margin-left: 25vw;
   margin-right: 25vw;
-
+  padding-top: 3vh;
   display: flex;
   flex-direction: row;
   gap: 0;
@@ -196,7 +172,7 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
 
 .search-results {
   background-color: white;
-  margin-top: 10px;
+  margin-top: calc(var(--search-element-top) + var(--search-element-height) + 10px);
   position: absolute;
   left: var(--search-element-left);
   width: var(--search-element-width);
@@ -335,8 +311,24 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
 @media (max-width: 1300px) {
   .search-container {
     margin-top: 3vh;
-    margin-left: 17vw;
-    margin-right: 17vw;
+    margin-left: 8vw;
+    margin-right: 24vw;
+  }
+
+  .user-flow-parent {
+    left: 81%;
+  }
+
+  .result-title {
+    font-size: .9rem;
+  }
+
+  .result-subtitle {
+    font-size: .65rem;
+  }
+
+  .search-result-card {
+    height: 8vh;
   }
 }
 </style>

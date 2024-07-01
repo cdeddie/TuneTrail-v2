@@ -82,6 +82,7 @@ watch(currentTrack, () => {
   }
 });
 
+// Vue component produced from https://codepen.io/ecemgo/pen/vYPadZz
 onMounted(() => {
   swiper = new Swiper('.swiper', {
     modules: [EffectCoverflow],
@@ -111,7 +112,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="root">
+  <div class="card-view-root">
     <div class="album-cover">
       <div class="swiper">
         <div class="swiper-wrapper">
@@ -151,13 +152,13 @@ onMounted(() => {
 
       <div class="controls">
         <button class="backward" @click="playPreviousTrack">
-          <i class="bi bi-skip-backward-fill"></i>
+          <img src="@/assets/backward.svg">
         </button>
         <button class="play-pause-btn" @click="playPause">
           <i :class="['bi', isPlaying ? 'bi-pause-fill' : 'bi-play-fill']" id="controlIcon"></i>
         </button>
         <button class="forward" @click="playNextTrack">
-          <i class="bi bi-skip-forward-fill"></i>
+          <img src="@/assets/forward.svg">
         </button>
       </div>
     </div>
@@ -165,15 +166,15 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.root {
+.card-view-root {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--secondary-colour);
   margin: 0 2vw;
-  height: 70vh;
+  background-color: var(--secondary-colour);
+  height: 100%;
   border-radius: 1rem;
   animation: slidein 120s forwards infinite alternate;
 }
@@ -294,26 +295,27 @@ i {
   align-items: center;
 }
 
-.controls button {
+.controls .play-pause-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 50px;
   aspect-ratio: 1/1;
   margin: 20px;
-  background: rgba(163, 162, 164, 0.3);
-  color: var(--primary-clr);
+  background: white;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  outline: 0;
-  font-size: 1.1rem;
-  box-shadow: 0 10px 20px rgba(5, 36, 28, 0.3);
   cursor: pointer;
   transition: all 0.3s linear;
 }
 
-.forward i, .backward i {
-  font-size: 20px;
+.play-pause-btn i {
+  color: var(--secondary-colour);
+}
+
+.forward img, .backward img {
+  height: 40px;
+  aspect-ratio: 1/1;
+  filter: invert(100);
 }
 
 .play-pause-btn i {

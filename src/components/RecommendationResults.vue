@@ -42,16 +42,33 @@ const buttons = [
     
     <div class="results-container">
       <RecommendationResultsListView class="results-list" v-if="activeIndex === 0" :recommendation-data="recommendationData" />
-      <RecommendationResultsCardView v-else-if="activeIndex === 1" :recommendation-data="recommendationData" />
+      <RecommendationResultsCardView class="results-cards" v-else-if="activeIndex === 1" :recommendation-data="recommendationData" />
     </div>
   </div>
-
 </template>
 
 <style scoped>
+.results-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.results-container {
+  display: flex;
+  flex-grow: 1;
+  margin-bottom: 3vh;
+}
+
 .results-list {
   margin-left: calc(25vw + 40px);
   margin-right: 25vw;
+}
+
+.results-card {
+  display: flex;
+  flex-grow: 1;
+  height: 100%;
 }
 
 .results-filters {
@@ -90,5 +107,17 @@ button:hover {
 
 .colored-svg {
   filter: brightness(0) saturate(100%) invert(34%) sepia(98%) saturate(914%) hue-rotate(205deg) brightness(103%) contrast(98%);
+}
+
+@media (max-width: 1300px) {
+  .results-list {
+    margin-left: calc(8vw + 40px);
+    margin-right: 17vw;
+  }
+
+  .results-filters {
+    margin-left: calc(8vw + 40px);
+    margin-top: 2vh;
+  }
 }
 </style>

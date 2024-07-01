@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { fetchSearch } from '../utils/fetchSpotifySearch';
 import debounce from 'debounce';
 
@@ -68,12 +68,38 @@ watch(searchLoading, async () => {
 watch(() => props.searchDisabled, () => {
   clearSearchQuery();
 });
+
+// Element positioning css vars
+const searchElement = ref<HTMLElement | null>(null);
+const searchElementPos = ref<DOMRect | undefined>();
+
+const updateElementPosition = () => {
+  if (searchElement.value) {
+    const el = searchElement.value;
+    searchElementPos.value = el.getBoundingClientRect();
+
+    document.documentElement.style.setProperty('--search-element-left', `${searchElementPos.value.left}px`);
+    document.documentElement.style.setProperty('--search-element-width', `${searchElementPos.value.width}px`);
+    document.documentElement.style.setProperty('--search-element-top', `${searchElementPos.value.top}px`);
+    document.documentElement.style.setProperty('--search-element-height', `${searchElementPos.value.height}px`);
+  }
+};
+
+onMounted(() => {
+  updateElementPosition();
+  window.addEventListener('resize', updateElementPosition);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateElementPosition);
+});
 </script>
 
 <template>
   <div class="input-group">
     <input 
       type="text" 
+      ref="searchElement"
       required
       v-model="searchQuery"
       @focus="emit('search-focused', true);"
@@ -99,7 +125,8 @@ watch(() => props.searchDisabled, () => {
   z-index: 1111;
   min-height: 5vh;
   position: relative;
-  margin: 0 40px;
+  margin-left: 40px;
+  margin-right: 20px;
   display: flex;
   flex-direction: row;
 }
