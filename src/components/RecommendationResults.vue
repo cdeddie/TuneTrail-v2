@@ -120,4 +120,10 @@ button:hover {
     margin-top: 2vh;
   }
 }
+
+@media (max-width: 1050px) {
+  .results-container {
+    margin-bottom: 0;
+  }
+}
 </style>

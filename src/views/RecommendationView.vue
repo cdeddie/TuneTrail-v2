@@ -175,7 +175,7 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
   margin-top: calc(var(--search-element-top) + var(--search-element-height) + 10px);
   position: absolute;
   left: var(--search-element-left);
-  width: var(--search-element-width);
+  width: calc(var(--search-element-width));
 
   border-radius: 1rem;
   z-index: 1111;

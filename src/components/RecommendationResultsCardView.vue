@@ -18,6 +18,9 @@ const audioPlayer = ref<HTMLAudioElement | null>(null);
 const currentTime = ref(0);
 const TOTAL_DURATION = 30;
 
+const volume = ref(50);
+const previousVolume = ref(50);
+
 let swiper: Swiper;
 
 const progressValue = computed(() => {
@@ -82,6 +85,31 @@ watch(currentTrack, () => {
   }
 });
 
+const toggleMute = () => {
+  if (volume.value > 0) {
+    previousVolume.value = volume.value;
+    volume.value = 0;
+  } else {
+    volume.value = previousVolume.value > 0 ? previousVolume.value : 50;
+  }
+};
+
+watch([() => audioPlayer.value, volume], () => {
+  if (audioPlayer.value) {
+    audioPlayer.value.volume = volume.value / 100;
+  }
+}, { immediate: true });
+
+const volumeIconClass = computed(() => {
+  if (volume.value == 0) {
+    return 'bi bi-volume-mute-fill';
+  } else if (volume.value < 50) {
+    return 'bi bi-volume-down-fill';
+  } else {
+    return 'bi bi-volume-up-fill';
+  }
+});
+
 // Vue component produced from https://codepen.io/ecemgo/pen/vYPadZz
 onMounted(() => {
   swiper = new Swiper('.swiper', {
@@ -128,8 +156,14 @@ onMounted(() => {
     </div>
 
     <div class="music-player">
-      <h1>{{ currentTrack?.name }}</h1>
-      <p>{{ currentTrack?.artists.map((artist: any) => artist.name).join(', ') }}</p>
+      <h1><a :href="currentTrack?.uri">{{ currentTrack?.name }}</a></h1>
+      <p>
+        <span v-for="(artist, index) in currentTrack?.artists" :key="artist.id">
+          <a :href="artist.uri">{{ artist.name }}</a>
+          <span v-if="index < currentTrack.artists.length - 1" style="color: rgba(220, 220, 220, 0.667);">, </span>
+        </span>
+
+      </p>
 
       <audio 
         ref="audioPlayer" 
@@ -151,16 +185,32 @@ onMounted(() => {
       />
 
       <div class="controls">
-        <button class="backward" @click="playPreviousTrack">
-          <img src="@/assets/backward.svg">
-        </button>
-        <button class="play-pause-btn" @click="playPause">
-          <i :class="['bi', isPlaying ? 'bi-pause-fill' : 'bi-play-fill']" id="controlIcon"></i>
-        </button>
-        <button class="forward" @click="playNextTrack">
-          <img src="@/assets/forward.svg">
-        </button>
+        <div class="main-controls">
+          <button class="backward" @click="playPreviousTrack">
+            <img src="@/assets/backward.svg">
+          </button>
+          <button class="play-pause-btn" @click="playPause">
+            <i :class="['bi', isPlaying ? 'bi-pause-fill' : 'bi-play-fill']" id="controlIcon"></i>
+          </button>
+          <button class="forward" @click="playNextTrack">
+            <img src="@/assets/forward.svg">
+          </button>
+        </div>
+
+        <div class="volume-control">
+          <label for="volume-slider" @click="toggleMute">
+            <i :class="volumeIconClass"></i>
+          </label>
+          <input 
+            type="range" 
+            id="volume-slider" 
+            min="0" 
+            max="100" 
+            v-model="volume"
+          >
+        </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -260,7 +310,15 @@ i {
 .music-player p {
   font-size: 1rem;
   font-weight: 400;
-  opacity: 0.6;
+}
+
+.music-player p a {
+  color: rgba(220, 220, 220, 0.667);
+}
+
+.music-player p a:hover {
+  color: white;
+  text-decoration: underline;
 }
 
 /* Music Player Progress */
@@ -293,6 +351,49 @@ i {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.main-controls {
+  display: flex;
+  flex-direction: row;
+
+  align-items: center;
+}
+
+/* Need to have this seperate to controls div or something */
+.volume-control {
+  display: flex;
+  left: 25vw;
+  align-items: center;
+  position: absolute;
+}
+
+.volume-control input:hover, i:hover {
+  cursor: pointer;
+}
+
+.volume-control i {
+  font-size: 1.5rem;
+  margin-right: 4px;
+}
+
+#volume-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 3px;
+  background: white;
+  border-radius: 4px;
+}
+
+#volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  background: white;
+  width: 12px;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
 }
 
 .controls .play-pause-btn {
@@ -332,5 +433,22 @@ i {
 
 .controls button:nth-child(2):is(:hover, :focus-visible) {
   transform: scale(1.25);
+}
+
+@media (max-width: 1300px) {
+  #progress {
+    margin: 12px 0;
+  }
+}
+
+@media (max-width: 1050px) {
+  .card-view-root {
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .results-container {
+    margin-bottom: 0;
+  }
 }
 </style>
