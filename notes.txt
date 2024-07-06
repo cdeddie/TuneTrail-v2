@@ -1,0 +1,1 @@
+- Anything under 1000px x 750px goes to shit rly quickly in <RecommendationResultsCardView />

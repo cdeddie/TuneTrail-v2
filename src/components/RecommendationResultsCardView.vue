@@ -4,6 +4,12 @@ import Swiper from 'swiper';
 import { EffectCoverflow } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 const props = defineProps<{
   recommendationData: any,
@@ -69,11 +75,14 @@ const onEnded = () => {
 const playNextTrack = () => {
   currentTrackIndex.value = (currentTrackIndex.value + 1) % tracks.value.length;
   swiper.slideNext();
+  if (isPlaying.value) playPause();
+  console.log(currentTrackIndex.value);
 };
 
 const playPreviousTrack = () => {
   currentTrackIndex.value = (currentTrackIndex.value - 1 + tracks.value.length) % tracks.value.length;
   swiper.slidePrev();
+  if (isPlaying.value) playPause();
 };
 
 watch(currentTrack, () => {
@@ -115,6 +124,7 @@ onMounted(() => {
   swiper = new Swiper('.swiper', {
     modules: [EffectCoverflow],
     effect: 'coverflow',
+    rewind: true,
     centeredSlides: true,
     initialSlide: currentTrackIndex.value,
     slidesPerView: 'auto',
@@ -162,55 +172,103 @@ onMounted(() => {
           <a :href="artist.uri">{{ artist.name }}</a>
           <span v-if="index < currentTrack.artists.length - 1" style="color: rgba(220, 220, 220, 0.667);">, </span>
         </span>
-
       </p>
 
       <audio 
         ref="audioPlayer" 
         @timeupdate="onTimeUpdate"
         @ended="onEnded"
-      >
-        <source :src="currentTrack?.preview_url" type="audio/mpeg" />
-      </audio>
+        :src="currentTrack?.preview_url"
+      ></audio>
 
       <input 
         id="progress" 
+        :class="{ 'disabled': currentTrack?.preview_url === null  }"
         type="range" 
         :min="0"
         :max="300"
         :step="1"
         :value="progressValue"
+        :disabled="currentTrack?.preview_url === null" 
         @input="onProgressInput" 
         @change="onProgressChange" 
       />
+    </div>
 
-      <div class="controls">
-        <div class="main-controls">
-          <button class="backward" @click="playPreviousTrack">
-            <img src="@/assets/backward.svg">
-          </button>
-          <button class="play-pause-btn" @click="playPause">
-            <i :class="['bi', isPlaying ? 'bi-pause-fill' : 'bi-play-fill']" id="controlIcon"></i>
-          </button>
-          <button class="forward" @click="playNextTrack">
-            <img src="@/assets/forward.svg">
-          </button>
+    <div class="controls">
+
+      <div class="main-controls">
+        <button class="backward" @click="playPreviousTrack">
+          <img src="@/assets/backward.svg">
+        </button>
+
+        <!-- Unfortunately don't know a way to conditionally render tooltip other than this -->
+        <div v-if="currentTrack?.preview_url === null">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <button 
+                  class='play-pause-btn'
+                  :class="{ 'disabled': currentTrack?.preview_url === null }"
+                  :disabled="currentTrack?.preview_url === null" 
+                  @click="playPause"
+                >
+                  <i 
+                    :class="[
+                      'bi', 
+                      isPlaying ? 'bi-pause-circle-fill' : 'bi-play-circle-fill', 
+                      { 'bi-play-circle-fill': currentTrack?.preview_url === null }
+                    ]" 
+                    id="controlIcon"
+                  ></i>
+                </button>
+              </TooltipTrigger>
+
+              <TooltipContent>
+                <p style="text-align: center;">
+                  Spotify does not provide all recommended tracks with a preview audio clip.<br>
+                  Login with your Spotify account to fix.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
-        <div class="volume-control">
-          <label for="volume-slider" @click="toggleMute">
-            <i :class="volumeIconClass"></i>
-          </label>
-          <input 
-            type="range" 
-            id="volume-slider" 
-            min="0" 
-            max="100" 
-            v-model="volume"
+        <div v-else>
+          <button 
+            class='play-pause-btn'
+            :class="{ 'disabled': currentTrack?.preview_url === null }"
+            :disabled="currentTrack?.preview_url === null" 
+            @click="playPause"
           >
+            <i 
+              :class="[
+                'bi', 
+                isPlaying ? 'bi-pause-circle-fill' : 'bi-play-circle-fill', 
+                { 'bi-play-circle-fill': currentTrack?.preview_url === null }
+              ]" 
+              id="controlIcon"
+            ></i>
+          </button>
         </div>
+
+        <button class="forward" @click="playNextTrack">
+          <img src="@/assets/forward.svg">
+        </button>
       </div>
 
+      <div class="volume-control">
+        <label for="volume-slider" @click="toggleMute">
+          <i :class="volumeIconClass"></i>
+        </label>
+        <input 
+          type="range" 
+          id="volume-slider" 
+          min="0" 
+          max="100" 
+          v-model="volume"
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -345,6 +403,14 @@ i {
   outline: 3px solid black;
 }
 
+#progress.disabled::-webkit-slider-thumb {
+  background-color: rgba(201, 201, 201, 0.677);
+}
+
+#progress.disabled {
+  background-color: rgba(201, 201, 201, 0.677);
+}
+
 /* Music Player Controls */
 
 .controls {
@@ -358,16 +424,20 @@ i {
 .main-controls {
   display: flex;
   flex-direction: row;
-
   align-items: center;
 }
 
 /* Need to have this seperate to controls div or something */
 .volume-control {
   display: flex;
-  left: 25vw;
+  left: calc(50vw + 50px);
   align-items: center;
   position: absolute;
+}
+
+.volume-control label {
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .volume-control input:hover, i:hover {
@@ -375,8 +445,13 @@ i {
 }
 
 .volume-control i {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   margin-right: 4px;
+}
+
+.volume-control:hover #volume-slider {
+  opacity: 1;
+  margin-left: 0;
 }
 
 #volume-slider {
@@ -385,6 +460,10 @@ i {
   height: 3px;
   background: white;
   border-radius: 4px;
+
+  opacity: 0;
+  transition: all 0.3s ease;
+  margin-left: -30px;
 }
 
 #volume-slider::-webkit-slider-thumb {
@@ -399,28 +478,27 @@ i {
 .controls .play-pause-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 50px;
-  aspect-ratio: 1/1;
-  margin: 20px;
-  background: white;
-  border-radius: 50%;
+  margin-right: 10px;
+  margin-left: 10.5px;
+  overflow: hidden;
+  width: fit-content;
   cursor: pointer;
   transition: all 0.3s linear;
 }
 
 .play-pause-btn i {
-  color: var(--secondary-colour);
+  color: white;
+  font-size: 3.5rem;
+}
+
+button.disabled i {
+  color: rgba(201, 201, 201, 0.677);
 }
 
 .forward img, .backward img {
   height: 40px;
   aspect-ratio: 1/1;
   filter: invert(100);
-}
-
-.play-pause-btn i {
-  font-size: 30px;
 }
 
 .controls button:is(:hover, :focus-visible) {
@@ -433,6 +511,12 @@ i {
 
 .controls button:nth-child(2):is(:hover, :focus-visible) {
   transform: scale(1.25);
+}
+
+@media (max-width: 1600px) {
+  .volume-control {
+    left: calc(50vw + 55px);
+  }
 }
 
 @media (max-width: 1300px) {
@@ -449,6 +533,10 @@ i {
 
   .results-container {
     margin-bottom: 0;
+  }
+
+  .volume-control {
+    left: calc(50vw + 85px);
   }
 }
 </style>
