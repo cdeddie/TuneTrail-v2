@@ -73,6 +73,7 @@ onUnmounted(() => {
   padding: 5px 0;
   align-items: center;
   background-clip: content-box;
+  min-height: 90px;
   
   opacity: 0;
   transform: translateY(30px);
@@ -98,13 +99,14 @@ onUnmounted(() => {
 }
 
 .card-img {
-  height: 10vh;
+  height: 80px;
   border-radius: .2rem;
 }
 
 .card-info {
   display: flex;
   flex-direction: column;
+  margin-top: auto;
   margin-left: 10px;
   color: white;
 }
@@ -123,7 +125,7 @@ onUnmounted(() => {
 
 @media (max-width: 1300px) {
   .results-root {
-    margin-left: calc(17vw + 40px);
+    margin-left: 21vw;
     margin-right: 17vw;
   }
 
@@ -134,5 +136,9 @@ onUnmounted(() => {
   .result-subtitle {
     font-size: .9rem;
   }
+}
+
+@media (max-width: 1000px) {
+
 }
 </style>

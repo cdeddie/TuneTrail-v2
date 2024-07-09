@@ -182,6 +182,7 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
 
   opacity: 0;
   animation: fadeIn 0.5s ease-in-out forwards;
+  height: fit-content;
 }
 
 @keyframes fadeIn {
@@ -233,7 +234,7 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
   display: flex;
   flex-direction: column;
   margin-left: 10px;
-  color: var(--primary-colour);
+  color: black;
 }
 
 .result-title {
@@ -329,6 +330,12 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
 
   .search-result-card {
     height: 8vh;
+  }
+}
+
+@media(max-width: 1000px) {
+  .search-container {
+    margin-left: 0;
   }
 }
 </style>

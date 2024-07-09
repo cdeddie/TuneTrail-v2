@@ -17,7 +17,6 @@ const handleFirstSearch = () => {
       <div class="search-content">
         <LandingSearch 
           :placeholder="'Search for a song to discover more'" 
-          :background-colour="'#4A71FD'" 
           :search-category="'tracks'"
           :search-disabled="false"
           style="width: 70%; height: 7vh;"

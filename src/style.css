@@ -12,6 +12,7 @@
   --secondary-colour: #4A71FD;
 
   background-color: var(--primary-colour);
+  transition: background-color ease-in-out .3s;
 }
 
 body {

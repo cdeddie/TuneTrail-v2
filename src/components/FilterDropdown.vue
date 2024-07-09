@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
 import FilterSwitchButton from './FilterSwitchButton.vue';
 import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
 
@@ -36,11 +35,10 @@ const filterState = store.filterState;
 .filter-dropdown-root span {
   color: white;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .filter-switch-button {
   margin-bottom: 1vh;
 }
-
 </style>

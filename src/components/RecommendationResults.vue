@@ -106,7 +106,7 @@ button:hover {
 }
 
 .colored-svg {
-  filter: brightness(0) saturate(100%) invert(34%) sepia(98%) saturate(914%) hue-rotate(205deg) brightness(103%) contrast(98%);
+  filter: brightness(0);
 }
 
 @media (max-width: 1300px) {
@@ -124,6 +124,16 @@ button:hover {
 @media (max-width: 1050px) {
   .results-container {
     margin-bottom: 0;
+  }
+}
+
+@media (max-width: 1000px) {
+  .results-filters {
+    margin-left: 4vw;
+  }
+
+  .results-list {
+    margin-left: 4vw;
   }
 }
 </style>

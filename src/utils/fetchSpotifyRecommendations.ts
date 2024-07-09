@@ -1,5 +1,5 @@
 import { Tag } from '@/types/TagType';
-import { RecommendationFilter } from '@/types/recommendationType';
+import { RecommendationFilter } from '@/types/RecommendationType';
 
 const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BASE_URL;
 
@@ -21,7 +21,7 @@ export const fetchRecommendations = async (tagObject: Tag[], recObject: Recommen
     const limit = 25; // TODO implement client manipulation
     const seedType = tagObject[0]?.type;
 
-    let url = `${baseUrl}/public-recommendations?limit=${limit}&tags=${tags}&recTargets=${recTargets}&seedType=${seedType}`;
+    let url = `${baseUrl}/recommendations?limit=${limit}&tags=${tags}&recTargets=${recTargets}&seedType=${seedType}`;
 
     const response = await fetch(url, { credentials: 'include' });
 

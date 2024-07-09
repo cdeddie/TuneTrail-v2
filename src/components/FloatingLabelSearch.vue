@@ -2,11 +2,12 @@
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { fetchSearch } from '../utils/fetchSpotifySearch';
 import debounce from 'debounce';
+import { useColourThemeStore } from '@/stores/colourThemeStore';
 
 // Search flow with other components
 const props = defineProps<{
   placeholder: string,
-  backgroundColour: string,
+  backgroundColour?: string,
   searchCategory: string,
   searchDisabled: boolean,
 }>();
@@ -93,6 +94,14 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updateElementPosition);
 });
+
+// Colour theme setting
+const themeStore = useColourThemeStore();
+
+document.documentElement.style.setProperty('--search-background-colour', themeStore.getPrimaryColour());
+watch(() => themeStore.activeThemeId, () => {
+  document.documentElement.style.setProperty('--search-background-colour', themeStore.getPrimaryColour());
+});
 </script>
 
 <template>
@@ -168,7 +177,6 @@ onBeforeUnmount(() => {
 .input-group input:valid ~ label {
   top: 0;
   font-size: .8rem;
-  --search-background-colour: v-bind($props.backgroundColour);
   background-color: var(--search-background-colour);
 }
 

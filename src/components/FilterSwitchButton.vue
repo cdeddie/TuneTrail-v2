@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import type { RecommendationFilter } from '@/types/recommendationType';
+import type { RecommendationFilter } from '@/types/RecommendationType';
 import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
 
 const store = useRecommendationFilterStore();
