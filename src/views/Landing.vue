@@ -1,29 +1,54 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import LandingSearch from '@/components/FloatingLabelSearch.vue';
 import importedImages from '@/utils/importImages';
+import { useColourThemeStore } from '@/stores/colourThemeStore';
+import { truncateString } from '@/utils/stringProcessing';
 
 const landingTitleVisible = ref<boolean>(true);
 
-const handleFirstSearch = () => {
-  landingTitleVisible.value = !landingTitleVisible.value;
+const handleFirstSearch = (newSearchResults: any) => {
+  landingTitleVisible.value = false;
+  searchResults.value = newSearchResults;
 };
+
+// Colour theme for search - requires secondary instead of primary
+const themeStore = useColourThemeStore();
+const searchBackground: string = themeStore.getSecondaryColour();
+
+// Search handling
+const searchResults = ref<any>();
+const searchResultsVisible = ref<boolean>(false);
+
+watch(searchResults, (newSearchResults) => {
+  if (newSearchResults?.tracks) {
+    setTimeout(() => {
+      searchResultsVisible.value = true;
+    }, 2200);
+  } else {
+    searchResultsVisible.value = false;
+  }
+});
 </script>
 
 <template>
   <main class="landing-root">
+    {{ landingTitleVisible }}
+    {{ searchResultsVisible }}
     <div class="landing-content">
       <h1>TuneTrail</h1>
       <div class="search-content">
         <LandingSearch 
           :placeholder="'Search for a song to discover more'" 
+          :background-colour="searchBackground"
           :search-category="'tracks'"
           :search-disabled="false"
+          @search-results="(newSearchResults: any) => handleFirstSearch(newSearchResults)"
           style="width: 70%; height: 7vh;"
         />
 
         <div class="search-results">
-          <div class="landing-result">
+          <div class="landing-result" v-if="!searchResultsVisible">
             <div class="animated-title">
               <div class="text-top" :class="{ 'loading-animation': !landingTitleVisible }">
                 <div :class="{ 'top-animation': !landingTitleVisible }">
@@ -36,9 +61,33 @@ const handleFirstSearch = () => {
               </div>
             </div>
           </div>
+
+          <div class="search-results-tracks" v-else-if="searchResultsVisible">
+            <div class="tracks-results">
+              <div 
+                class="search-result-card" 
+                v-for="(track) in searchResults.tracks?.items"
+                @click="" 
+              >
+                <img :src="track.album.images[1]?.url" class="card-img">
+                <div class="card-info">
+                  <span class="result-title">{{ track.name }}</span>
+                  <span class="result-subtitle">
+                    <i 
+                      v-if="track.explicit"
+                      class="bi bi-explicit-fill"
+                      style="margin-right: 2px;"
+                    ></i>
+                    {{ truncateString(track.artists[0].name) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <div class="spotify-logo"><i class="bi bi-spotify" @click="handleFirstSearch"></i></div>
+        <div class="spotify-logo"><i class="bi bi-spotify"></i></div>
       </div>
     </div>
 
@@ -96,8 +145,71 @@ h1 {
   right: 0;
 }
 
+/* ----- Search Results ----- */
+
 .search-results {
 
+}
+
+.search-results-tracks {
+  background-color: white;
+  border-radius: 1rem;
+  margin-left: 40px;
+  width: 70%;
+  margin-top: 2vh;
+}
+
+.search-result-card {
+  height: 7.5vh;
+  display: flex;
+  flex-direction: row;
+  
+  padding: 5px 10px;
+  align-items: center;
+  background-color: #D9D9D9;
+  background-clip: content-box;
+  border-radius: 1.35rem;
+  transition: transform 0.3s ease;
+}
+
+.search-result-card:hover {
+  transform: scale(1.01);
+  cursor: pointer;
+}
+
+.search-result-card:first-child {
+  padding-top: 10px;
+}
+
+.search-result-card:last-child {
+  padding-bottom: 10px;
+}
+
+.card-img {
+  height: 4.5vh;
+  margin-left: 25px; 
+}
+
+.img-alt {
+  font-size: 2.5rem;
+  margin-left: 25px;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  color: black;
+}
+
+.result-title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.result-subtitle {
+  font-size: .75rem;
+  font-weight: 550;
 }
 
 .landing-result {
@@ -153,7 +265,7 @@ h1 {
 }
 
 .loading-animation {
-  border-bottom: 0.4vmin solid black;
+  
 }
 
 .top-animation {

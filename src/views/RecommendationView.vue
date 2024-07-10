@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ref, watch } from 'vue';
 import DiscoverSearch from '@/components/FloatingLabelSearch.vue';
 import SwitchButton from '@/components/SwitchButton.vue';
 import UserFlow from '@/components/UserFlow.vue';

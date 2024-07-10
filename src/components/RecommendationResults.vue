@@ -103,6 +103,7 @@ button.active {
 button:hover {
   background-color: white;
   border-radius: .5rem;
+  transition: background-color 0.5s ease;
 }
 
 .colored-svg {

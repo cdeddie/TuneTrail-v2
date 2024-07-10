@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { fetchSearch } from '../utils/fetchSpotifySearch';
 import debounce from 'debounce';
 import { useColourThemeStore } from '@/stores/colourThemeStore';
@@ -98,9 +98,16 @@ onBeforeUnmount(() => {
 // Colour theme setting
 const themeStore = useColourThemeStore();
 
-document.documentElement.style.setProperty('--search-background-colour', themeStore.getPrimaryColour());
+const backgroundColor = computed(() => {
+  return props.backgroundColour ?? themeStore.getPrimaryColour();
+});
+
+document.documentElement.style.setProperty('--search-background-colour', backgroundColor.value);
+
 watch(() => themeStore.activeThemeId, () => {
-  document.documentElement.style.setProperty('--search-background-colour', themeStore.getPrimaryColour());
+  if (!props.backgroundColour) {
+    document.documentElement.style.setProperty('--search-background-colour', themeStore.getPrimaryColour());
+  }
 });
 </script>
 

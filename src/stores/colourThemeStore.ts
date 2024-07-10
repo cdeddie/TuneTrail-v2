@@ -14,8 +14,8 @@ export const themes: Theme[] = [
   { id: 4, color1: '#80A1C1', color2: '#EEE3AB' },
   { id: 5, color1: '#7353BA', color2: '#FAA6FF' },
   { id: 6, color1: '#D33F49', color2: '#D7C0D0' },
-  { id: 7, color1: '#FF8033', color2: '#3380FF' },
-  { id: 8, color1: '#FF5733', color2: '#33FF57' },
+  { id: 7, color1: '#251605', color2: '#C57B57' },
+  { id: 8, color1: '#111111', color2: '#1ED760' },
 ];
 
 export const useColourThemeStore = defineStore('ColourThemeStore', () => {
