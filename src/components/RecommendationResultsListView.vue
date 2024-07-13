@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, nextTick, onUnmounted } from 'vue';
-import { truncateString } from '@/utils/stringProcessing';
+import { ref, watch, nextTick, onUnmounted }  from 'vue';
+import { truncateString }                     from '@/utils/stringProcessing';
+import { Skeleton }                           from '@/components/ui/skeleton'
 
 const props = defineProps<{
   recommendationData: any,
+  recommendationDataLoading: boolean,
 }>();
 
 // Intersection observer logic
@@ -42,31 +44,74 @@ onUnmounted(() => {
 
 <template>
   <div class="list-view">
-    <a
-      class="result-card" 
-      v-for="(track, index) in recommendationData?.tracks"
-      :key="track.id"
-      :ref="(el) => { if (el) cardRefs[index] = el as HTMLElement }"
-      :href="track.external_urls.spotify"
-      target="_blank"
-    >
-      <img :src="track.album.images[1]?.url" class="card-img">
-      <div class="card-info">
-        <span class="result-title">{{ track.name }}</span>
-        <span class="result-subtitle">
-          <i 
-            v-if="track.explicit"
-            class="bi bi-explicit-fill"
-            style="margin-right: 2px;"
-          ></i>
-          {{ truncateString(track.artists[0].name) }}
-        </span>
+    <div class="skeleton-container" v-for="index in 25" :key="index" v-if="recommendationDataLoading">
+      <Skeleton class="skeleton skeleton-album"/>
+      <div class="skeleton-details">
+        <Skeleton class="skeleton skeleton-title"/>
+        <Skeleton class="skeleton skeleton-subtitle"/>
       </div>
-    </a>
+    </div>
+    <div class="results-loaded" v-else-if="recommendationData">
+      <a
+        class="result-card" 
+        v-for="(track, index) in recommendationData?.tracks"
+        :key="track.id"
+        :ref="(el) => { if (el) cardRefs[index] = el as HTMLElement }"
+        :href="track.external_urls.spotify"
+        target="_blank"
+      >
+        <img :src="track.album.images[1]?.url" class="card-img">
+        <div class="card-info">
+          <span class="result-title">{{ track.name }}</span>
+          <span class="result-subtitle">
+            <i 
+              v-if="track.explicit"
+              class="bi bi-explicit-fill"
+              style="margin-right: 2px;"
+            ></i>
+            {{ truncateString(track.artists[0].name) }}
+          </span>
+        </div>
+      </a>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.skeleton {
+  background-color: rgba(168, 168, 168, 0.55);
+}
+
+.skeleton-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.skeleton-album {
+  height: 80px;
+  width: 80px;
+  margin-bottom: 8px;
+}
+
+.skeleton-details {
+  display: flex;
+  flex-direction: column;
+  margin-left: 5px;
+  margin-bottom: 8px;
+  margin-top: auto;
+}
+
+.skeleton-title {
+  height: 20px;
+  width: 200px;
+}
+
+.skeleton-subtitle {
+  height: 20px;
+  width: 70px;
+  margin-top: 3px;
+}
+
 .result-card {
   display: flex;
   flex-direction: row;

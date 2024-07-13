@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
-import { fetchSearch } from '../utils/fetchSpotifySearch';
-import debounce from 'debounce';
-import { useColourThemeStore } from '@/stores/colourThemeStore';
+import { fetchSearch }                                      from '../utils/fetchSpotifySearch';
+import debounce                                             from 'debounce';
+import { useColourThemeStore }                              from '@/stores/colourThemeStore';
 
 // Search flow with other components
 const props = defineProps<{

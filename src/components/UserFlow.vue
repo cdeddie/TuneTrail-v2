@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-import FilterDropdown from './FilterDropdown.vue';
-import SettingsDropdown from './SettingsDropdown.vue';
+import { ref, onMounted, onUnmounted }  from 'vue';
+import FilterDropdown                   from './DropdownFilter.vue';
+import SettingsDropdown                 from './DropdownSettings.vue';
+import AuthDropdown                     from './DropdownAuth.vue';
 
 // The logic for this component is contained within the child components. 
 // This component simply provides a frontend for the user flow portion
@@ -46,6 +47,7 @@ onUnmounted(() => {
         <div v-if="activeDropdown === item" class="dropdown">
           <FilterDropdown v-if="item === 'filters'" />
           <SettingsDropdown v-if="item === 'settings'" />
+          <AuthDropdown v-if="item === 'profile'" />
         </div>
       </transition>
     </div>

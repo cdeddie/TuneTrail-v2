@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia';
+import { defineStore }          from 'pinia';
 import { RecommendationFilter } from '@/types/RecommendationType';
-import { reactive } from 'vue';
+import { reactive }             from 'vue';
 
 export const useRecommendationFilterStore = defineStore('RecommendationFilterStore', () => {
   const filterState = reactive<RecommendationFilter>({

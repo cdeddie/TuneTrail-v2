@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import LandingSearch from '@/components/FloatingLabelSearch.vue';
-import importedImages from '@/utils/importImages';
-import { useColourThemeStore } from '@/stores/colourThemeStore';
-import { truncateString } from '@/utils/stringProcessing';
+import { ref, watch }           from 'vue';
+import LandingSearch            from '@/components/FloatingLabelSearch.vue';
+import importedImages           from '@/utils/importImages';
+import { useColourThemeStore }  from '@/stores/colourThemeStore';
+import { truncateString }       from '@/utils/stringProcessing';
 
 const landingTitleVisible = ref<boolean>(true);
 
@@ -27,14 +27,13 @@ watch(searchResults, (newSearchResults) => {
     }, 2200);
   } else {
     searchResultsVisible.value = false;
+    landingTitleVisible.value = true;
   }
 });
 </script>
 
 <template>
   <main class="landing-root">
-    {{ landingTitleVisible }}
-    {{ searchResultsVisible }}
     <div class="landing-content">
       <h1>TuneTrail</h1>
       <div class="search-content">
@@ -48,42 +47,44 @@ watch(searchResults, (newSearchResults) => {
         />
 
         <div class="search-results">
-          <div class="landing-result" v-if="!searchResultsVisible">
-            <div class="animated-title">
-              <div class="text-top" :class="{ 'loading-animation': !landingTitleVisible }">
-                <div :class="{ 'top-animation': !landingTitleVisible }">
-                  <span>discover new tunes</span>
-                  <span>with the help of</span>
+          <Transition name="fade" mode="out-in">
+            <div class="landing-result" v-if="!searchResultsVisible">
+              <div class="animated-title">
+                <div class="text-top" :class="{ 'loading-animation': !landingTitleVisible }">
+                  <div :class="{ 'top-animation': !landingTitleVisible }">
+                    <span>discover new tunes</span>
+                    <span>with the help of</span>
+                  </div>
+                </div>
+                <div class="text-bottom">
+                  <div :class="{ 'bottom-animation': !landingTitleVisible }">old favourites!</div>
                 </div>
               </div>
-              <div class="text-bottom">
-                <div :class="{ 'bottom-animation': !landingTitleVisible }">old favourites!</div>
-              </div>
             </div>
-          </div>
 
-          <div class="search-results-tracks" v-else-if="searchResultsVisible">
-            <div class="tracks-results">
-              <div 
-                class="search-result-card" 
-                v-for="(track) in searchResults.tracks?.items"
-                @click="" 
-              >
-                <img :src="track.album.images[1]?.url" class="card-img">
-                <div class="card-info">
-                  <span class="result-title">{{ track.name }}</span>
-                  <span class="result-subtitle">
-                    <i 
-                      v-if="track.explicit"
-                      class="bi bi-explicit-fill"
-                      style="margin-right: 2px;"
-                    ></i>
-                    {{ truncateString(track.artists[0].name) }}
-                  </span>
+            <div class="search-results-tracks" v-else-if="searchResultsVisible">
+              <div class="tracks-results">
+                <div 
+                  class="search-result-card" 
+                  v-for="(track) in searchResults.tracks?.items"
+                  @click="" 
+                >
+                  <img :src="track.album.images[1]?.url" class="card-img">
+                  <div class="card-info">
+                    <span class="result-title">{{ track.name }}</span>
+                    <span class="result-subtitle">
+                      <i 
+                        v-if="track.explicit"
+                        class="bi bi-explicit-fill"
+                        style="margin-right: 2px;"
+                      ></i>
+                      {{ truncateString(track.artists[0].name) }}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </Transition>
 
         </div>
 
@@ -149,6 +150,16 @@ h1 {
 
 .search-results {
 
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .search-results-tracks {

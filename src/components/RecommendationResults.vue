@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import RecommendationResultsListView from './RecommendationResultsListView.vue';
-import RecommendationResultsCardView from './RecommendationResultsCardView.vue';
+import { ref }                        from 'vue';
+import RecommendationResultsListView  from './RecommendationResultsListView.vue';
+import RecommendationResultsCardView  from './RecommendationResultsCardView.vue';
 
 defineProps<{
   recommendationData: any,
+  recommendationDataLoading: boolean,
 }>();
 
 // Button logic (choose between list or card view)
@@ -41,8 +42,17 @@ const buttons = [
     </div>
     
     <div class="results-container">
-      <RecommendationResultsListView class="results-list" v-if="activeIndex === 0" :recommendation-data="recommendationData" />
-      <RecommendationResultsCardView class="results-cards" v-else-if="activeIndex === 1" :recommendation-data="recommendationData" />
+      <RecommendationResultsListView 
+        class="results-list" 
+        v-if="activeIndex === 0" 
+        :recommendation-data="recommendationData" 
+        :recommendation-data-loading="recommendationDataLoading"
+      />
+      <RecommendationResultsCardView 
+        class="results-cards" 
+        v-else-if="activeIndex === 1" 
+        :recommendation-data="recommendationData" 
+      />
     </div>
   </div>
 </template>

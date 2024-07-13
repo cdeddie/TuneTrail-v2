@@ -1,5 +1,5 @@
 import { FastAverageColor } from 'fast-average-color';
-import Vibrant from 'node-vibrant/lib/bundle.js'
+import Vibrant              from 'node-vibrant/lib/bundle.js'
 
 const fac = new FastAverageColor();
 

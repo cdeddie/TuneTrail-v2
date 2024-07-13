@@ -6,18 +6,20 @@ const themeStore = useColourThemeStore();
 
 <template>
   <div class="settings-dropdown-root">
-    <span class="settings-title">Settings</span>
-    <span class="theme-title">Theme</span>
-    <div class="theme-grid">
-      <div
-        v-for="theme in themes"
-        :key="theme.id"
-        class="theme-circle"
-        :class="{ active: theme.id === themeStore.activeThemeId }"
-        @click="themeStore.setActiveTheme(theme.id)"
-      >
-        <div class="theme-half" :style="{ backgroundColor: theme.color1 }"></div>
-        <div class="theme-half" :style="{ backgroundColor: theme.color2 }"></div>
+    <div class="background">
+      <span class="settings-title">Settings</span>
+      <span class="theme-title">Theme</span>
+      <div class="theme-grid">
+        <div
+          v-for="theme in themes"
+          :key="theme.id"
+          class="theme-circle"
+          :class="{ active: theme.id === themeStore.activeThemeId }"
+          @click="themeStore.setActiveTheme(theme.id)"
+        >
+          <div class="theme-half" :style="{ backgroundColor: theme.color1 }"></div>
+          <div class="theme-half" :style="{ backgroundColor: theme.color2 }"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -25,10 +27,16 @@ const themeStore = useColourThemeStore();
 
 <style scoped>
 .settings-dropdown-root {
+  background-color: rgb(37, 37, 37);
+  padding: 7px;
+  border-radius: .95rem;
+  color: white;
+}
+
+.background {
   background-color: rgba(0, 0, 0, 0.667);
   padding: 20px;
-  border-radius: 1rem;
-  color: white;
+  border-radius: .9rem;
 }
 
 .settings-title {

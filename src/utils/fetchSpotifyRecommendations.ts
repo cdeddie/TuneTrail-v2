@@ -1,4 +1,4 @@
-import { Tag } from '@/types/TagType';
+import { Tag }                  from '@/types/TagType';
 import { RecommendationFilter } from '@/types/RecommendationType';
 
 const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BASE_URL;

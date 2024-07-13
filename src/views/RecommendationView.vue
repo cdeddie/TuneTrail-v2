@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import DiscoverSearch from '@/components/FloatingLabelSearch.vue';
-import SwitchButton from '@/components/SwitchButton.vue';
-import UserFlow from '@/components/UserFlow.vue';
-import RecommendationResults from '@/components/RecommendationResults.vue'
-import { Tag, createTag } from '@/types/TagType';
-import { pickBWTextColour } from '@/utils/colourStyle';
+import { ref, watch }                   from 'vue';
+import DiscoverSearch                   from '@/components/FloatingLabelSearch.vue';
+import SwitchButton                     from '@/components/SwitchButton.vue';
+import UserFlow                         from '@/components/UserFlow.vue';
+import RecommendationResults            from '@/components/RecommendationResults.vue'
+import { Tag, createTag }               from '@/types/TagType';
+import { pickBWTextColour }             from '@/utils/colourStyle';
 import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
-import { fetchRecommendations } from '@/utils/fetchSpotifyRecommendations';
-import { truncateString } from '@/utils/stringProcessing';
+import { fetchRecommendations }         from '@/utils/fetchSpotifyRecommendations';
+import { truncateString }               from '@/utils/stringProcessing';
 
 const searchCategory = ref<string>('Tracks');
 const searchResults = ref<any>();
@@ -51,13 +51,24 @@ const store = useRecommendationFilterStore();
 const filterState = store.filterState;
 
 const recommendationResults = ref<any>();
+const recommendationDataLoading = ref<boolean>(false);
 
 watch(() => [...tags.value], async (newTags) => {
-  recommendationResults.value = await fetchRecommendations(newTags, filterState);
+  recommendationDataLoading.value = true;
+  try {
+    recommendationResults.value = await fetchRecommendations(newTags, filterState);
+  } finally {
+    recommendationDataLoading.value = false;
+  }
 }, { deep: true });
 
 watch(filterState, async () => {
-  recommendationResults.value = await fetchRecommendations(tags.value, filterState);
+  recommendationDataLoading.value = true;
+  try {
+    recommendationResults.value = await fetchRecommendations(tags.value, filterState);
+  } finally {
+    recommendationDataLoading.value = false;
+  }
 }, { deep: true });
 
 // Utils
@@ -75,7 +86,6 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
         :placeholder="searchDisabled ? 
                       'Maximum number reached' 
                       : `Add up to 5 ${searchCategory.toLowerCase()}`"
-        :background-colour="'#2D283E'"
         :search-category="searchCategory"
         :search-disabled="searchDisabled"
         @search-results="(newSearchResults: any) => searchResults = newSearchResults"
@@ -150,7 +160,10 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
     </div>
 
     <UserFlow class="user-flow-parent" />
-    <RecommendationResults :recommendation-data="recommendationResults" />
+    <RecommendationResults 
+      :recommendation-data="recommendationResults" 
+      :recommendation-data-loading="recommendationDataLoading"
+    />
   </div>
 </template>
 

@@ -1,12 +1,15 @@
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
+import App              from './App.vue';
+import { createApp }    from 'vue';
+import { createPinia }  from 'pinia';
+import { useAuthStore } from '@/stores/authStore';
 import './style.css';
 import './assets/index.css';
-import App from './App.vue';
 
 import { createWebHistory, createRouter } from 'vue-router';
-import Landing from '@/views/Landing.vue';
-import RecommendationView from '@/views/RecommendationView.vue';
+import Landing                            from '@/views/Landing.vue';
+import RecommendationView                 from '@/views/RecommendationView.vue';
+
+const app = createApp(App);
 
 const routes = [
   { path: '/', component: Landing },
@@ -18,8 +21,12 @@ const router = createRouter({
   routes,
 });
 
+app.use(router);
+
 const pinia = createPinia();
-createApp(App)
-  .use(router)
-  .use(pinia)
-  .mount('#app');
+app.use(pinia);
+
+const authStore = useAuthStore();
+await authStore.checkLoginStatus();
+
+app.mount('#app');

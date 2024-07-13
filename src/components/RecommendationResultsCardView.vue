@@ -1,24 +1,27 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
-import Swiper from 'swiper';
-import { EffectCoverflow } from 'swiper/modules';
+import { ref, computed, onMounted, watch, nextTick }                from 'vue';
+import Swiper                                                       from 'swiper';
+import { EffectCoverflow }                                          from 'swiper/modules';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 
 const props = defineProps<{
   recommendationData: any,
 }>();
 
-const tracks = computed(() => props.recommendationData.tracks || []);
-const currentTrackIndex = ref(0);
-const currentTrack = computed(() => tracks.value[currentTrackIndex.value]);
-const isPlaying = ref(false);
+const isPlaying = ref<boolean>(false);
+const currentTrackIndex = ref<number>(0);
+
+const tracks = computed(() => {
+  if (props.recommendationData && props.recommendationData.tracks) {
+    return props.recommendationData.tracks;
+  } else {
+    return [];
+  }
+});
+
+const currentTrack = computed(() => tracks.value ? tracks.value[currentTrackIndex.value] : 0);
 
 const audioPlayer = ref<HTMLAudioElement | null>(null);
 const currentTime = ref(0);
@@ -76,7 +79,6 @@ const playNextTrack = () => {
   currentTrackIndex.value = (currentTrackIndex.value + 1) % tracks.value.length;
   swiper.slideNext();
   if (isPlaying.value) playPause();
-  console.log(currentTrackIndex.value);
 };
 
 const playPreviousTrack = () => {
@@ -121,21 +123,26 @@ const volumeIconClass = computed(() => {
 
 // Vue component produced from https://codepen.io/ecemgo/pen/vYPadZz
 onMounted(() => {
+  initializeSwiper();
+});
+
+const initializeSwiper = (): void => {
   swiper = new Swiper('.swiper', {
     modules: [EffectCoverflow],
     effect: 'coverflow',
     rewind: true,
+    observer: true,
     centeredSlides: true,
     initialSlide: currentTrackIndex.value,
     slidesPerView: 'auto',
-    allowTouchMove: false,
+    allowTouchMove: true,
     spaceBetween: 40,
     coverflowEffect: {
       rotate: 25,
       stretch: 0,
       depth: 50,
       modifier: 1,
-      slideShadows: false,
+      slideShadows: true,
     },
     navigation: {
       nextEl: '.forward',
@@ -146,12 +153,22 @@ onMounted(() => {
   swiper.on('slideChange', () => {
     currentTrackIndex.value = swiper.activeIndex;
   });
+}
+
+watch(() => props.recommendationData, async (newValue) => {
+  if (newValue) {
+    await nextTick();
+    if (swiper) {
+      swiper.destroy();
+    }
+    initializeSwiper();
+  }
 });
 </script>
 
 <template>
-  <div class="card-view-root">
-    <div class="album-cover">
+  <div class="card-view-root" v-if="props.recommendationData?.tracks">
+    <div class="album-cover" v-if="tracks.length">
       <div class="swiper">
         <div class="swiper-wrapper">
           <div v-for="(track) in tracks" :key="track.id" class="swiper-slide">
@@ -196,6 +213,9 @@ onMounted(() => {
     </div>
 
     <div class="controls">
+      <div class="add-placeholder">
+
+      </div>
 
       <div class="main-controls">
         <button class="backward" @click="playPreviousTrack">
@@ -415,24 +435,26 @@ i {
 
 .controls {
   display: flex;
-  justify-content: center;
   align-items: center;
-  position: relative;
-  width: 100%;
+}
+
+.add-placeholder {
+  width: 161px;
+  margin-right: 10px;
 }
 
 .main-controls {
   display: flex;
   flex-direction: row;
+  justify-content: center;
   align-items: center;
 }
 
 /* Need to have this seperate to controls div or something */
 .volume-control {
   display: flex;
-  left: calc(50vw + 50px);
   align-items: center;
-  position: absolute;
+  margin-left: 10px;
 }
 
 .volume-control label {
@@ -463,7 +485,6 @@ i {
 
   opacity: 0;
   transition: all 0.3s ease;
-  margin-left: -30px;
 }
 
 #volume-slider::-webkit-slider-thumb {
@@ -479,7 +500,7 @@ i {
   display: flex;
   align-items: center;
   margin-right: 10px;
-  margin-left: 10.5px;
+  margin-left: 10px;
   overflow: hidden;
   width: fit-content;
   cursor: pointer;
