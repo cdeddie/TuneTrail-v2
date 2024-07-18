@@ -69,7 +69,7 @@ onUnmounted(() => {
               class="bi bi-explicit-fill"
               style="margin-right: 2px;"
             ></i>
-            {{ truncateString(track.artists[0].name) }}
+            {{ truncateString(track.artists[0].name, 35) }}
           </span>
         </div>
       </a>

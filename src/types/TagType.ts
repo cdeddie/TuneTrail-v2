@@ -4,10 +4,10 @@ import Vibrant              from 'node-vibrant/lib/bundle.js'
 const fac = new FastAverageColor();
 
 export type Tag = {
-  type: 'Artist' | 'Track';
-  id: string;
-  name: string;
-  image: string;
+  type:   'Artist' | 'Track';
+  id:     string;
+  name:   string;
+  image:  string;
   colour: string;
 };
 

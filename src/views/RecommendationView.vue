@@ -91,7 +91,7 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
         @search-results="(newSearchResults: any) => searchResults = newSearchResults"
         @search-results-loading="(newSearchLoading: boolean) => searchLoading = newSearchLoading"
         @search-focused="(newSearchFocused: boolean) => searchFocused = newSearchFocused"
-        style="width: 100%"
+        style="width: 100%; margin-left: 40px;"
       />
       <SwitchButton 
         ref="switchElement"
@@ -118,7 +118,7 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
                 class="bi bi-explicit-fill"
                 style="margin-right: 2px;"
               ></i>
-              {{ truncateString(track.artists[0].name) }}
+              {{ truncateString(track.artists[0].name, 30) }}
             </span>
           </div>
         </div>
@@ -133,7 +133,7 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
           <img v-if="artist.images[0]" :src="artist.images[1]?.url" class="card-img">
           <i v-else class="bi bi-person-fill img-alt"></i>
           <div class="card-info">
-            <span class="result-title">{{ truncateString(artist.name) }}</span>
+            <span class="result-title">{{ truncateString(artist.name, 30) }}</span>
             <span class="result-subtitle">{{ artist.genres[0] }}</span>
           </div>
         </div>
@@ -187,7 +187,7 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
   background-color: white;
   margin-top: calc(var(--search-element-top) + var(--search-element-height) + 10px);
   position: absolute;
-  left: var(--search-element-left);
+  left: calc(var(--search-element-left) + 20px);
   width: calc(var(--search-element-width));
 
   border-radius: 1rem;
@@ -265,7 +265,7 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
   margin-top: 10px;
   display: flex;
   flex-direction: row;
-  margin-left: var(--search-element-left);
+  margin-left: calc(var(--search-element-left) + 20px);
 }
 
 .tag-container {

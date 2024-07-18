@@ -43,7 +43,7 @@ watch(searchResults, (newSearchResults) => {
           :search-category="'tracks'"
           :search-disabled="false"
           @search-results="(newSearchResults: any) => handleFirstSearch(newSearchResults)"
-          style="width: 70%; height: 7vh;"
+          style="width: 70%; height: 7vh; margin-left: 40px;"
         />
 
         <div class="search-results">
@@ -78,14 +78,13 @@ watch(searchResults, (newSearchResults) => {
                         class="bi bi-explicit-fill"
                         style="margin-right: 2px;"
                       ></i>
-                      {{ truncateString(track.artists[0].name) }}
+                      {{ truncateString(track.artists[0].name, 30) }}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
           </Transition>
-
         </div>
 
         <div class="spotify-logo"><i class="bi bi-spotify"></i></div>
@@ -103,8 +102,6 @@ watch(searchResults, (newSearchResults) => {
     </div>
     
   </main>
-
-
 </template>
 
 <style scoped>

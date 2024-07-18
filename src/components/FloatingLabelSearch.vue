@@ -113,7 +113,9 @@ watch(() => themeStore.activeThemeId, () => {
 
 <template>
   <div class="input-group">
+    <form novalidate id="novalidate"></form>
     <input 
+      form="novalidate"
       type="text" 
       ref="searchElement"
       required
@@ -141,7 +143,7 @@ watch(() => themeStore.activeThemeId, () => {
   z-index: 1111;
   min-height: 5vh;
   position: relative;
-  margin-left: 40px;
+  margin-left: 20px;
   margin-right: 20px;
   display: flex;
   flex-direction: row;
@@ -207,6 +209,18 @@ watch(() => themeStore.activeThemeId, () => {
   .input-group input:valid {
     padding-left: 1rem;
     font-size: 1.1rem;
+  }
+}
+
+@media(max-width: 385px) {
+  .input-group input+label {
+    font-size: .85rem;
+  }
+
+  .input-group input:focus,
+  .input-group input:valid {
+    padding-left: 1rem;
+    font-size: .9rem;
   }
 }
 

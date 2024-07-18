@@ -1,6 +1,6 @@
-export const truncateString = (input: string) => {
-  if (input.length > 35) {
-    return input.substring(0, 35) + '...';
+export const truncateString = (input: string, limit: number) => {
+  if (input.length > limit) {
+    return input.substring(0, limit) + '...';
   } else {
     return input;
   }

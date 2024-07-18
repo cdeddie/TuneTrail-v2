@@ -2,7 +2,7 @@ import { defineStore }  from 'pinia';
 import { ref }          from 'vue';
 
 export type Theme = {
-  id: number;
+  id:     number;
   color1: string;
   color2: string;
 };
