@@ -140,7 +140,7 @@ watch(() => themeStore.activeThemeId, () => {
 }
 
 .input-group {
-  z-index: 1111;
+  z-index: 5;
   min-height: 5vh;
   position: relative;
   margin-left: 20px;

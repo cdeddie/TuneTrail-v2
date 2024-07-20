@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch }           from 'vue';
 import LandingSearch            from '@/components/FloatingLabelSearch.vue';
-import importedImages           from '@/utils/importImages';
+import { getRandomAlbums }      from '@/utils/importImages';
 import { useColourThemeStore }  from '@/stores/colourThemeStore';
 import { truncateString }       from '@/utils/stringProcessing';
 
@@ -30,6 +30,9 @@ watch(searchResults, (newSearchResults) => {
     landingTitleVisible.value = true;
   }
 });
+
+// Album slider
+const albums = getRandomAlbums(20);
 </script>
 
 <template>
@@ -93,11 +96,11 @@ watch(searchResults, (newSearchResults) => {
 
     <div class="album-covers">
       <div class="album-slide">
-        <img v-for="(src) in importedImages" :src="src">
+        <a v-for="(album) in albums" :href="album.link"><img :src="album.image" class="album-cover"></a>
       </div>
 
       <div class="album-slide">
-        <img v-for="(src) in importedImages" :src="src">
+        <a v-for="(album) in albums" :href="album.link"><img :src="album.image" class="album-cover"></a>
       </div>
     </div>
     
@@ -334,6 +337,14 @@ h1 {
 
 .album-covers:hover .album-slide {
   animation-play-state: paused;
+}
+
+.album-cover {
+  transition: transform 0.5s ease;
+}
+
+.album-cover:hover {
+  transform: scale(1.02);
 }
 
 /* ----- RESPONSIVENESS ----- */

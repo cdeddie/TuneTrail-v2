@@ -17,6 +17,6 @@ onMounted(() => {
 
 <style scoped>
 .app-root {
-  height: 100vh;
+  max-height: 100vh;
 }
 </style>

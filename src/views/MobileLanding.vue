@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { ref, watch }           from 'vue';
-import LandingSearch            from '@/components/FloatingLabelSearch.vue';
-import { useColourThemeStore }  from '@/stores/colourThemeStore';
-import { truncateString }       from '@/utils/stringProcessing';
+import { ref, watch, onMounted }  from 'vue';
+import LandingSearch              from '@/components/FloatingLabelSearch.vue';
+import { useColourThemeStore }    from '@/stores/colourThemeStore';
+import { truncateString }         from '@/utils/stringProcessing';
+import { getRandomAlbums }        from '@/utils/importImages';
+import { useRouter }              from 'vue-router';
+import { Tag, createTag }         from '@/types/TagType';
 
 const landingTitleVisible = ref<boolean>(true);
 
@@ -29,6 +32,36 @@ watch(searchResults, (newSearchResults) => {
     landingTitleVisible.value = true;
   }
 });
+
+// Album slider
+const albums = getRandomAlbums(40);
+const mid = Math.ceil(albums.length / 2);
+const albumsFirst = albums.slice(0, mid);
+const albumsSecond = albums.slice(mid);
+
+const albumsSlide = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+  if (albumsSlide.value) {
+    const totalWidth = albumsSlide.value.scrollWidth;
+    const visibleWidth = albumsSlide.value.offsetWidth;
+
+    // Set the CSS variable
+    albumsSlide.value.style.setProperty('--translateX', `${totalWidth + visibleWidth}px`);
+  }
+});
+
+// Redirect to /discover page
+const router = useRouter();
+
+const navigateToTarget = async (track: any) => {
+  const tag: Tag = await createTag(track);
+
+  router.push({ 
+    path: '/discover',
+    query: { tag: JSON.stringify(tag) }
+  });
+};
 </script>
 
 <template>
@@ -59,7 +92,7 @@ watch(searchResults, (newSearchResults) => {
                 <div 
                   class="search-result-card" 
                   v-for="(track) in searchResults.tracks?.items"
-                  @click="" 
+                  @click="navigateToTarget(track)" 
                 >
                   <img :src="track.album.images[1]?.url" class="card-img">
                   <div class="card-info">
@@ -79,13 +112,38 @@ watch(searchResults, (newSearchResults) => {
           </Transition>
         </div>
       </div>
+
+      <div class="albums-container">
+        <div class="albums">
+          <div class="albums-slide" ref="albumsSlide">
+            <img v-for="(album) in albumsFirst" :src="album.image">
+            <img v-for="(album) in albumsFirst" :src="album.image">
+          </div>
+        </div>
+
+        <div class="albums">
+          <div class="albums-slide right" ref="albumsSlide">
+            <img v-for="(album) in albumsSecond" :src="album.image">
+            <img v-for="(album) in albumsSecond" :src="album.image">
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .landing-mobile {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   padding: 5%;
+}
+
+.landing-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .search-content {
@@ -105,6 +163,7 @@ h1 {
 
 .search-results {
   display: flex;
+  flex-direction: column;
   padding-bottom: 10px;
 }
 
@@ -178,9 +237,9 @@ h1 {
   font-weight: 550;
 }
 
-/* Hero text */
+/* ----- Hero text ----- */
 .hero-text {
-  margin: 7.5vh 20px;
+  margin: 20px;
   font-family: Roboto, Arial, sans-serif;
 }
 
@@ -194,9 +253,58 @@ h1 {
 }
 
 .text-content span {
-  font-size: 32px;
+  font-size: 2.1rem;
   font-weight: 800;
   color: white;
   line-height: 1.3;
+}
+
+/* ----- Album Slider ----- */
+@keyframes slide-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-1 * (20 * 12.5vh + 20 * 20px)));
+  }
+}
+
+@keyframes slide-right {
+  from {
+    transform: translateX(calc(-1 * (20 * 12.5vh + 20 * 20px)));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.albums-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-evenly;
+}
+
+.albums {
+  overflow: hidden;
+  position: relative;
+}
+
+.albums-slide {
+  display: flex;
+  flex-direction: row;
+  animation: 20s slide-left infinite linear;
+}
+
+.right {
+  display: flex;
+  flex-direction: row;
+  animation: 22.5s slide-right infinite linear;
+}
+
+.albums-slide img {
+  height: 12.5vh;
+  width: 12.5vh;
+  margin: 0 10px;
 }
 </style>

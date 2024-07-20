@@ -1,14 +1,22 @@
 <script setup lang="ts">
-import { ref, watch }                   from 'vue';
+import { ref, watch, onMounted }        from 'vue';
+import { useRoute }                     from 'vue-router';
 import DiscoverSearch                   from '@/components/FloatingLabelSearch.vue';
-import SwitchButton                     from '@/components/SwitchButton.vue';
-import UserFlow                         from '@/components/UserFlow.vue';
-import RecommendationResults            from '@/components/RecommendationResults.vue'
 import { Tag, createTag }               from '@/types/TagType';
-import { pickBWTextColour }             from '@/utils/colourStyle';
 import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
 import { fetchRecommendations }         from '@/utils/fetchSpotifyRecommendations';
+import { pickBWTextColour }             from '@/utils/colourStyle';
 import { truncateString }               from '@/utils/stringProcessing';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 
 const searchCategory = ref<string>('Tracks');
 const searchResults = ref<any>();
@@ -17,13 +25,6 @@ const searchFocused = ref<boolean>(false);
 const searchDisabled = ref<boolean>(false);
 
 const searchElement = ref<InstanceType<typeof DiscoverSearch> | null>(null);
-
-// Switch button handling
-const handleUpdateActive = (activeValue: string) => {
-  searchElement.value?.clearSearchQuery();
-  searchCategory.value = activeValue;
-  tags.value.length = 0;
-};
 
 // Tag handling
 const tags = ref<Tag[]>([]);
@@ -76,32 +77,55 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
   const [r, g, b] = rgb.slice(4, -1).split(',').map(Number);
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
+
+// Handling query from landing page
+const route = useRoute();
+const landingTag = ref<Tag>();
+
+onMounted(() => {
+  if (route.query.tag) {
+    try {
+      landingTag.value = JSON.parse(route.query.tag as string);
+      if (landingTag.value) {
+        tags.value.push(landingTag.value);
+      }
+    } catch (e) {
+      console.error('Failed to parse tag from query:', e);
+    }
+  }
+});
 </script>
 
 <template>
-  <div class="discover-root">
+  <div class="discover-mobile">
     <div class="search-container">
       <DiscoverSearch 
         ref="searchElement"
         :placeholder="searchDisabled ? 
                       'Maximum number reached' 
-                      : `Add up to 5 ${searchCategory.toLowerCase()}`"
+                      : `Add up to 5 ${searchCategory}`"
         :search-category="searchCategory"
         :search-disabled="searchDisabled"
         @search-results="(newSearchResults: any) => searchResults = newSearchResults"
         @search-results-loading="(newSearchLoading: boolean) => searchLoading = newSearchLoading"
         @search-focused="(newSearchFocused: boolean) => searchFocused = newSearchFocused"
-        style="width: 100%; margin-left: 40px;"
+        style="width: 80%; margin-right: 10px;"
       />
-      <SwitchButton 
-        ref="switchElement"
-        :left="'Tracks'" 
-        :right="'Artists'" 
-        class="search-category-button" 
-        @update-active-value="handleUpdateActive"
-      />
+
+      <div class="drawer-container">
+        <Drawer class="drawer-parent">
+          <DrawerTrigger>
+            <img src="@/assets/list.svg">
+          </DrawerTrigger>
+          <DrawerContent>
+            <div class="drawer-content">
+              <span>Hello!</span>
+            </div>
+          </DrawerContent>
+        </Drawer>
+      </div>
     </div>
-  
+
     <div class="search-results" v-if="searchResults && searchFocused">
       <div class="tracks-results" v-if="searchResults?.tracks">
         <div 
@@ -158,36 +182,40 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
         ></i>
       </div>
     </div>
-
-    <UserFlow class="user-flow-parent" />
-    <RecommendationResults 
-      :recommendation-data="recommendationResults" 
-      :recommendation-data-loading="recommendationDataLoading"
-    />
   </div>
 </template>
 
 <style scoped>
-.discover-root {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
 .search-container {
-  margin-left: 25vw;
-  margin-right: 25vw;
-  padding-top: 3vh;
+  margin-top: 20px;
   display: flex;
   flex-direction: row;
-  gap: 0;
 }
 
+/* Settings drawer */
+.drawer-container {
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.drawer-container img {
+  height: 40px;
+  margin-top: 2px;
+}
+
+.drawer-content {
+  height: 20vh;
+  color: white;
+  filter: brightness(1);
+}
+
+/* Search Results */
 .search-results {
   background-color: white;
-  margin-top: calc(var(--search-element-top) + var(--search-element-height) + 10px);
+  margin-top: calc(var(--search-element-top) - 5px);
   position: absolute;
-  left: calc(var(--search-element-left) + 20px);
+  left: calc(var(--search-element-left));
   width: calc(var(--search-element-width));
 
   border-radius: 1rem;
@@ -262,13 +290,14 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
 
 /* Tag styling */
 .tag-parent {
-  margin-top: 10px;
   display: flex;
   flex-direction: row;
-  margin-left: calc(var(--search-element-left) + 20px);
+  flex-wrap: wrap;
+  margin-left: calc(var(--search-element-left));
 }
 
 .tag-container {
+  margin-top: 10px;
   max-height: 5vh;
   display: flex;
   flex-direction: row;
@@ -306,49 +335,10 @@ const convertRgbToRgba = (rgb: string, opacity: number): string => {
 
 .tag-container i {
   margin-right: 10px;
+  font-size: 1.25rem;
 }
 
 .tag-container i:hover {
   cursor: pointer;
-}
-
-/* User flow styles */
-.user-flow-parent {
-  position: absolute;
-  left: 87%;
-  top: var(--search-element-top);
-  height: var(--search-element-height);
-  align-items: center;
-}
-
-
-@media (max-width: 1300px) {
-  .search-container {
-    margin-top: 3vh;
-    margin-left: 8vw;
-    margin-right: 24vw;
-  }
-
-  .user-flow-parent {
-    left: 81%;
-  }
-
-  .result-title {
-    font-size: .9rem;
-  }
-
-  .result-subtitle {
-    font-size: .65rem;
-  }
-
-  .search-result-card {
-    height: 8vh;
-  }
-}
-
-@media(max-width: 1000px) {
-  .search-container {
-    margin-left: 0;
-  }
 }
 </style>
