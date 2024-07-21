@@ -2,6 +2,7 @@
 import { ref, watch, onMounted }        from 'vue';
 import { useRoute }                     from 'vue-router';
 import DiscoverSearch                   from '@/components/FloatingLabelSearch.vue';
+import RecommendationResults            from '@/components/RecommendationResults.vue'
 import { Tag, createTag }               from '@/types/TagType';
 import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
 import { fetchRecommendations }         from '@/utils/fetchSpotifyRecommendations';
@@ -135,7 +136,7 @@ onMounted(() => {
         >
           <img :src="track.album.images[1]?.url" class="card-img">
           <div class="card-info">
-            <span class="result-title">{{ track.name }}</span>
+            <span class="result-title">{{ truncateString(track.name, 25) }}</span>
             <span class="result-subtitle">
               <i 
                 v-if="track.explicit"
@@ -157,7 +158,7 @@ onMounted(() => {
           <img v-if="artist.images[0]" :src="artist.images[1]?.url" class="card-img">
           <i v-else class="bi bi-person-fill img-alt"></i>
           <div class="card-info">
-            <span class="result-title">{{ truncateString(artist.name, 30) }}</span>
+            <span class="result-title">{{ truncateString(artist.name, 25) }}</span>
             <span class="result-subtitle">{{ artist.genres[0] }}</span>
           </div>
         </div>
@@ -182,12 +183,21 @@ onMounted(() => {
         ></i>
       </div>
     </div>
+
+    <RecommendationResults 
+      :recommendation-data="recommendationResults" 
+      :recommendation-data-loading="recommendationDataLoading"
+    />
   </div>
 </template>
 
 <style scoped>
+.discover-mobile {
+
+}
+
 .search-container {
-  margin-top: 20px;
+  padding-top: 20px;
   display: flex;
   flex-direction: row;
 }

@@ -41,16 +41,6 @@ const albumsSecond = albums.slice(mid);
 
 const albumsSlide = ref<HTMLElement | null>(null);
 
-onMounted(() => {
-  if (albumsSlide.value) {
-    const totalWidth = albumsSlide.value.scrollWidth;
-    const visibleWidth = albumsSlide.value.offsetWidth;
-
-    // Set the CSS variable
-    albumsSlide.value.style.setProperty('--translateX', `${totalWidth + visibleWidth}px`);
-  }
-});
-
 // Redirect to /discover page
 const router = useRouter();
 

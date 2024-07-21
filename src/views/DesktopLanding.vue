@@ -4,6 +4,8 @@ import LandingSearch            from '@/components/FloatingLabelSearch.vue';
 import { getRandomAlbums }      from '@/utils/importImages';
 import { useColourThemeStore }  from '@/stores/colourThemeStore';
 import { truncateString }       from '@/utils/stringProcessing';
+import { useRouter }            from 'vue-router';
+import { Tag, createTag }       from '@/types/TagType';
 
 const landingTitleVisible = ref<boolean>(true);
 
@@ -33,6 +35,18 @@ watch(searchResults, (newSearchResults) => {
 
 // Album slider
 const albums = getRandomAlbums(20);
+
+// Redirect to /discover page
+const router = useRouter();
+
+const navigateToTarget = async (track: any) => {
+  const tag: Tag = await createTag(track);
+
+  router.push({ 
+    path: '/discover',
+    query: { tag: JSON.stringify(tag) }
+  });
+};
 </script>
 
 <template>
@@ -70,7 +84,7 @@ const albums = getRandomAlbums(20);
                 <div 
                   class="search-result-card" 
                   v-for="(track) in searchResults.tracks?.items"
-                  @click="" 
+                  @click="navigateToTarget(track)" 
                 >
                   <img :src="track.album.images[1]?.url" class="card-img">
                   <div class="card-info">
@@ -147,10 +161,6 @@ h1 {
 }
 
 /* ----- Search Results ----- */
-
-.search-results {
-
-}
 
 .fade-enter-active,
 .fade-leave-active {
@@ -273,10 +283,6 @@ h1 {
   border-bottom: 0.4vmin solid white;
   width: 70%;
   top: 0;
-}
-
-.loading-animation {
-  
 }
 
 .top-animation {

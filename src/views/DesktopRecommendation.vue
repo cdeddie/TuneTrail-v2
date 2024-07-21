@@ -4,7 +4,7 @@ import { useRoute }                     from 'vue-router';
 import DiscoverSearch                   from '@/components/FloatingLabelSearch.vue';
 import SwitchButton                     from '@/components/SwitchButton.vue';
 import UserFlow                         from '@/components/UserFlow.vue';
-import RecommendationResults            from '@/components/RecommendationResults.vue'
+import RecommendationResults            from '@/components/RecommendationResults.vue';
 import { Tag, createTag }               from '@/types/TagType';
 import { pickBWTextColour }             from '@/utils/colourStyle';
 import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
@@ -205,7 +205,7 @@ onMounted(() => {
   background-color: white;
   margin-top: calc(var(--search-element-top) + var(--search-element-height) + 10px);
   position: absolute;
-  left: calc(var(--search-element-left) + 20px);
+  left: calc(var(--search-element-left));
   width: calc(var(--search-element-width));
 
   border-radius: 1rem;
@@ -280,13 +280,15 @@ onMounted(() => {
 
 /* Tag styling */
 .tag-parent {
-  margin-top: 10px;
   display: flex;
   flex-direction: row;
-  margin-left: calc(var(--search-element-left) + 20px);
+  margin-left: calc(var(--search-element-left));
+  max-width: 50vw;
+  flex-wrap: wrap;
 }
 
 .tag-container {
+  margin-top: 10px;
   max-height: 5vh;
   display: flex;
   flex-direction: row;
