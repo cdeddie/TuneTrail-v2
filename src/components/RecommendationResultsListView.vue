@@ -78,6 +78,11 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.list-view {
+  display: flex;
+  flex-direction: column;
+}
+
 .skeleton {
   background-color: rgba(168, 168, 168, 0.55);
 }

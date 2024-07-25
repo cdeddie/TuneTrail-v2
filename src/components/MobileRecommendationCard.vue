@@ -119,6 +119,14 @@ const onEnded = () => {
           </button>
       </div>
     </div>
+    
+    <div class="preview-error" v-if="track?.preview_url === null">
+      <div>
+        <i class="bi bi-info-circle"></i>
+        Spotify does not provide all recommended tracks with a preview audio clip.
+        Login with your Spotify account to fix.
+      </div>
+    </div>
   </div>
 </template>
 
@@ -240,5 +248,12 @@ button.disabled i {
 
 .controls button:nth-child(2):is(:hover, :focus-visible) {
   transform: scale(1.25);
+}
+
+.preview-error {
+  text-align: center;
+  padding: 0 15px 10px 15px;
+  font-size: .55rem;
+  color: rgb(215, 215, 215);
 }
 </style>

@@ -60,7 +60,7 @@ const setActive = (value: 'High' | 'Low') => {
 }
 
 button {
-  padding: 2.5px 2vw;
+  padding: 2.5px 2.2vw;
   border: none;
   background-color: transparent;
   color: white;
@@ -81,5 +81,12 @@ button.active::before {
   background-color: rgba(170, 170, 170, 0.606);
   border-radius: .2rem;
   z-index: -1;
+}
+
+@media (max-width: 600px) {
+  button {
+    padding: 2.5px 17vw;
+    height: 3.25vh;
+  }
 }
 </style>

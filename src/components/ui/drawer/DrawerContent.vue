@@ -34,7 +34,7 @@ const forwarded = useForwardPropsEmits(props, emits)
 }
 
 .border {
-  border-color: var(--secondary-colour) !important;
+  border-color: var(--primary-colour) !important;
   border-width: 2px !important;
 }
 </style>

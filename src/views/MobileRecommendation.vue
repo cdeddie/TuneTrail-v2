@@ -2,7 +2,8 @@
 import { ref, watch, onMounted }        from 'vue';
 import { useRoute }                     from 'vue-router';
 import DiscoverSearch                   from '@/components/FloatingLabelSearch.vue';
-import RecommendationResults            from '@/components/RecommendationResults.vue'
+import RecommendationResults            from '@/components/RecommendationResults.vue';
+import DrawerSettings                   from '@/components/DrawerSettings.vue'; 
 import { Tag, createTag }               from '@/types/TagType';
 import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
 import { fetchRecommendations }         from '@/utils/fetchSpotifyRecommendations';
@@ -119,9 +120,7 @@ onMounted(() => {
             <img src="@/assets/list.svg">
           </DrawerTrigger>
           <DrawerContent>
-            <div class="drawer-content">
-              <span>Hello!</span>
-            </div>
+            <DrawerSettings />
           </DrawerContent>
         </Drawer>
       </div>
@@ -212,12 +211,6 @@ onMounted(() => {
 .drawer-container img {
   height: 40px;
   margin-top: 2px;
-}
-
-.drawer-content {
-  height: 20vh;
-  color: white;
-  filter: brightness(1);
 }
 
 /* Search Results */
