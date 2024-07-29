@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { getProminentColour } from '@/types/TagType';
+import { ref, onMounted, computed }   from 'vue';
+import { getProminentColour }         from '@/types/TagType';
+import { truncateString }             from '@/utils/stringProcessing';
 
 const props = defineProps<{
   track: any,
@@ -66,7 +67,7 @@ const onEnded = () => {
     <div class="album-img"><img :src="track?.album.images[0].url"></div>
 
     <div class="music-player">
-      <h1><a :href="track?.uri">{{ track?.name }}</a></h1>
+      <h1><a :href="track?.uri">{{ truncateString(track?.name, 40) }}</a></h1>
       <p>
         <span v-for="(artist, index) in track?.artists" :key="artist.id">
           <a :href="artist.uri">{{ artist.name }}</a>
@@ -209,7 +210,7 @@ const onEnded = () => {
 .controls {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .controls .play-pause-btn {

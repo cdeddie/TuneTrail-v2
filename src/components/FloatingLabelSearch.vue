@@ -143,7 +143,7 @@ watch(() => themeStore.activeThemeId, () => {
   z-index: 5;
   min-height: 5vh;
   position: relative;
-  margin-left: 20px;
+  margin-left: 4vw;
   margin-right: 20px;
   display: flex;
   flex-direction: row;

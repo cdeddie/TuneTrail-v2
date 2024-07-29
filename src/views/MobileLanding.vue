@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted }  from 'vue';
+import { ref, watch }             from 'vue';
 import LandingSearch              from '@/components/FloatingLabelSearch.vue';
 import { useColourThemeStore }    from '@/stores/colourThemeStore';
 import { truncateString }         from '@/utils/stringProcessing';
@@ -219,7 +219,7 @@ h1 {
 
 .result-title {
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 3.8vw;
 }
 
 .result-subtitle {

@@ -90,7 +90,7 @@ const logoutAndRefresh = async () => {
     </div>
   </div>
 
-  <hr style="margin: 5px calc(2 * var(--button-element-left)) 10px calc(2 * var(--button-element-left)); border: 2px solid var(--primary-colour);">
+  <hr style="margin: 5px calc(2 * var(--button-element-left)) 10px calc(2 * var(--button-element-left)); border: 1.5px solid var(--primary-colour);">
 
   <div class="auth-drawer">
     <div class="button-wrapper">
@@ -132,6 +132,7 @@ const logoutAndRefresh = async () => {
 
 .filter-switch-button {
   background-color: var(--primary-colour);
+  transition: 1s background-color ease;
 }
 
 /* Colour settings */
@@ -171,7 +172,7 @@ const logoutAndRefresh = async () => {
 
 .theme-circle.active {
   transform: scale(1.2);
-  border: 1.5px solid rgb(0, 0, 0);
+  border: 1.5px solid rgba(105, 105, 105, 0.532);
 }
 
 .theme-half {
@@ -204,12 +205,14 @@ const logoutAndRefresh = async () => {
   width: stretch;
   padding: 5px 15px;
   transition: transform 0.3s ease, filter 0.3s ease;
+  color: var(--primary-colour);
 }
 
 .button-wrapper span {
   margin-left: 7px;
   display: inline-block;
   white-space: nowrap;
+  font-weight: 700;
 }
 
 .button-wrapper:hover {

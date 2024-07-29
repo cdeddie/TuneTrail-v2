@@ -164,22 +164,24 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="tag-parent">
-      <div 
-        v-for="(tag) in tags" 
-        :key="tag.id" 
-        class="tag-container" 
-        :style="{ backgroundColor: convertRgbToRgba(tag.colour, 0.5) }"
-      >
-        <img v-if="tag.image != ''" :src="tag.image">
-        <span v-if="tag.image != ''" :style="{ color: pickBWTextColour(tag.colour) }">{{ tag.name }}</span>
-        <i v-else class="bi bi-person-fill img-alt"></i>
-        <i 
-          class="fa fa-times-circle"
-          aria-hidden="true" 
-          @click="removeTag(tag)"
-          :style="{ color: pickBWTextColour(tag.colour) }"
-        ></i>
+    <div class="tags-scroll-container">
+      <div class="tag-parent">
+        <div 
+          v-for="(tag) in tags" 
+          :key="tag.id" 
+          class="tag-container" 
+          :style="{ backgroundColor: convertRgbToRgba(tag.colour, 0.5) }"
+        >
+          <img v-if="tag.image != ''" :src="tag.image">
+          <span v-if="tag.image != ''" :style="{ color: pickBWTextColour(tag.colour) }">{{ tag.name }}</span>
+          <i v-else class="bi bi-person-fill img-alt"></i>
+          <i 
+            class="fa fa-times-circle"
+            aria-hidden="true" 
+            @click="removeTag(tag)"
+            :style="{ color: pickBWTextColour(tag.colour) }"
+          ></i>
+        </div>
       </div>
     </div>
 
@@ -216,10 +218,10 @@ onMounted(() => {
 /* Search Results */
 .search-results {
   background-color: white;
-  margin-top: calc(var(--search-element-top) - 5px);
+  margin-top: 8px;
   position: absolute;
-  left: calc(var(--search-element-left));
-  width: calc(var(--search-element-width));
+  left: calc(var(--search-element-left) - 5px);
+  width: calc(var(--search-element-width) + 5px);
 
   border-radius: 1rem;
   z-index: 1111;
@@ -266,7 +268,7 @@ onMounted(() => {
 
 .card-img {
   height: 4.5vh;
-  margin-left: 25px; 
+  margin-left: 15px; 
 }
 
 .img-alt {
@@ -292,22 +294,30 @@ onMounted(() => {
 }
 
 /* Tag styling */
+.tags-scroll-container {
+  width: 100vw;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
 .tag-parent {
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  margin-left: calc(var(--search-element-left));
+  margin-left: 4vw;
+  margin-right: 4vw;
 }
 
 .tag-container {
-  margin-top: 10px;
+  min-width: fit-content;
   max-height: 5vh;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   border-radius: .5rem;
-  margin-right: 12px;
+  margin-top: 10px;
+  margin-right: 10px;
 
   animation: popout 1s ease;
   -webkit-animation: popout 1s ease;
