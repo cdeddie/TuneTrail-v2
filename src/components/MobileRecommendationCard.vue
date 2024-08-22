@@ -2,7 +2,6 @@
 import { ref, onMounted, computed, watch }  from 'vue';
 import { getProminentColour }               from '@/types/TagType';
 import { truncateString }                   from '@/utils/stringProcessing';
-import { darkOrLightFont }                  from '@/utils/colourStyle';
 
 const props = defineProps<{
   track: any,
