@@ -9,7 +9,7 @@ export const fetchSearch = async(query: string, searchCategory: string) => {
   try {
     const sanitizedQuery = encodeURIComponent(query?.toLowerCase());
     // TODO: Handle user login (future). Also value needs to be between Songs and Artists
-    const url = `${baseUrl}/search?query=${sanitizedQuery}&type=${searchCategory?.toLowerCase().slice(0, -1)}`;
+    const url = `${baseUrl}/api/search?query=${sanitizedQuery}&type=${searchCategory?.toLowerCase().slice(0, -1)}`;
     const response = await fetch(url, { credentials: 'include' });
 
     if (!response.ok) {
