@@ -39,7 +39,7 @@ const authStore = useAuthStore();
 const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BASE_URL;
 
 const redirectToLogin = () => {
-  window.location.replace(`${baseUrl}/auth/login`);
+  window.location.replace(`${baseUrl}/api/auth/login`);
 };
 
 const logoutAndRefresh = async () => {

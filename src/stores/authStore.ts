@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
 
   const checkLoginStatus = async () => {
     try {
-      const url = `${baseUrl}/auth/status`;
+      const url = `${baseUrl}/api/auth/status`;
       const response = await fetch(url, { credentials: 'include' });
       const loginData = await response.json();
       isLoggedIn.value = loginData.isLoggedIn;
