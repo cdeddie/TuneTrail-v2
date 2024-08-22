@@ -43,7 +43,7 @@ const initializeSwiper = (): void => {
       stretch: 0,
       depth: 50,
       modifier: 1,
-      slideShadows: true,
+      slideShadows: false,
     },
     navigation: {
       nextEl: '.forward',

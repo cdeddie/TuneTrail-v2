@@ -3,7 +3,7 @@ import { RecommendationFilter } from '@/types/RecommendationType';
 
 const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BASE_URL;
 
-export const fetchRecommendations = async (tagObject: Tag[], recObject: RecommendationFilter | undefined) => {
+export const fetchRecommendations = async (tagObject: Tag[], recObject: RecommendationFilter | undefined): Promise<{ data: any; warning: boolean; } | undefined> => {
 
   if (tagObject.length === 0) return;
 
@@ -25,12 +25,14 @@ export const fetchRecommendations = async (tagObject: Tag[], recObject: Recommen
 
     const response = await fetch(url, { credentials: 'include' });
 
+    const warning = response.headers.get('X-Rate-Limit-Warning') === 'True';
+
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
 
-    const data = await response.json();
-    return data
+    const data: any = await response.json();
+    return { data, warning };
   } catch (error) {
     console.error('Error fetching recommendations', error);
   }

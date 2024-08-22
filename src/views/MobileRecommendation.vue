@@ -9,6 +9,7 @@ import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore
 import { fetchRecommendations }         from '@/utils/fetchSpotifyRecommendations';
 import { pickBWTextColour }             from '@/utils/colourStyle';
 import { truncateString }               from '@/utils/stringProcessing';
+import { VisuallyHidden }               from 'radix-vue';
 import {
   Drawer,
   DrawerClose,
@@ -59,7 +60,11 @@ const recommendationDataLoading = ref<boolean>(false);
 watch(() => [...tags.value], async (newTags) => {
   recommendationDataLoading.value = true;
   try {
-    recommendationResults.value = await fetchRecommendations(newTags, filterState);
+    const result = await fetchRecommendations(newTags, filterState);
+    if (result) {
+      const { data, warning } = result;
+      recommendationResults.value = data;
+    }
   } finally {
     recommendationDataLoading.value = false;
   }
@@ -68,7 +73,11 @@ watch(() => [...tags.value], async (newTags) => {
 watch(filterState, async () => {
   recommendationDataLoading.value = true;
   try {
-    recommendationResults.value = await fetchRecommendations(tags.value, filterState);
+    const result = await fetchRecommendations(tags.value, filterState);
+    if (result) {
+      const { data, warning } = result;
+      recommendationResults.value = data;
+    }
   } finally {
     recommendationDataLoading.value = false;
   }
@@ -115,11 +124,17 @@ onMounted(() => {
       />
 
       <div class="drawer-container">
-        <Drawer class="drawer-parent">
+        <Drawer>
           <DrawerTrigger>
             <img src="@/assets/list.svg">
           </DrawerTrigger>
           <DrawerContent>
+            <VisuallyHidden>
+              <DrawerHeader>
+                <DrawerTitle />
+                <DrawerDescription>Settings</DrawerDescription>
+              </DrawerHeader>
+            </VisuallyHidden>
             <DrawerSettings />
           </DrawerContent>
         </Drawer>

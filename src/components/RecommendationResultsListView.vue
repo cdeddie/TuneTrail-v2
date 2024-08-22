@@ -51,6 +51,7 @@ onUnmounted(() => {
         <Skeleton class="skeleton skeleton-subtitle"/>
       </div>
     </div>
+    
     <div class="results-loaded" v-else-if="recommendationData">
       <a
         class="result-card" 

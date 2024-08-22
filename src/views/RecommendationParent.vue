@@ -5,9 +5,11 @@ import MobileRecommendation       from '@/views/MobileRecommendation.vue';
 import DesktopRecommendation      from '@/views/DesktopRecommendation.vue';
 
 const deviceStore = useDeviceStore();
+
 const currentComponent = shallowRef(deviceStore.isMobile ? MobileRecommendation : DesktopRecommendation);
 
 watch(() => deviceStore.isMobile, (newValue) => {
+  console.log(newValue);
   currentComponent.value = newValue ? MobileRecommendation : DesktopRecommendation;
 });
 </script>

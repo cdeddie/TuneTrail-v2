@@ -57,7 +57,11 @@ const recommendationDataLoading = ref<boolean>(false);
 watch(() => [...tags.value], async (newTags) => {
   recommendationDataLoading.value = true;
   try {
-    recommendationResults.value = await fetchRecommendations(newTags, filterState);
+    const result = await fetchRecommendations(newTags, filterState);
+    if (result) {
+      const { data, warning } = result;
+      recommendationResults.value = data;
+    }
   } finally {
     recommendationDataLoading.value = false;
   }
@@ -66,7 +70,11 @@ watch(() => [...tags.value], async (newTags) => {
 watch(filterState, async () => {
   recommendationDataLoading.value = true;
   try {
-    recommendationResults.value = await fetchRecommendations(tags.value, filterState);
+    const result = await fetchRecommendations(tags.value, filterState);
+    if (result) {
+      const { data, warning } = result;
+      recommendationResults.value = data;
+    }
   } finally {
     recommendationDataLoading.value = false;
   }

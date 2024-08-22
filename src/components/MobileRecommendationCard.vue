@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, computed }   from 'vue';
-import { getProminentColour }         from '@/types/TagType';
-import { truncateString }             from '@/utils/stringProcessing';
+import { ref, onMounted, computed, watch }  from 'vue';
+import { getProminentColour }               from '@/types/TagType';
+import { truncateString }                   from '@/utils/stringProcessing';
+import { darkOrLightFont }                  from '@/utils/colourStyle';
 
 const props = defineProps<{
   track: any,
@@ -16,6 +17,11 @@ const trackColour = ref<string>('');
 
 onMounted(async () => {
   trackColour.value = await getProminentColour(props.track.album.images[0].url);
+});
+
+watch(async () => props.track, async (newTrack) => {
+  const resolved = await newTrack;
+  trackColour.value = await getProminentColour(resolved.album.images[0].url);
 });
 
 // Preview audio tag play logic
