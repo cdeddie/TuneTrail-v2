@@ -11,7 +11,7 @@ const redirectToLogin = () => {
 
 const logoutAndRefresh = async () => {
   try {
-    const response = await fetch('http://localhost:3443/auth/logout', {
+    const response = await fetch('http://localhost:3443/api/auth/logout', {
       method: 'GET',
       credentials: 'include',
     });
