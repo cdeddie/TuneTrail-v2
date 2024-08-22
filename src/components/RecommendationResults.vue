@@ -168,9 +168,6 @@ button:hover {
 }
 
 /* ----- Mobile view ----- */
-.mobile-results {
-  
-}
 
 .mobile-results-list {
   margin: 0 4vw;

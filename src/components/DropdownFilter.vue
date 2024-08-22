@@ -18,7 +18,7 @@ const capitalizeFirstLetter = (key: keyof RecommendationFilter): string => {
   <div class="filter-dropdown-root">
     <div class="background">
       <span style="font-size: 1.4rem;">Filters</span>
-      <div v-for="(value, key) in filterState" :key="key" class="filter-item">
+      <div v-for="(_value, key) in filterState" :key="key" class="filter-item">
         <div style="color: white; margin-top: 6px;">{{ capitalizeFirstLetter(key) }}</div>
         <FilterSwitchButton
           :label="key"

@@ -63,7 +63,7 @@ const logoutAndRefresh = async () => {
 
 <template>
   <div class="filters">
-    <div v-for="(value, key) in filterState" :key="key" class="filter-item">
+    <div v-for="(_value, key) in filterState" :key="key" class="filter-item">
       <div class="filter-label">{{ capitalizeFirstLetter(key) }}</div>
       <div class="filter-switch-wrapper" ref="buttonElement">
         <FilterSwitchButton

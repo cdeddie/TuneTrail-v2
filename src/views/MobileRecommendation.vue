@@ -12,10 +12,8 @@ import { truncateString }               from '@/utils/stringProcessing';
 import { VisuallyHidden }               from 'radix-vue';
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -62,7 +60,7 @@ watch(() => [...tags.value], async (newTags) => {
   try {
     const result = await fetchRecommendations(newTags, filterState);
     if (result) {
-      const { data, warning } = result;
+      const { data } = result;
       recommendationResults.value = data;
     }
   } finally {
@@ -75,7 +73,7 @@ watch(filterState, async () => {
   try {
     const result = await fetchRecommendations(tags.value, filterState);
     if (result) {
-      const { data, warning } = result;
+      const { data } = result;
       recommendationResults.value = data;
     }
   } finally {
@@ -208,10 +206,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.discover-mobile {
-
-}
-
 .search-container {
   padding-top: 20px;
   display: flex;
