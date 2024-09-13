@@ -208,7 +208,7 @@ watch(() => themeStore.activeThemeId, () => {
   .input-group input:focus,
   .input-group input:valid {
     padding-left: 1rem;
-    font-size: 1.1rem;
+    font-size: 16px;
   }
 }
 
@@ -220,7 +220,7 @@ watch(() => themeStore.activeThemeId, () => {
   .input-group input:focus,
   .input-group input:valid {
     padding-left: 1rem;
-    font-size: .9rem;
+    font-size: 16px;
   }
 }
 

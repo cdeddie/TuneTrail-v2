@@ -257,7 +257,7 @@ h1 {
 
 .animated-title {
   color: white;
-  font-family: Roboto, Arial, sans-serif;
+  font-family: Arial, sans-serif;
   height: 90vmin;
   top: 50%;
 }
