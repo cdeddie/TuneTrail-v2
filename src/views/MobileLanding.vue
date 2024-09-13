@@ -230,7 +230,7 @@ h1 {
 /* ----- Hero text ----- */
 .hero-text {
   margin: 20px;
-  font-family: 'Roboto', Arial, sans-serif;
+  font-family: 'Archivo Black', Arial, sans-serif;
   font-weight: 900;
 }
 
