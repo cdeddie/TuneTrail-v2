@@ -361,4 +361,9 @@ h1 {
   }
 }
 
+@media(max-width: 1650px) {
+  .search-result-card {
+    height: 8.5vh;
+  }
+}
 </style>

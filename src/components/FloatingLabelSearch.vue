@@ -200,6 +200,19 @@ watch(() => themeStore.activeThemeId, () => {
   font-size: 1.4rem;
 }
 
+/* Responsiveness */
+@media(max-width: 1450px) {
+  .input-group input+label {
+    font-size: 1.2rem;
+  }
+
+  .input-group input:focus,
+  .input-group input:valid {
+    padding-left: 1rem;
+    font-size: 1.2rem;
+  }
+}
+
 @media(max-width: 1050px) {
   .input-group input+label {
     font-size: 1rem;
