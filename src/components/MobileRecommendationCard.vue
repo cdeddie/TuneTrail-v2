@@ -65,6 +65,16 @@ const onEnded = () => {
   currentTime.value = TOTAL_DURATION;
   isPlaying.value = false;
 };
+
+const playNextTrack = () => {
+  if (isPlaying.value) playPause();
+  emits('play-next');
+};
+
+const playPreviousTrack = () => {
+  if (isPlaying.value) playPause();
+  emits('play-prev');
+};
 </script>
 
 <template>
@@ -100,7 +110,7 @@ const onEnded = () => {
       />
 
       <div class="controls">
-        <button class="backward" @click="emits('play-prev')">
+        <button class="backward" @click="playPreviousTrack">
           <img src="@/assets/backward.svg">
         </button>
 
@@ -120,7 +130,7 @@ const onEnded = () => {
             ></i>
           </button>
 
-          <button class="forward" @click="emits('play-next')">
+          <button class="forward" @click="playNextTrack">
             <img src="@/assets/forward.svg">
           </button>
       </div>

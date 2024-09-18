@@ -10,6 +10,8 @@ const props = defineProps<{
   recommendationData: any,
 }>();
 
+const currentTrackIndex = ref<number>(0);
+
 const tracks = computed(() => {
   if (props.recommendationData && props.recommendationData.tracks) {
     return props.recommendationData.tracks;
@@ -17,9 +19,6 @@ const tracks = computed(() => {
     return [];
   }
 });
-
-const currentTrackIndex = ref<number>(0);
-
 
 // Core swiper logic
 let swiper: Swiper;
@@ -66,12 +65,12 @@ watch(() => props.recommendationData, async (newValue) => {
   }
 });
 
-const swiperRight = () => {
+const playNextTrack = () => {
   currentTrackIndex.value = (currentTrackIndex.value + 1) % tracks.value.length;
   swiper.slideNext();
 };
 
-const swiperLeft = () => {
+const playPreviousTrack = () => {
   currentTrackIndex.value = (currentTrackIndex.value - 1 + tracks.value.length) % tracks.value.length;
   swiper.slidePrev();
 };
@@ -85,8 +84,8 @@ const swiperLeft = () => {
           v-for="(track) in tracks"
           :track="track" 
           class="swiper-slide card"
-          @play-next="swiperRight"
-          @play-prev="swiperLeft"
+          @play-next="playNextTrack"
+          @play-prev="playPreviousTrack"
         />
       </div>
     </div>
