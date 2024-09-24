@@ -10,6 +10,7 @@ import { pickBWTextColour }             from '@/utils/colourStyle';
 import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
 import { fetchRecommendations }         from '@/utils/fetchSpotifyRecommendations';
 import { truncateString }               from '@/utils/stringProcessing';
+import { Skeleton }                     from '@/components/ui/skeleton';
 
 const searchCategory = ref<string>('Tracks');
 const searchResults = ref<any>();
@@ -17,7 +18,20 @@ const searchLoading = ref<boolean>(false);
 const searchFocused = ref<boolean>(false);
 const searchDisabled = ref<boolean>(false);
 
+const albumImageLoaded = ref<boolean[]>([]);
+const artistImageLoaded = ref<boolean[]>([]);
+
 const searchElement = ref<InstanceType<typeof DiscoverSearch> | null>(null);
+
+// Search handling
+const processSearchResults = () => {
+  if (searchResults.value.tracks.items) {
+    albumImageLoaded.value = new Array(searchResults.value.tracks.items.length).fill(false);
+  }
+  if (searchResults.value.artists.items) {
+    artistImageLoaded.value = new Array(searchResults.value.artists.items.length).fill(false);
+  }
+};
 
 // Switch button handling
 const handleUpdateActive = (activeValue: string) => {
@@ -114,7 +128,7 @@ onMounted(() => {
                       : `Add up to 5 ${searchCategory.toLowerCase()}`"
         :search-category="searchCategory"
         :search-disabled="searchDisabled"
-        @search-results="(newSearchResults: any) => searchResults = newSearchResults"
+        @search-results="(newSearchResults: any) => { searchResults = newSearchResults; processSearchResults(); }"
         @search-results-loading="(newSearchLoading: boolean) => searchLoading = newSearchLoading"
         @search-focused="(newSearchFocused: boolean) => searchFocused = newSearchFocused"
         style="width: 100%; margin-left: 40px;"
@@ -129,38 +143,61 @@ onMounted(() => {
     </div>
   
     <div class="search-results" v-if="searchResults && searchFocused">
-      <div class="tracks-results" v-if="searchResults?.tracks">
-        <div 
-          class="search-result-card" 
-          v-for="(track) in searchResults.tracks?.items"
-          @click="addTag(track)"
-        >
-          <img :src="track.album.images[1]?.url" class="card-img">
-          <div class="card-info">
-            <span class="result-title">{{ track.name }}</span>
-            <span class="result-subtitle">
-              <i 
-                v-if="track.explicit"
-                class="bi bi-explicit-fill"
-                style="margin-right: 2px;"
-              ></i>
-              {{ truncateString(track.artists[0].name, 30) }}
-            </span>
+      <div v-if="searchLoading">
+        <Skeleton class="search-skeleton"></Skeleton>
+        <Skeleton class="search-skeleton"></Skeleton>
+        <Skeleton class="search-skeleton"></Skeleton>
+        <Skeleton class="search-skeleton"></Skeleton>
+        <Skeleton class="search-skeleton"></Skeleton>
+      </div>
+      <div v-else class="finished-loading">
+        <div class="tracks-results" v-if="searchResults?.tracks">
+          <div 
+            class="search-result-card" 
+            v-for="(track, index) in searchResults.tracks?.items"
+            :key="track.id"
+            @click="addTag(track)"
+          >
+            <div class="img-placeholder" v-show="!albumImageLoaded[index]"></div>
+            <img 
+              :src="track.album.images[1]?.url" 
+              class="card-img"
+              @load="albumImageLoaded[index] = true"
+              v-show="albumImageLoaded[index]"
+            >
+            <div class="card-info">
+              <span class="result-title">{{ track.name }}</span>
+              <span class="result-subtitle">
+                <i 
+                  v-if="track.explicit"
+                  class="bi bi-explicit-fill"
+                  style="margin-right: 2px;"
+                ></i>
+                {{ truncateString(track.artists[0].name, 30) }}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="artists-results" v-else-if="searchResults?.artists">
-        <div 
-          class="search-result-card" 
-          v-for="(artist) in searchResults.artists?.items"
-          @click="addTag(artist)"
-        >
-          <img v-if="artist.images[0]" :src="artist.images[1]?.url" class="card-img">
-          <i v-else class="bi bi-person-fill img-alt"></i>
-          <div class="card-info">
-            <span class="result-title">{{ truncateString(artist.name, 30) }}</span>
-            <span class="result-subtitle">{{ artist.genres[0] }}</span>
+        <div class="artists-results" v-else-if="searchResults?.artists">
+          <div 
+            class="search-result-card" 
+            v-for="(artist, index) in searchResults.artists?.items"
+            @click="addTag(artist)"
+          >
+            <div class="img-placeholder" v-show="!artistImageLoaded[index]"></div>
+            <img 
+              v-if="artist.images[0]" 
+              :src="artist.images[1]?.url" 
+              class="card-img"
+              @load="artistImageLoaded[index] = true"
+              v-show="artistImageLoaded[index]"
+            >
+            <i v-else class="bi bi-person-fill img-alt"></i>
+            <div class="card-info">
+              <span class="result-title">{{ truncateString(artist.name, 30) }}</span>
+              <span class="result-subtitle">{{ artist.genres[0] }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -269,6 +306,13 @@ onMounted(() => {
   margin-left: 25px;
 }
 
+.img-placeholder {
+  height: 4.5vh;
+  width: 4.5vh;
+  background-color: #D9D9D9;
+  margin-left: 25px;
+}
+
 .card-info {
   display: flex;
   flex-direction: column;
@@ -349,6 +393,32 @@ onMounted(() => {
   align-items: center;
 }
 
+/* Skeleton styles */
+.search-skeleton {
+  height: 7.5vh;
+  display: flex;
+  flex-direction: row;
+  
+  padding: 5px 10px;
+  align-items: center;
+  background-color: #D9D9D9;
+  background-clip: content-box;
+  border-radius: 1.35rem;
+}
+
+.search-skeleton:first-child {
+  padding-top: 10px;
+}
+
+.search-skeleton:last-child {
+  padding-bottom: 10px;
+}
+
+@media(max-width: 1000px) {
+  .search-container {
+    margin-left: 0;
+  }
+}
 
 @media (max-width: 1300px) {
   .search-container {
@@ -372,11 +442,28 @@ onMounted(() => {
   .search-result-card {
     height: 8vh;
   }
+
+  .search-skeleton {
+    height: 8vh;
+  }
 }
 
-@media(max-width: 1000px) {
-  .search-container {
-    margin-left: 0;
+@media (max-width: 1500px) {
+  .search-result-card {
+    height: 9vh;
+  }
+
+  .search-skeleton {
+    height: 9vh;
+  }
+
+  .card-img {
+    height: 5.5vh;
+  }
+
+  .img-placeholder {
+    height: 5.5vh;
+    width: 5.5vh;
   }
 }
 </style>

@@ -9,9 +9,12 @@ import {
 import FilterDropdown     from './DropdownFilter.vue';
 import SettingsDropdown   from './DropdownSettings.vue';
 import AuthDropdown       from './DropdownAuth.vue';
+import { useAuthStore }   from '@/stores/authStore';
 
 // The logic for this component is contained within the child components. 
 // This component simply provides a frontend for the user flow portion
+
+const authStore = useAuthStore();
 
 const activeDropdown = ref<string | null>(null);
 const dropdownRefs = ref<{ [key: string]: HTMLElement | null }>({
@@ -80,7 +83,13 @@ const setDropdownRef = (el: Element | ComponentPublicInstance | null, item: stri
         :class="{ active: activeDropdown === item }"
         @click.stop="toggleDropdown(item)"
       >
-        <i :class="`bi bi-${item === 'profile' ? 'person' : item === 'settings' ? 'gear-wide-connected' : 'funnel'}`"></i>
+        <!-- TODO: Implement user details session on backend. Maybe do custom type for json? -->
+        <template v-if="item === 'profile' && false">
+          <img :src="authStore.userDetails.images?.url" class="profile-image" alt="User Profile Image" />
+        </template>
+        <template v-else>
+          <i :class="`bi bi-${item === 'settings' ? 'gear-wide-connected' : item === 'filters' ? 'funnel' : 'person'}`"></i>
+        </template>
       </div>
       <transition name="fade">
         <div v-if="activeDropdown === item" class="dropdown" :ref="el => setDropdownRef(el, item)">
