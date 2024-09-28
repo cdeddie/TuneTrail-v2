@@ -1,12 +1,13 @@
-import App from './App.vue';
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
+import App              from './App.vue';
+import { createApp }    from 'vue';
+import { createPinia }  from 'pinia';
 import { useAuthStore } from '@/stores/authStore';
 import './style.css';
 import './assets/index.css';
+
 import { createWebHistory, createRouter } from 'vue-router';
-import LandingParent from '@/views/LandingParent.vue'
-import RecommendationParent from '@/views/RecommendationParent.vue';    
+import LandingParent                      from '@/views/LandingParent.vue'
+import DiscoverParent                     from '@/views/DiscoverParent.vue';
 
 async function initializeApp() {
   const app = createApp(App);
@@ -16,7 +17,7 @@ async function initializeApp() {
 
   const routes = [
     { path: '/', name: 'home', component: LandingParent },
-    { path: '/discover', name: 'discover', component: RecommendationParent }
+    { path: '/discover', name: 'discover', component: DiscoverParent }
   ];
 
   const router = createRouter({

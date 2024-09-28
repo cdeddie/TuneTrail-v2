@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { shallowRef, watch }      from 'vue';
 import { useDeviceStore }         from '@/stores/deviceStore';
-import MobileRecommendation       from '@/views/MobileRecommendation.vue';
-import DesktopRecommendation      from '@/views/DesktopRecommendation.vue';
+import MobileRecommendation       from '@/views/MobileDiscover.vue';
+import DesktopRecommendation      from '@/views/DesktopDiscover.vue';
 
 const deviceStore = useDeviceStore();
 

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref }                                from 'vue';
 import { useDeviceStore }                     from '@/stores/deviceStore';
-import RecommendationResultsListView          from './RecommendationResultsListView.vue';
-import RecommendationResultsCardView          from './RecommendationResultsCardView.vue';
-import MobileRecommendationResultsCardView    from './MobileRecommendationResultsCardView.vue';
+import RecommendationResultsListView          from './DiscoverResultsListView.vue';
+import RecommendationResultsCardView          from './DiscoverResultsCardView.vue';
+import MobileRecommendationResultsCardView    from './MobileDiscoverResultsCardView.vue';
 
 defineProps<{
   recommendationData: any,

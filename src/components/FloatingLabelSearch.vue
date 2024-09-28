@@ -98,11 +98,12 @@ onBeforeUnmount(() => {
 // Colour theme setting
 const themeStore = useColourThemeStore();
 
-const backgroundColor = computed(() => {
+// If the prop exists, return it otherwise return primary colour of current theme
+const backgroundColour = computed(() => {
   return props.backgroundColour ?? themeStore.getPrimaryColour();
 });
 
-document.documentElement.style.setProperty('--search-background-colour', backgroundColor.value);
+document.documentElement.style.setProperty('--search-background-colour', backgroundColour.value);
 
 watch(() => themeStore.activeThemeId, () => {
   if (!props.backgroundColour) {

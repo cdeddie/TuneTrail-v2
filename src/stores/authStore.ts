@@ -12,7 +12,7 @@ export const useAuthStore = defineStore('AuthStore', () => {
       const url = `${baseUrl}/api/auth/status`;
       const response = await fetch(url, { credentials: 'include' });
       const loginData = await response.json();
-      userDetails.value = loginData;
+      userDetails.value = loginData.session.spotify_info;
       isLoggedIn.value = loginData.isLoggedIn;
     } catch (error) {
       console.error('Failed to check login status:', error);

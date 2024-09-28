@@ -83,9 +83,8 @@ const setDropdownRef = (el: Element | ComponentPublicInstance | null, item: stri
         :class="{ active: activeDropdown === item }"
         @click.stop="toggleDropdown(item)"
       >
-        <!-- TODO: Implement user details session on backend. Maybe do custom type for json? -->
-        <template v-if="item === 'profile' && false">
-          <img :src="authStore.userDetails.images?.url" class="profile-image" alt="User Profile Image" />
+        <template v-if="item === 'profile' && authStore.isLoggedIn">
+          <img :src="authStore.userDetails.images[0].url" class="profile-image" alt="Prf" />
         </template>
         <template v-else>
           <i :class="`bi bi-${item === 'settings' ? 'gear-wide-connected' : item === 'filters' ? 'funnel' : 'person'}`"></i>
@@ -149,6 +148,12 @@ i {
   transform: translateX(-50%);
   z-index: 10;
   margin-top: 0.5rem;
+}
+
+.profile-image {
+  border-radius: 50%;
+  height: 77.5%;
+  border: 1px solid white;
 }
 
 /* Transition styles */

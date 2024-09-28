@@ -2,7 +2,7 @@
 import { ref, watch, onMounted }        from 'vue';
 import { useRoute }                     from 'vue-router';
 import DiscoverSearch                   from '@/components/FloatingLabelSearch.vue';
-import RecommendationResults            from '@/components/RecommendationResults.vue';
+import RecommendationResults            from '@/components/DiscoverResults.vue';
 import DrawerSettings                   from '@/components/DrawerSettings.vue'; 
 import { Tag, createTag }               from '@/types/TagType';
 import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';

@@ -4,7 +4,7 @@ import { useRoute }                     from 'vue-router';
 import DiscoverSearch                   from '@/components/FloatingLabelSearch.vue';
 import SwitchButton                     from '@/components/SwitchButton.vue';
 import UserFlow                         from '@/components/UserFlow.vue';
-import RecommendationResults            from '@/components/RecommendationResults.vue';
+import RecommendationResults            from '@/components/DiscoverResults.vue';
 import { Tag, createTag }               from '@/types/TagType';
 import { pickBWTextColour }             from '@/utils/colourStyle';
 import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';

@@ -4,6 +4,7 @@ type Album = {
 };
 
 export const getRandomAlbums = (number: number): Album[] => {
+  if (number > albums.length) return albums;
   const numberOfAlbums = albums.length;
   const numberOfRandomAlbums = number;
 
@@ -19,7 +20,8 @@ export const getRandomAlbums = (number: number): Album[] => {
   return randomAlbums;
 }
 
-const albums: Album[] =[
+const albums: Album[] =
+[
   {
   "image": "https://i.scdn.co/image/ab67616d0000b273c8b444df094279e70d0ed856",
   "link": "spotify:album:6dVIqQ8qmQ5GBnJ9shOYGE"
@@ -297,7 +299,7 @@ const albums: Album[] =[
   "link": "spotify:album:4LH4d3cOWNNsVw41Gqt2kv"
   },
   {
-  "image": "https://i.scdn.co/image/ab67616d0000b273715973050587fe3c93033aad",
+  "image": "https://i.scdn.co/image/ab67616d0000b2736cfd9a7353f98f5165ea6160",
   "link": "spotify:album:4PWBTB6NYSKQwfo79I3prg"
   },
   {
@@ -355,7 +357,71 @@ const albums: Album[] =[
   {
   "image": "https://i.scdn.co/image/ab67616d0000b273ceb24a1906254750e82c1db7",
   "link": "spotify:album:7HJSVyFzG1sM02weSAqhdH"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b27333c6b920eabcf4c00d7a1093",
+  "link": "spotify:album:4UlGauD7ROb3YbVOFMgW5u"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273992370c34c86fda1e172d0c5",
+  "link": "spotify:album:0h19Ty9F2Ma8pKkRdx17UT"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273ad08f4b38efbff0c0da0f252",
+  "link": "spotify:album:5G5UwqPsxDKpxJLX4xsyuh"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b2732f2eeee9b405f4d00428d84c",
+  "link": "spotify:album:2u30gztZTylY4RG7IvfXs8"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b27389992f4d7d4ab94937bf9e23",
+  "link": "spotify:album:7dK54iZuOxXFarGhXwEXfF"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b2730b51f8d91f3a21e8426361ae",
+  "link": "spotify:album:6mUdeDZCsExyJLMdAfDuwh"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273879e9318cb9f4e05ee552ac9",
+  "link": "spotify:album:5XpEKORZ4y6OrCZSKsi46A"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273c7ea04a9b455e3f68ef82550",
+  "link": "spotify:album:6X1x82kppWZmDzlXXK3y3q"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273d7f3e4d143c198d3542a775d",
+  "link": "spotify:album:655KljKIXl42fiNDMKivbY"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b2730f51e29700232d57fe8a0830",
+  "link": "spotify:album:2HTbQ0RHwukKVXAlTmCZP2"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b27350a3147b4edd7701a876c6ce",
+  "link": "spotify:album:0S0KGZnfBGSIssfF54WSJh"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273f38c6b37a21334e22005b1f7",
+  "link": "spotify:album:1p12OAWwudgMqfMzjMvl2a"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b2731a84d71391df7469c5ab8539",
+  "link": "spotify:album:0bCAjiUamIFqKJsekOYuRw"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b2737005885df706891a3c182a57",
+  "link": "spotify:album:5zi7WsKlIiUXv09tbGLKsE"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273ee65bbd54f993b5f01d5c511",
+  "link": "spotify:album:2PfGKHtqEX58bHtkQxJnWG"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b2732764cdf400a1d859640539a9",
+  "link": "spotify:album:6gDtROOIYa6OQxwhDNkDRM"
   }
-  ]
+]
 
 export default albums;

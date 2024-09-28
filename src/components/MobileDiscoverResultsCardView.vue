@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, nextTick, computed }    from 'vue';
-import MobileRecommendationCard                         from './MobileRecommendationCard.vue';
+import MobileRecommendationCard                         from './MobileDiscoverCard.vue';
 import Swiper                                           from 'swiper';
 import { EffectCoverflow }                              from 'swiper/modules';
 import 'swiper/css';
