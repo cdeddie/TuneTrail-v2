@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick }                from 'vue';
+import { getAverageColour }                                         from '@/types/TagType';
+import { darkOrLightFont }                                          from '@/utils/colourStyle';
 import Swiper                                                       from 'swiper';
 import { EffectCoverflow }                                          from 'swiper/modules';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 
@@ -60,13 +62,6 @@ const onProgressInput = (event: Event) => {
     const time = value / 10;
     currentTime.value = time;
     audioPlayer.value.currentTime = time;
-  }
-};
-
-const onProgressChange = () => {
-  if (audioPlayer.value) {
-    audioPlayer.value.play();
-    isPlaying.value = true;
   }
 };
 
@@ -165,10 +160,33 @@ watch(() => props.recommendationData, async (newValue) => {
     currentTrackIndex.value = 0;
   }
 });
+
+// Root background current track prominent colour logic
+const backgroundColour = ref<string>('');
+const updateBackgroundColour = async () => {
+  console.log(currentTrack.value.album);
+  try {
+    const imgUrl = currentTrack.value.album.images[0]?.url; 
+    backgroundColour.value = await getAverageColour(imgUrl);
+  } catch (error) {
+    console.error('Error extracting prominent color:', error);
+    backgroundColour.value = 'transparent';
+  }
+};
+
+onMounted(() => {
+  updateBackgroundColour();
+});
+
+watch(currentTrack, () => {
+  updateBackgroundColour();
+  console.log(backgroundColour.value)
+});
 </script>
 
 <template>
-  <div class="card-view-root" v-if="props.recommendationData?.tracks">
+  <div class="card-view-root" v-if="props.recommendationData?.tracks" :style="{ backgroundColor: backgroundColour }">
+    {{ darkOrLightFont(backgroundColour) }}
     <div class="album-cover" v-if="tracks.length">
       <div class="swiper">
         <div class="swiper-wrapper">
@@ -209,7 +227,6 @@ watch(() => props.recommendationData, async (newValue) => {
         :value="progressValue"
         :disabled="currentTrack?.preview_url === null" 
         @input="onProgressInput" 
-        @change="onProgressChange" 
       />
     </div>
 
@@ -302,10 +319,10 @@ watch(() => props.recommendationData, async (newValue) => {
   align-items: center;
   justify-content: center;
   margin: 0 2vw;
-  background-color: var(--secondary-colour);
   height: 100%;
   border-radius: 1rem;
   animation: slidein 120s forwards infinite alternate;
+  transition: background-color .7s ease;
 }
 
 @keyframes slidein {

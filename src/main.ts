@@ -6,8 +6,9 @@ import './style.css';
 import './assets/index.css';
 
 import { createWebHistory, createRouter } from 'vue-router';
-import LandingParent                      from '@/views/LandingParent.vue'
+// import LandingParent                      from '@/views/LandingParent.vue'
 import DiscoverParent                     from '@/views/DiscoverParent.vue';
+import NewLanding from './views/NewLanding.vue';
 
 async function initializeApp() {
   const app = createApp(App);
@@ -16,7 +17,7 @@ async function initializeApp() {
   app.use(pinia);
 
   const routes = [
-    { path: '/', name: 'home', component: LandingParent },
+    { path: '/', name: 'home', component: NewLanding },
     { path: '/discover', name: 'discover', component: DiscoverParent }
   ];
 

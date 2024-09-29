@@ -12,5 +12,6 @@ export const darkOrLightFont = (colour: string): boolean => {
   const luminance = r * 0.299 + g * 0.587 + b * 0.114;
 
   // Returns true if light, false if dark
+  // -> if true, can use light font, if false should use dark font
   return luminance > 186 ? true : false;
 };

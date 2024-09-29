@@ -8,7 +8,7 @@ export type Theme = {
 };
 
 export const themes: Theme[] = [
-  { id: 1, color1: '#2D283E', color2: '#4A71FD' },
+  { id: 1, color1: '#001021', color2: '#4A71FD' },
   { id: 2, color1: '#FFC9B5', color2: '#F7B1AB' },
   { id: 3, color1: '#2D2D2A', color2: '#4C4C47' },
   { id: 4, color1: '#80A1C1', color2: '#EEE3AB' },

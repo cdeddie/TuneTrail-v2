@@ -30,3 +30,4 @@ Preview.vue
 /cypress
 *.cy*
 cypress.config*
+/.VSCodeCounter

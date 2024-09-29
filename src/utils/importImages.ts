@@ -39,20 +39,12 @@ const albums: Album[] =
   "link": "spotify:album:5SKnXCvB4fcGSZu32o3LRY"
   },
   {
-  "image": "https://i.scdn.co/image/ab67616d0000b27326b7dd89810cc1a40ada642c",
-  "link": "spotify:album:5sY6UIQ32GqwMLAfSNEaXb"
-  },
-  {
   "image": "https://i.scdn.co/image/ab67616d0000b27348905438b9c1153978d9fbf4",
   "link": "spotify:album:2noRn2Aes5aoNVsU6iWThc"
   },
   {
   "image": "https://i.scdn.co/image/ab67616d0000b2732e02117d76426a08ac7c174f",
   "link": "spotify:album:79ONNoS4M9tfIA1mYLBYVX"
-  },
-  {
-  "image": "https://i.scdn.co/image/ab67616d0000b273cdb645498cd3d8a2db4d05e1",
-  "link": "spotify:album:7ycBtnsMtyVbbwTfJwRjSP"
   },
   {
   "image": "https://i.scdn.co/image/ab67616d0000b27378de8b28de36a74afc0348b5",
@@ -67,16 +59,8 @@ const albums: Album[] =
   "link": "spotify:album:1EoDsNmgTLtmwe1BDAVxV5"
   },
   {
-  "image": "https://i.scdn.co/image/ab67616d0000b2734ae1c4c5c45aabe565499163",
-  "link": "spotify:album:78bpIziExqiI9qztvNFlQu"
-  },
-  {
   "image": "https://i.scdn.co/image/ab67616d0000b27392f2d790c6a97b195f66d51e",
   "link": "spotify:album:5zClcGCSWj926AMjvBNSLc"
-  },
-  {
-  "image": "https://i.scdn.co/image/ab67616d0000b2739b19c107109de740bad72df5",
-  "link": "spotify:album:7q2B4M5EiBkqrlsNW8lB7N"
   },
   {
   "image": "https://i.scdn.co/image/ab67616d0000b27360ba1d6104d0475c7555a6b2",
@@ -101,10 +85,6 @@ const albums: Album[] =
   {
   "image": "https://i.scdn.co/image/ab67616d0000b273fcd3724fba954e6104e4530d",
   "link": "spotify:album:5ra51AaWF3iVebyhlZ1aqq"
-  },
-  {
-  "image": "https://i.scdn.co/image/ab67616d0000b273a388a3f20d1bf2123249cc79",
-  "link": "spotify:album:2yNaksHgeMQM9Quse463b5"
   },
   {
   "image": "https://i.scdn.co/image/ab67616d0000b273431ac6e6f393acf475730ec6",
@@ -135,10 +115,6 @@ const albums: Album[] =
   "link": "spotify:album:7KtyUeiJidoZO0ybxBXw0Q"
   },
   {
-  "image": "https://i.scdn.co/image/ab67616d0000b27376ffb5b5ab045d22c81235c1",
-  "link": "spotify:album:0E4xv5gPjykrwBgBZzI8XG"
-  },
-  {
   "image": "https://i.scdn.co/image/ab67616d0000b2735d48e2f56d691f9a4e4b0bdf",
   "link": "spotify:album:5Dbax7G8SWrP9xyzkOvy2F"
   },
@@ -167,10 +143,6 @@ const albums: Album[] =
   "link": "spotify:album:0ETFjACtuP2ADo6LFhL6HN"
   },
   {
-  "image": "https://i.scdn.co/image/ab67616d0000b27338906032688bb13b135ce19a",
-  "link": "spotify:album:7aNclGRxTysfh6z0d8671k"
-  },
-  {
   "image": "https://i.scdn.co/image/ab67616d0000b273d0c72291cd96834e199e1ff8",
   "link": "spotify:album:7EpUpNUkkEGnaCvkcn1j4H"
   },
@@ -181,10 +153,6 @@ const albums: Album[] =
   {
   "image": "https://i.scdn.co/image/ab67616d0000b2739b9b36b0e22870b9f542d937",
   "link": "spotify:album:4m2880jivSbbyEGAKfITCa"
-  },
-  {
-  "image": "https://i.scdn.co/image/ab67616d0000b27302abe1eaf9da931f42629b4a",
-  "link": "spotify:album:01FCoGEQ3NFWF4fHJzdiax"
   },
   {
   "image": "https://i.scdn.co/image/ab67616d0000b2730ab3c2a306c614fae36ff1d6",
@@ -215,14 +183,6 @@ const albums: Album[] =
   "link": "spotify:album:0u7sgzvlLmPLvujXxy9EeY"
   },
   {
-  "image": "https://i.scdn.co/image/ab67616d0000b2730d5a84e4e47399d2726c330c",
-  "link": "spotify:album:0zicd2mBV8HTzSubByj4vP"
-  },
-  {
-  "image": "https://i.scdn.co/image/ab67616d0000b273654afcab578b93f29ca55a29",
-  "link": "spotify:album:1GXMNFfoHF4sN7lG8gZq1j"
-  },
-  {
   "image": "https://i.scdn.co/image/ab67616d0000b273238290ae5b71b71aa8178e9d",
   "link": "spotify:album:1KQGEF23vxXUWtfO0x3BV2"
   },
@@ -233,10 +193,6 @@ const albums: Album[] =
   {
   "image": "https://i.scdn.co/image/ab67616d0000b273a90d170c61fb7d063d47161d",
   "link": "spotify:album:1XslIirSxfAhhxRdn4Li9t"
-  },
-  {
-  "image": "https://i.scdn.co/image/ab67616d0000b27357df7ce0eac715cf70e519a7",
-  "link": "spotify:album:1bt6q2SruMsBtcerNVtpZB"
   },
   {
   "image": "https://i.scdn.co/image/ab67616d0000b273345536847e60f622ee0eae96",
@@ -339,10 +295,6 @@ const albums: Album[] =
   "link": "spotify:album:6Jx4cGhWHewTcfKDJKguBQ"
   },
   {
-  "image": "https://i.scdn.co/image/ab67616d0000b2730ac131b9488447476f7406b5",
-  "link": "spotify:album:6w84G1JaQPqbf8RzS48tPf"
-  },
-  {
   "image": "https://i.scdn.co/image/ab67616d0000b273b0b3bd1a5f3967705579e6f1",
   "link": "spotify:album:755yBlrk0Sz8tIgMMTgyr1"
   },
@@ -379,10 +331,6 @@ const albums: Album[] =
   "link": "spotify:album:7dK54iZuOxXFarGhXwEXfF"
   },
   {
-  "image": "https://i.scdn.co/image/ab67616d0000b2730b51f8d91f3a21e8426361ae",
-  "link": "spotify:album:6mUdeDZCsExyJLMdAfDuwh"
-  },
-  {
   "image": "https://i.scdn.co/image/ab67616d0000b273879e9318cb9f4e05ee552ac9",
   "link": "spotify:album:5XpEKORZ4y6OrCZSKsi46A"
   },
@@ -393,14 +341,6 @@ const albums: Album[] =
   {
   "image": "https://i.scdn.co/image/ab67616d0000b273d7f3e4d143c198d3542a775d",
   "link": "spotify:album:655KljKIXl42fiNDMKivbY"
-  },
-  {
-  "image": "https://i.scdn.co/image/ab67616d0000b2730f51e29700232d57fe8a0830",
-  "link": "spotify:album:2HTbQ0RHwukKVXAlTmCZP2"
-  },
-  {
-  "image": "https://i.scdn.co/image/ab67616d0000b27350a3147b4edd7701a876c6ce",
-  "link": "spotify:album:0S0KGZnfBGSIssfF54WSJh"
   },
   {
   "image": "https://i.scdn.co/image/ab67616d0000b273f38c6b37a21334e22005b1f7",
@@ -415,12 +355,72 @@ const albums: Album[] =
   "link": "spotify:album:5zi7WsKlIiUXv09tbGLKsE"
   },
   {
-  "image": "https://i.scdn.co/image/ab67616d0000b273ee65bbd54f993b5f01d5c511",
-  "link": "spotify:album:2PfGKHtqEX58bHtkQxJnWG"
+  "image": "https://i.scdn.co/image/ab67616d0000b2736ca5c90113b30c3c43ffb8f4",
+  "link": "spotify:album:2cWBwpqMsDJC1ZUwz813lo"
   },
   {
-  "image": "https://i.scdn.co/image/ab67616d0000b2732764cdf400a1d859640539a9",
-  "link": "spotify:album:6gDtROOIYa6OQxwhDNkDRM"
+  "image": "https://i.scdn.co/image/ab67616d0000b2737aede4855f6d0d738012e2e5",
+  "link": "spotify:album:392p3shh2jkxUxY2VHvlH8"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b27354823b660c0985479ea17f08",
+  "link": "spotify:album:12Biup1Sq5hpHsX85gJPb2"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b2731f478dacb513e939f5ac0586",
+  "link": "spotify:album:5IyHtkKQvafw7bQYFnx4FO"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b27358267bd34420a00d5cf83a49",
+  "link": "spotify:album:31qVWUdRrlb8thMvts0yYL"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273f6b55ca93bd33211227b502b",
+  "link": "spotify:album:1uyf3l2d4XYwiEqAb7t7fX"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b2734718e2b124f79258be7bc452",
+  "link": "spotify:album:2ODvWsOgouMbaA5xf0RkJe"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b27350570144b4a9a459406f9a3d",
+  "link": "spotify:album:0WzOtZBpXvWdNdH7hCJ4qo"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273072e9faef2ef7b6db63834a3",
+  "link": "spotify:album:41GuZcammIkupMPKH2OJ6I"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b2738b5511866a48597871d9aa47",
+  "link": "spotify:album:7l1lqgstKqV7pmjg6UgPQG"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273a38f4c1b8f53a2f792ffb561",
+  "link": "spotify:album:3HA1Ru1gEAgaxTywkJmBOL"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273738f2371ae0c10a381aa5052",
+  "link": "spotify:album:0IQbQC6V4UuHLcgO9Yt3uu"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b2737749a08ddab9edbe427e9876",
+  "link": "spotify:album:5fedTyx7AnXeyxLL0giq6x"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273b111f0ccb858f42da1f91b8d",
+  "link": "spotify:album:0j4s8goMrRPZWjG3v0UblY"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b2738504a0836dfaa61b28930505",
+  "link": "spotify:album:3j75sKW2Lw9gUEhjNzPKn4"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273998757c19e2675eef596be0c",
+  "link": "spotify:album:7rTN1XY9plvvoHiA5jY4PD"
+  },
+  {
+  "image": "https://i.scdn.co/image/ab67616d0000b273addafcf885fe8001401379ca",
+  "link": "spotify:album:7yqSkf4TGPOHUtDKMVjhbD"
   }
 ]
 
