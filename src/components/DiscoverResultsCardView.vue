@@ -185,7 +185,6 @@ watch(currentTrack, () => {
 
 <template>
   <div class="card-view-root" v-if="props.recommendationData?.tracks" :style="{ backgroundColor: backgroundColour }">
-    {{ darkOrLightFont(backgroundColour) }}
     <div class="album-cover" v-if="tracks.length">
       <div class="swiper">
         <div class="swiper-wrapper">
