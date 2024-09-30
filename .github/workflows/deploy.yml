@@ -27,10 +27,6 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 3.27.222.147 >> ~/.ssh/known_hosts
 
-      - name: Debug SSH connection
-        run: |
-          ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@3.27.222.147 'echo SSH connection successful'
-
       - name: Install dependencies
         run: npm ci
   
