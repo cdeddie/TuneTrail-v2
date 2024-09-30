@@ -24,6 +24,10 @@ jobs:
       - name: Build frontend
         run: npm run build
 
+      - name: Debug SSH connection
+        run: |
+          ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@3.27.222.147 'echo SSH connection successful'
+
       - name: Deploy to EC2 (Staging)
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
@@ -32,5 +36,5 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 3.27.222.147 >> ~/.ssh/known_hosts
-          sudo scp -i ~/.ssh/id_rsa -r ./dist ubuntu@3.27.222.147:~/dev/TuneTrail-v2/frontend/staging
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./dist ubuntu@3.27.222.147:~/dev/TuneTrail-v2/frontend/staging
           rm -rf ~/.ssh
