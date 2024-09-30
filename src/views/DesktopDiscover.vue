@@ -28,7 +28,7 @@ const processSearchResults = () => {
   if (searchResults.value.tracks.items) {
     albumImageLoaded.value = new Array(searchResults.value.tracks.items.length).fill(false);
   }
-  if (searchResults.value.artists.items) {
+  if (searchResults.value.artists?.items) {
     artistImageLoaded.value = new Array(searchResults.value.artists.items.length).fill(false);
   }
 };

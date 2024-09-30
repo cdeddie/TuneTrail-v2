@@ -14,7 +14,7 @@ const props = defineProps<{
 const activeValue = computed({
   get: () => {
     const value = filterState.value[props.label];
-    if (value === 80) return 'High';
+    if (value === 100) return 'High';
     if (value === 20) return 'Low';
     return null;
   },

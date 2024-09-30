@@ -6,12 +6,21 @@ import DesktopRecommendation      from '@/views/DesktopDiscover.vue';
 
 const deviceStore = useDeviceStore();
 
-const currentComponent = shallowRef(deviceStore.isMobile ? MobileRecommendation : DesktopRecommendation);
+const currentComponent = shallowRef(
+  deviceStore.isMobile || deviceStore.isTabletPortrait
+    ? MobileRecommendation
+    : DesktopRecommendation
+);
 
-watch(() => deviceStore.isMobile, (newValue) => {
-  console.log(newValue);
-  currentComponent.value = newValue ? MobileRecommendation : DesktopRecommendation;
-});
+watch(
+  () => [deviceStore.isMobile, deviceStore.isTabletPortrait], 
+  ([newIsMobile, newIsTabletPortrait]) => {
+    console.log(`isMobile: ${newIsMobile}, isTabletPortrait: ${newIsTabletPortrait}`);
+    currentComponent.value = newIsMobile || newIsTabletPortrait
+      ? MobileRecommendation
+      : DesktopRecommendation;
+  }
+);
 </script>
 
 <template>

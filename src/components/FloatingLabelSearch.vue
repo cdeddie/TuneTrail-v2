@@ -216,17 +216,17 @@ watch(() => themeStore.activeThemeId, () => {
 
 @media(max-width: 1050px) {
   .input-group input+label {
-    font-size: 1rem;
+    font-size: 1.6rem;
   }
 
   .input-group input:focus,
   .input-group input:valid {
     padding-left: 1rem;
-    font-size: 16px;
+    font-size: 1.6rem;
   }
 }
 
-@media(max-width: 385px) {
+@media(max-width: 480px) {
   .input-group input+label {
     font-size: .85rem;
   }

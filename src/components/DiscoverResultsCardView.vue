@@ -157,7 +157,6 @@ watch(() => props.recommendationData, async (newValue) => {
       swiper.destroy();
     }
     initializeSwiper();
-    currentTrackIndex.value = 0;
   }
 });
 

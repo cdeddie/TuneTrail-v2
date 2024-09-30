@@ -12,7 +12,7 @@ export const useRecommendationFilterStore = defineStore('RecommendationFilterSto
 
   const updateFilterValue = (key: keyof RecommendationFilter, value: string | null) => {
     if (value === 'High') {
-      filterState[key] = 80;
+      filterState[key] = 100;
     } else if (value === 'Low') {
       filterState[key] = 20;
     } else {

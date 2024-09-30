@@ -12,7 +12,7 @@ export const useDeviceStore = defineStore('device', () => {
   const height = ref<number>(window.innerHeight);
 
   const MOBILE_BREAKPOINT = 769;
-  const TABLET_BREAKPOINT = 1025;
+  const TABLET_BREAKPOINT = 1033;
 
   const updateDimensions = (): void => {
     width.value = window.innerWidth;

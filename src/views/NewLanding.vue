@@ -5,19 +5,11 @@ import { useRouter }                                    from 'vue-router';
 import { Tag, createTag }                               from '@/types/TagType';
 import { truncateString }                               from '@/utils/stringProcessing';
 import { useColourThemeStore }                          from '@/stores/colourThemeStore';
+import { useDeviceStore }                               from '@/stores/deviceStore';
 import LandingSearch                                    from '@/components/FloatingLabelSearch.vue';
 
 const albums = ref<ReturnType<typeof getRandomAlbums>>([]);
 let animationFrameId = ref<number | null>(null);
-
-onMounted(() => {
-  albums.value = getRandomAlbums(100);
-  startUpdateLoop();
-});
-
-onUnmounted(() => {
-  stopUpdateLoop();
-});
 
 const getAlbumsForLevel = (levelIndex: number) => {
   const albumsPerLevel = 20;
@@ -48,9 +40,7 @@ const updateCirclePos = (event: MouseEvent) => {
 
 // Get the CSS variable value
 onMounted(() => {
-  console.log(secondaryTheme);
   secondaryColourRGB.value = hexToRGB(secondaryTheme);
-  console.log(secondaryColourRGB.value)
 });
 
 // Reactive circle style with dynamic background
@@ -103,6 +93,15 @@ const stopUpdateLoop = () => {
   }
 };
 
+onMounted(() => {
+  albums.value = getRandomAlbums(100);
+  startUpdateLoop();
+});
+
+onUnmounted(() => {
+  stopUpdateLoop();
+});
+
 // Search handling
 const searchResults = ref<any>();
 const searchResultsVisible = ref<boolean>(false);
@@ -117,6 +116,19 @@ const navigateToTarget = async (track: any) => {
     query: { tag: JSON.stringify(tag) }
   });
 };
+
+// Truncating string length based on viewport model
+const deviceStore = useDeviceStore();
+const truncateLength = computed(() => {
+  if (deviceStore.width < 330) {
+    return 20;
+  } else if (deviceStore.width < 380) {
+    return 25;
+  } else if (deviceStore.width < 430) {
+    return 33;
+  } 
+  return 50;
+});
 </script>
 
 <template>
@@ -150,23 +162,23 @@ const navigateToTarget = async (track: any) => {
       <div class="search-results">
         <div style="color: white;"></div>
           <Transition name="fade" mode="out-in">
-            <div class="search-results-tracks" v-if="searchResultsVisible">
+            <div class="search-results-tracks" v-if="searchResults && searchResultsVisible">
               <div class="tracks-results">
                 <div 
                   class="search-result-card" 
-                  v-for="(track) in searchResults.tracks?.items"
+                  v-for="(track) in searchResults?.tracks.items"
                   @click="navigateToTarget(track)" 
                 >
                   <img :src="track.album.images[1]?.url" class="card-img">
                   <div class="card-info">
-                    <span class="result-title">{{ track.name }}</span>
+                    <span class="result-title">{{ truncateString(track.name, truncateLength) }}</span>
                     <span class="result-subtitle">
                       <i 
                         v-if="track.explicit"
                         class="bi bi-explicit-fill"
                         style="margin-right: 2px;"
                       ></i>
-                      {{ truncateString(track.artists[0].name, 30) }}
+                      {{ truncateString(track.artists[0].name, truncateLength) }}
                     </span>
                   </div>
                 </div>
@@ -200,6 +212,14 @@ const navigateToTarget = async (track: any) => {
   margin: 10px 0;
 }
 
+.carousel-level:first-child {
+  margin: 20px 0;
+}
+
+.carousel-level:last-child {
+  margin: 20px 0;
+}
+
 .carousel-track {
   display: flex;
   animation: scroll linear infinite;
@@ -222,11 +242,12 @@ const navigateToTarget = async (track: any) => {
   object-fit: cover;
   border-radius: 10px;
   filter: grayscale(95%);
-  transition: filter .5s ease;
+  transition: filter 2s ease;
 }
 
 .album-item img.colour {
   filter: grayscale(0%);
+  transition: filter .5s ease;
 }
 
 @keyframes scroll {
@@ -238,27 +259,14 @@ const navigateToTarget = async (track: any) => {
   }
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .album-item {
-    height: 15vh;
-    margin-right: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .album-item {
-    height: 12vh;
-    margin-right: 8px;
-  }
-}
 
 /* Search bar */
 .landing-content {
   position: absolute;
   width: 40vw;
   top: 7.5%;
-  left: 30vw;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 h1 {
@@ -311,7 +319,6 @@ h1 {
 
   background-color: white;
   border-radius: 1rem;
-
 }
 
 .search-result-card {
@@ -376,5 +383,103 @@ h1 {
   height: 30vh;
   margin-left: 40px;
   margin-top: 15vh;
+}
+
+/* Resposiveness */
+@media (max-width: 1280px) {
+  .search-result-card {
+    height: 8.5vh;
+  }
+
+  .card-img {
+    height: 5vh;
+  }
+}
+
+@media (max-width: 1033px) {
+  .album-item {
+    height: 18vh;
+    margin-right: 10px;
+    margin-right: 2vh;
+  }
+
+  .album-item img {
+    filter: grayscale(0%);
+  }
+
+  .landing-content {
+    width: 80vw;
+  }
+
+  h1 {
+    font-size: 18vw;
+  }
+
+  .search-container {
+    margin: 0 40px;
+  }
+
+  .search-results-tracks {
+    width: calc(80vw - 80px);
+    margin-left: 40px;
+  }
+
+  .search-result-card {
+    height: 7vh;
+  }
+
+  .result-title {
+    font-size: 1.5rem;
+  }
+
+  .result-subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .album-item {
+    height: 18vh;
+    margin-right: 2vh;
+  }
+
+  .landing-content {
+    width: 100vw;
+    top: 12.5%;
+  }
+
+  h1 {
+    color: white;
+    font-size: 22vw;
+    margin-bottom: 1vh;
+  }
+
+  .search-container {
+    box-shadow: 0 0 5px 20px black;
+    border-radius: .5rem;
+    margin: 0 20px;
+    padding: 5px;
+  }
+
+  .search-results-tracks {
+    margin: 3vh 1.5vw;
+    width: 97vw;
+  }
+
+  .search-result-card {
+    height: 8.5vh;
+  }
+
+  .card-img {
+    margin-left: 5vw;
+  }
+
+  .result-title {
+    font-size: 1.2rem;
+  }
+
+  .result-subtitle {
+    font-size: 1rem;
+  }
 }
 </style>

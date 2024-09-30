@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+staging
+/staging
 
 # Editor directories and files
 .vscode/*
@@ -31,3 +33,5 @@ Preview.vue
 *.cy*
 cypress.config*
 /.VSCodeCounter
+
+.env
