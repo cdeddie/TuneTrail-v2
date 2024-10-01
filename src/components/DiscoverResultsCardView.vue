@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick }                from 'vue';
 import { getAverageColour }                                         from '@/types/TagType';
-import { darkOrLightFont, pickBWTextColour }                                          from '@/utils/colourStyle';
+import { darkOrLightFont }                                          from '@/utils/colourStyle';
 import Swiper                                                       from 'swiper';
 import { EffectCoverflow }                                          from 'swiper/modules';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
