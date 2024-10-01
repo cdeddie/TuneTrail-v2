@@ -2,11 +2,6 @@ name: Manual Production Deploy
 
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Select environment'
-        required: true
-        default: 'production'
 
 jobs:
   deploy-production:

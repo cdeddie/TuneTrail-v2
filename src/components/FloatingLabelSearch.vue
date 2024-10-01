@@ -124,6 +124,7 @@ watch(() => themeStore.activeThemeId, () => {
       @focus="emit('search-focused', true);"
       @blur="handleBlur"
       :disabled="searchDisabled"
+      @keydown.enter.prevent
     >
     <label for="" :class="{ 'disabled-input': searchDisabled }">
       <i class="bi bi-search"></i>

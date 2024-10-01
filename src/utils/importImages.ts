@@ -4,6 +4,7 @@ type Album = {
 };
 
 export const getRandomAlbums = (number: number): Album[] => {
+  console.log(albums.length);
   if (number > albums.length) return albums;
   const numberOfAlbums = albums.length;
   const numberOfRandomAlbums = number;
@@ -101,10 +102,6 @@ const albums: Album[] =
   {
   "image": "https://i.scdn.co/image/ab67616d0000b27394d08ab63e57b0cae74e8595",
   "link": "spotify:album:2Y9IRtehByVkegoD7TcLfi"
-  },
-  {
-  "image": "https://i.scdn.co/image/ab67616d0000b2739e1cfc756886ac782e363d79",
-  "link": "spotify:album:79dL7FLiJFOO0EoehUHQBv"
   },
   {
   "image": "https://i.scdn.co/image/ab67616d0000b273609c89ad17eb28c2013c56c6",
@@ -397,10 +394,6 @@ const albums: Album[] =
   {
   "image": "https://i.scdn.co/image/ab67616d0000b273a38f4c1b8f53a2f792ffb561",
   "link": "spotify:album:3HA1Ru1gEAgaxTywkJmBOL"
-  },
-  {
-  "image": "https://i.scdn.co/image/ab67616d0000b273738f2371ae0c10a381aa5052",
-  "link": "spotify:album:0IQbQC6V4UuHLcgO9Yt3uu"
   },
   {
   "image": "https://i.scdn.co/image/ab67616d0000b2737749a08ddab9edbe427e9876",

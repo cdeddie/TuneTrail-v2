@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick }                from 'vue';
 import { getAverageColour }                                         from '@/types/TagType';
+import { darkOrLightFont, pickBWTextColour }                                          from '@/utils/colourStyle';
 import Swiper                                                       from 'swiper';
 import { EffectCoverflow }                                          from 'swiper/modules';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -106,13 +107,16 @@ watch([() => audioPlayer.value, volume], () => {
 }, { immediate: true });
 
 const volumeIconClass = computed(() => {
+  let result:string;
   if (volume.value == 0) {
-    return 'bi bi-volume-mute-fill';
+    result = 'bi bi-volume-mute-fill';
   } else if (volume.value < 50) {
-    return 'bi bi-volume-down-fill';
+    result = 'bi bi-volume-down-fill';
   } else {
-    return 'bi bi-volume-up-fill';
+    result = 'bi bi-volume-up-fill';
   }
+
+  return result;
 });
 
 // Vue component produced from https://codepen.io/ecemgo/pen/vYPadZz
@@ -190,8 +194,7 @@ watch(currentTrack, () => {
           <div v-for="(track) in tracks" :key="track.id" class="swiper-slide">
             <img :src="track.album.images[0]?.url" />
             <div class="overlay">
-              <a :href="track.external_urls.spotify" target="_blank">
-              </a>
+              <a :href="track.external_urls.spotify" target="_blank"></a>
             </div>
           </div>
         </div>
@@ -199,11 +202,19 @@ watch(currentTrack, () => {
     </div>
 
     <div class="music-player">
-      <h1><a :href="currentTrack?.uri">{{ currentTrack?.name }}</a></h1>
+      <h1 :class="{ 'track-name-dark': darkOrLightFont(backgroundColour) }"><a :href="currentTrack?.uri">{{ currentTrack?.name }}</a></h1>
       <p>
         <span v-for="(artist, index) in currentTrack?.artists" :key="artist.id">
-          <a :href="artist.uri">{{ artist.name }}</a>
-          <span v-if="index < currentTrack.artists.length - 1" style="color: rgba(220, 220, 220, 0.667);">, </span>
+          <a 
+            class="track-artist"
+            :class="{ 'track-artist-dark': darkOrLightFont(backgroundColour) }"
+            :href="artist.uri"
+          >{{ artist.name }}</a>
+          <span 
+            class="track-artist" 
+            :class="{ 'track-artist-dark': darkOrLightFont(backgroundColour) }" 
+            v-if="index < currentTrack.artists.length - 1"
+          >, </span>
         </span>
       </p>
 
@@ -216,7 +227,7 @@ watch(currentTrack, () => {
 
       <input 
         id="progress" 
-        :class="{ 'disabled': currentTrack?.preview_url === null  }"
+        :class="{ 'disabled': currentTrack?.preview_url === null, 'progress-dark': darkOrLightFont(backgroundColour) }"
         type="range" 
         :min="0"
         :max="300"
@@ -234,7 +245,7 @@ watch(currentTrack, () => {
 
       <div class="main-controls">
         <button class="backward" @click="playPreviousTrack">
-          <img src="@/assets/backward.svg">
+          <img src="@/assets/backward.svg" :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }">
         </button>
 
         <!-- Unfortunately don't know a way to conditionally render tooltip other than this -->
@@ -272,7 +283,7 @@ watch(currentTrack, () => {
         <div v-else>
           <button 
             class='play-pause-btn'
-            :class="{ 'disabled': currentTrack?.preview_url === null }"
+            :class="{ 'disabled': currentTrack?.preview_url === null, 'svg-dark': darkOrLightFont(backgroundColour) }"
             :disabled="currentTrack?.preview_url === null" 
             @click="playPause"
           >
@@ -288,16 +299,17 @@ watch(currentTrack, () => {
         </div>
 
         <button class="forward" @click="playNextTrack">
-          <img src="@/assets/forward.svg">
+          <img src="@/assets/forward.svg" :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }">
         </button>
       </div>
 
       <div class="volume-control">
         <label for="volume-slider" @click="toggleMute">
-          <i :class="volumeIconClass"></i>
+          <i :class="[volumeIconClass, { 'svg-dark': darkOrLightFont(backgroundColour) }]"></i>
         </label>
         <input 
-          type="range" 
+          type="range"
+          :class="{ 'slider-dark': darkOrLightFont(backgroundColour) }" 
           id="volume-slider" 
           min="0" 
           max="100" 
@@ -377,7 +389,7 @@ i {
   background-color: rgba(28, 22, 37, 0.6);
   border-radius: inherit;
   opacity: 0;
-  transition: all 0.4s linear;
+  transition: all 0.3s linear;
 }
 
 
@@ -394,6 +406,10 @@ i {
   border-radius: 20px;
 }
 
+.track-name-dark {
+  color: black;
+}
+
 .music-player h1 {
   font-size: 1.5rem;
   font-weight: 600;
@@ -405,12 +421,21 @@ i {
   font-weight: 400;
 }
 
-.music-player p a {
+.track-artist {
   color: rgba(220, 220, 220, 0.667);
 }
 
-.music-player p a:hover {
+.track-artist:hover {
   color: white;
+  text-decoration: underline;
+}
+
+.track-artist-dark {
+  color: rgb(97, 97, 97);
+}
+
+.track-artist-dark:hover {
+  color: rgb(34, 34, 34);
   text-decoration: underline;
 }
 
@@ -438,6 +463,10 @@ i {
   outline: 3px solid black;
 }
 
+.progress-dark {
+  background: rgb(0, 0, 0) !important;
+}
+
 #progress.disabled::-webkit-slider-thumb {
   background-color: rgba(201, 201, 201, 0.677);
 }
@@ -447,6 +476,11 @@ i {
 }
 
 /* Music Player Controls */
+
+/* For bright backgrounds
+.dark {
+  background: black;
+} */
 
 .controls {
   display: flex;
@@ -511,6 +545,14 @@ i {
   border-radius: 50%;
 }
 
+.slider-dark {
+  background: black !important;
+}
+
+.slider-dark::-webkit-slider-thumb {
+  background: black !important;
+}
+
 .controls .play-pause-btn {
   display: flex;
   align-items: center;
@@ -519,7 +561,7 @@ i {
   overflow: hidden;
   width: fit-content;
   cursor: pointer;
-  transition: all 0.3s linear;
+  transition: all 0.3s ease;
 }
 
 .play-pause-btn i {
@@ -529,6 +571,10 @@ i {
 
 button.disabled i {
   color: rgba(201, 201, 201, 0.677);
+}
+
+.forward, .backward {
+  transition: all 0.3s ease;
 }
 
 .forward img, .backward img {
@@ -547,6 +593,10 @@ button.disabled i {
 
 .controls button:nth-child(2):is(:hover, :focus-visible) {
   transform: scale(1.25);
+}
+
+.svg-dark {
+  filter: brightness(0) saturate(100%) invert(9%) sepia(8%) saturate(1278%) hue-rotate(316deg) brightness(95%) contrast(85%) !important;
 }
 
 @media (max-width: 1600px) {

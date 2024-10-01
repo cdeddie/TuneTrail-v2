@@ -1,3 +1,4 @@
+// Direct string return
 export const pickBWTextColour = (colour: string): string => {
   const [r, g, b] = colour.slice(4, -1).split(',').map(Number);
 
