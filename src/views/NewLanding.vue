@@ -19,8 +19,10 @@ const getAlbumsForLevel = (levelIndex: number) => {
 
 const progress = ref<number>(0);
 const isLoading = ref<boolean>(true);
+const isFontLoaded = ref<boolean>(false);
 
 onMounted(async () => {
+  await loadFont();
   albums.value = getRandomAlbums(100);
   await loadImages(albums.value);
   await new Promise(resolve => setTimeout(resolve, 500)); // Wait for progress bar to complete
@@ -42,6 +44,16 @@ const loadImages = (albums: Album[]) => {
       };
     });
   });
+};
+
+const loadFont = async () => {
+  try {
+    await document.fonts.load('1em "Plus Jakarta Sans"');
+    isFontLoaded.value = true;
+  } catch (error) {
+    console.error('Font loading failed:', error);
+    isFontLoaded.value = true; // Show text anyway if font loading fails
+  }
 };
 
 // Cursor circle
@@ -164,7 +176,7 @@ const truncateLength = computed(() => {
   <Transition name="fade">
     <div id="loading-screen" v-if="isLoading">
       <div class="progress-content">
-        <div class="spotify-credit">
+        <div class="spotify-credit" :class="{ 'font-loaded': isFontLoaded }">
           <div>Powered by&nbsp;</div>
           <img src="@/assets/spotify.svg">
         </div>
@@ -266,6 +278,12 @@ const truncateLength = computed(() => {
   font-size: 2.8rem;
   font-weight: 550;
   margin-bottom: 10px;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+.spotify-credit.font-loaded {
+  opacity: 100;
 }
 
 .spotify-credit img {
