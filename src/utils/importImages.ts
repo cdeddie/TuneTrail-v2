@@ -1,4 +1,4 @@
-type Album = {
+export type Album = {
   image: string;
   link: string;
 };

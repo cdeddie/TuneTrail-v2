@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted }        from 'vue';
-import { getRandomAlbums }                              from '@/utils/importImages';
+import { getRandomAlbums, Album }                       from '@/utils/importImages';
 import { useRouter }                                    from 'vue-router';
 import { Tag, createTag }                               from '@/types/TagType';
 import { truncateString }                               from '@/utils/stringProcessing';
@@ -8,13 +8,40 @@ import { useColourThemeStore }                          from '@/stores/colourThe
 import { useDeviceStore }                               from '@/stores/deviceStore';
 import LandingSearch                                    from '@/components/FloatingLabelSearch.vue';
 
-const albums = ref<ReturnType<typeof getRandomAlbums>>([]);
-let animationFrameId = ref<number | null>(null);
+const albums = ref<Album[]>([]);
 
+// Albums logic, including loading logic
 const getAlbumsForLevel = (levelIndex: number) => {
   const albumsPerLevel = 20;
   const start = levelIndex * albumsPerLevel;
   return [...albums.value.slice(start, start + albumsPerLevel), ...albums.value.slice(start, start + albumsPerLevel)];
+};
+
+const progress = ref<number>(0);
+const isLoading = ref<boolean>(true);
+
+onMounted(async () => {
+  albums.value = getRandomAlbums(100);
+  await loadImages(albums.value);
+  await new Promise(resolve => setTimeout(resolve, 500)); // Wait for progress bar to complete
+  isLoading.value = false;
+});
+
+const loadImages = (albums: Album[]) => {
+  let loadedImages = 0;
+  const totalImages = albums.length;
+
+  return new Promise<void>((resolve) => {
+    albums.forEach((album) => {
+      const img = new Image();
+      img.src = album.image;
+      img.onload = img.onerror = () => {
+        loadedImages++;
+        progress.value = (loadedImages / totalImages) * 100;
+        if (loadedImages === totalImages) resolve();
+      };
+    });
+  });
 };
 
 // Cursor circle
@@ -75,6 +102,9 @@ const updateAlbumColours = () => {
   });
 };
 
+// Animation frame logic
+let animationFrameId = ref<number | null>(null);
+
 const updateLoop = () => {
   updateAlbumColours();
   animationFrameId.value = requestAnimationFrame(updateLoop);
@@ -94,7 +124,6 @@ const stopUpdateLoop = () => {
 };
 
 onMounted(() => {
-  albums.value = getRandomAlbums(100);
   startUpdateLoop();
 });
 
@@ -132,6 +161,20 @@ const truncateLength = computed(() => {
 </script>
 
 <template>
+  <Transition name="fade">
+    <div id="loading-screen" v-if="isLoading">
+      <div class="progress-content">
+        <div class="spotify-credit">
+          <div>Powered by&nbsp;</div>
+          <img src="@/assets/spotify.svg">
+        </div>
+        <div id="progress-bar-container">
+          <div id="progress-bar" :style="{ width: progress + '%' }"></div>
+        </div>
+      </div>
+    </div>
+  </Transition>
+
   <div class="landing-page" @mousemove="updateCirclePos">
     <div :style="circleStyle" class="circle" >
     </div>
@@ -149,7 +192,7 @@ const truncateLength = computed(() => {
       <h1>TuneTrail</h1>
       <div class="search-container">
         <LandingSearch 
-          :placeholder="'Search for a song to discover more'" 
+          :placeholder="'Search and select a song to discover more'" 
           :search-category="'tracks'"
           :search-disabled="false"
           :background-colour="'black'"
@@ -191,6 +234,69 @@ const truncateLength = computed(() => {
 </template>
 
 <style scoped>
+/* Loading screen */
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 11111;
+}
+
+.progress-content {
+  position: absolute;
+  top: 30%;
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+}
+
+.spotify-credit {
+  color: white;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 2.8rem;
+  font-weight: 550;
+  margin-bottom: 10px;
+}
+
+.spotify-credit img {
+  height: 3.5rem;
+  filter: brightness(0) saturate(100%) invert(92%) sepia(0%) saturate(7466%) hue-rotate(358deg) brightness(116%) contrast(107%);
+}
+
+#progress-bar-container {
+  height: 5px;
+  background-color: white;
+  overflow: hidden;
+}
+
+#progress-bar {
+  width: 0%;
+  height: 100%;
+  background-color: var(--secondary-colour);
+  transition: width 0.3s ease;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Landing */
 .landing-page {
   width: 100%;
   height: 100vh;
