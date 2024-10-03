@@ -605,5 +605,9 @@ h1 {
   .result-subtitle {
     font-size: 1rem;
   }
+
+  .progress-content {
+    width: 90%;
+  }
 }
 </style>
