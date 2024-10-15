@@ -166,7 +166,6 @@ watch(() => props.recommendationData, async (newValue) => {
 // Root background current track prominent colour logic
 const backgroundColour = ref<string>('');
 const updateBackgroundColour = async () => {
-  console.log(currentTrack.value.album);
   try {
     const imgUrl = currentTrack.value.album.images[0]?.url; 
     backgroundColour.value = await getAverageColour(imgUrl);
@@ -182,7 +181,6 @@ onMounted(() => {
 
 watch(currentTrack, () => {
   updateBackgroundColour();
-  console.log(backgroundColour.value)
 });
 </script>
 

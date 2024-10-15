@@ -188,8 +188,7 @@ const truncateLength = computed(() => {
   </Transition>
 
   <div class="landing-page" @mousemove="updateCirclePos">
-    <div :style="circleStyle" class="circle" >
-    </div>
+    <div :style="circleStyle" class="circle" v-if="deviceStore.isDesktop"></div>
     <div v-for="(_, index) in 5" :key="index" class="carousel-level" :class="`level-${index + 1}`">
       <div class="carousel-track" :class="{ reverse: index % 2 === 1 }" :style="{ animationDuration: `${(index % 2 === 0 ? 40 : 80)}s` }">
         <div v-for="album in getAlbumsForLevel(index)" :key="album.link" class="album-item">
@@ -459,8 +458,17 @@ h1 {
 }
 
 .search-result-card:hover {
-  transform: scale(1.01);
   cursor: pointer;
+  animation: breathing 1s ease-in-out infinite;
+}
+
+@keyframes breathing {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.01);
+  }
 }
 
 .search-result-card:first-child {

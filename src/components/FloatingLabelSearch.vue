@@ -128,7 +128,9 @@ watch(() => themeStore.activeThemeId, () => {
     >
     <label for="" :class="{ 'disabled-input': searchDisabled }">
       <i class="bi bi-search"></i>
-      <span>{{ props.placeholder }}</span>
+      <span>Search and</span>
+      <i class="bi bi-cursor" style="margin: 0 5px; transform: scaleX(-1);"></i>
+      <span>a song to discover more!</span>
     </label>
   </div>
 </template>

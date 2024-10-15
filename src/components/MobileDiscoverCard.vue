@@ -5,6 +5,7 @@ import { truncateString }                   from '@/utils/stringProcessing';
 
 const props = defineProps<{
   track: any,
+  pauseEvent: boolean,
 }>();
 
 const emits = defineEmits<{
@@ -21,6 +22,14 @@ onMounted(async () => {
 watch(async () => props.track, async (newTrack) => {
   const resolved = await newTrack;
   trackColour.value = await getProminentColour(resolved.album.images[0].url);
+});
+
+watch(() => props.pauseEvent, (newValue) => {
+  if (!newValue) return;
+  if (!audioPlayer.value) return;
+  if (isPlaying.value) {
+    playPause();
+  }
 });
 
 // Preview audio tag play logic

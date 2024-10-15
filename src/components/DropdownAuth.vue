@@ -7,7 +7,6 @@ const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BAS
 
 const redirectToLogin = () => {
   const currentUrl = window.location.href;
-  console.log(`${baseUrl}/api/auth/login?redirectUrl=${encodeURIComponent(currentUrl)}`);
   window.location.replace(`${baseUrl}/api/auth/login?redirectUrl=${encodeURIComponent(currentUrl)}`);
 };
 

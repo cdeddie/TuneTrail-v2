@@ -52,6 +52,11 @@ const initializeSwiper = (): void => {
 
   swiper.on('slideChange', () => {
     currentTrackIndex.value = swiper.activeIndex;
+
+    shouldPauseAudio.value = true;
+    setTimeout(() => {
+      shouldPauseAudio.value = false;
+    }, 100);
   });
 };
 
@@ -74,15 +79,19 @@ const playPreviousTrack = () => {
   currentTrackIndex.value = (currentTrackIndex.value - 1 + tracks.value.length) % tracks.value.length;
   swiper.slidePrev();
 };
+
+const shouldPauseAudio = ref<boolean>(false);
 </script>
 
 <template>
   <div class="mobile-card-view">
     <div class="swiper">
       <div class="swiper-wrapper">
+        <!-- todo: add key to this v-for after adding types -->
         <MobileRecommendationCard 
           v-for="(track) in tracks"
           :track="track" 
+          :pause-event="shouldPauseAudio"
           class="swiper-slide card"
           @play-next="playNextTrack"
           @play-prev="playPreviousTrack"

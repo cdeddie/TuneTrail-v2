@@ -4,7 +4,6 @@ export type Album = {
 };
 
 export const getRandomAlbums = (number: number): Album[] => {
-  console.log(albums.length);
   if (number > albums.length) return albums;
   const numberOfAlbums = albums.length;
   const numberOfRandomAlbums = number;

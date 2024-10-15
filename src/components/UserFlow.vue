@@ -84,7 +84,7 @@ const setDropdownRef = (el: Element | ComponentPublicInstance | null, item: stri
         @click.stop="toggleDropdown(item)"
       >
         <template v-if="item === 'profile' && authStore.isLoggedIn">
-          <img :src="authStore.userDetails.images[0].url" class="profile-image" alt="Prf" />
+          <img :src="authStore.userDetails?.images[0].url" class="profile-image" alt="Prf" />
         </template>
         <template v-else>
           <i :class="`bi bi-${item === 'settings' ? 'gear-wide-connected' : item === 'filters' ? 'funnel' : 'person'}`"></i>
