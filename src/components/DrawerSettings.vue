@@ -3,11 +3,7 @@ import { ref, onMounted }                 from 'vue';
 import { RecommendationFilter }           from '@/types/RecommendationType';
 import FilterSwitchButton                 from './FilterSwitchButton.vue';
 import { useRecommendationFilterStore }   from '@/stores/recommendationFilterStore';
-import { themes, useColourThemeStore }    from '@/stores/colourThemeStore';
 import { useAuthStore }                   from '@/stores/authStore';
-
-// Theme settings
-const themeStore = useColourThemeStore();
 
 // Filters
 const store = useRecommendationFilterStore();
@@ -76,22 +72,10 @@ const logoutAndRefresh = async () => {
   </div>
 
   <div class="settings-drawer">
-    <span class="theme-title">Theme</span>
-    <div class="theme-grid">
-      <div
-        v-for="theme in themes"
-        :key="theme.id"
-        class="theme-circle"
-        :class="{ active: theme.id === themeStore.activeThemeId }"
-        @click="themeStore.setActiveTheme(theme.id)"
-      >
-        <div class="theme-half" :style="{ backgroundColor: theme.color1 }"></div>
-        <div class="theme-half" :style="{ backgroundColor: theme.color2 }"></div>
-      </div>
-    </div>
+
   </div>
 
-  <hr style="margin: 5px calc(2 * var(--button-element-left)) 10px calc(2 * var(--button-element-left)); border: 1.5px solid var(--primary-colour);">
+  <hr style="margin: 5px calc(2 * var(--button-element-left)) 10px calc(2 * var(--button-element-left)); border: 1.5px solid black">
 
   <div class="auth-drawer">
     <div class="button-wrapper">
@@ -128,11 +112,10 @@ const logoutAndRefresh = async () => {
   margin-top: 6px;
   font-weight: 700;
   margin-left: calc(2 * var(--button-element-left));
-  color: var(--primary-colour);
+  color: white;
 }
 
 .filter-switch-button {
-  background-color: var(--primary-colour);
   transition: 1s background-color ease;
 }
 
@@ -144,49 +127,8 @@ const logoutAndRefresh = async () => {
   color: white;
 }
 
-.theme-title {
-  font-size: 1.3rem;
-  font-weight: 700;
-  display: block;
-  margin-bottom: 15px;
-  color: var(--primary-colour);
-  margin-left: calc(2 * var(--button-element-left));
-}
-
-.theme-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 40px);
-  grid-template-rows: repeat(2, 40px);
-  gap: 15px;
-  justify-content: center;
-}
-
-.theme-circle {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.3s ease-in-out;
-  display: flex;
-}
-
-.theme-circle.active {
-  transform: scale(1.2);
-  border: 1.5px solid rgba(105, 105, 105, 0.532);
-}
-
-.theme-half {
-  width: 50%;
-  height: 100%;
-}
-
 /* Auth */
 .auth-drawer {
-  background-color: var(--primary-colour);
-  padding: 7px;
-  border-radius: .95rem;
-  color: white;
   width: 40vw;
   display: flex;
   align-items: center;
@@ -201,16 +143,15 @@ const logoutAndRefresh = async () => {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  background-color: var(--secondary-colour);
   border-radius: .7rem;
   width: stretch;
-  padding: 5px 15px;
-  transition: transform 0.3s ease, filter 0.3s ease;
-  color: var(--primary-colour);
+  background-color: rgb(31, 215, 96);
+  border: 3px solid black;
+  padding: 7px 0;
 }
 
 .button-wrapper span {
-  margin-left: 7px;
+  margin-left: 6px;
   display: inline-block;
   white-space: nowrap;
   font-weight: 700;

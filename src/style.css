@@ -8,11 +8,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --primary-colour: #2D283E;
-  --secondary-colour: #4A71FD;
-
-  background-color: var(--primary-colour);
-  transition: background-color ease-in-out .3s;
+  --bg: rgb(0, 0, 0);
+  background-color: var(--bg);
 }
 
 body {

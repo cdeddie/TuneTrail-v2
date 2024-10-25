@@ -51,7 +51,7 @@ const logoutAndRefresh = async () => {
   background-color: rgb(37, 37, 37);
   padding: 7px;
   border-radius: .95rem;
-  color: white;
+  color: black;
 }
 
 .background {
@@ -64,7 +64,7 @@ const logoutAndRefresh = async () => {
   display: flex;
   flex-direction: row;
   align-items: center;
-  background-color: var(--secondary-colour);
+  background-color: rgb(36, 215, 96);
   border-radius: 1rem;
   width: fit-content;
   padding: 5px 15px;

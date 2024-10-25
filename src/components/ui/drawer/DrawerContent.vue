@@ -30,12 +30,12 @@ const forwarded = useForwardPropsEmits(props, emits)
 
 <style scoped>
 .drawer-bg {
-  background-color: var(--secondary-colour);
+  background-color: rgba(23,23,23);
   transition: .5s display background-color ease;
 }
 
 .border {
-  border-color: var(--primary-colour) !important;
+  border-color: black !important;
   border-width: 2px !important;
 }
 </style>

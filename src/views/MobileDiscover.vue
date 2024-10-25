@@ -133,6 +133,7 @@ onMounted(() => {
                 <DrawerDescription>Settings</DrawerDescription>
               </DrawerHeader>
             </VisuallyHidden>
+            <!-- The actual Drawer contents in <DrawerSettings /> -->
             <DrawerSettings />
           </DrawerContent>
         </Drawer>
@@ -318,6 +319,7 @@ onMounted(() => {
 }
 
 .tag-container {
+  border: 1px solid white;
   min-width: fit-content;
   max-height: 5vh;
   display: flex;
@@ -345,7 +347,7 @@ onMounted(() => {
 }
 
 .tag-container img {
-  height: 5vh;
+  height: calc(5vh - 2px);
   border-radius: .5rem 0 0 .5rem;
 }
 

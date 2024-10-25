@@ -18,7 +18,7 @@ async function initializeApp() {
 
   const routes = [
     { path: '/', name: 'home', component: NewLanding },
-    { path: '/discover', name: 'discover', component: DiscoverParent }
+    { path: '/discover', name: 'discover', component: DiscoverParent },
   ];
 
   const router = createRouter({

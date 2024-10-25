@@ -5,7 +5,7 @@ const deviceStore = useDeviceStore();
 </script>
 
 <template>
-  <div>
+  <div style="color: white;">
     <p>Screen width: {{ deviceStore.width }}</p>
     <p>Screen height: {{ deviceStore.height }}</p>
     <p>Is Mobile: {{ deviceStore.isMobile }}</p>

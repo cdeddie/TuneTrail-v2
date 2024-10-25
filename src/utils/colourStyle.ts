@@ -7,6 +7,7 @@ export const pickBWTextColour = (colour: string): string => {
   return luminance > 186 ? '#000000' : '#FFFFFF';
 };
 
+// Pass in as rgb(r, g, b)
 export const darkOrLightFont = (colour: string): boolean => {
   const [r, g, b] = colour.slice(4, -1).split(',').map(Number);
 

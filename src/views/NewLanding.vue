@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, onUnmounted }        from 'vue';
-import { getRandomAlbums, Album }                       from '@/utils/importImages';
-import { useRouter }                                    from 'vue-router';
-import { Tag, createTag }                               from '@/types/TagType';
-import { truncateString }                               from '@/utils/stringProcessing';
-import { useColourThemeStore }                          from '@/stores/colourThemeStore';
-import { useDeviceStore }                               from '@/stores/deviceStore';
-import LandingSearch                                    from '@/components/FloatingLabelSearch.vue';
+import { ref, onMounted, computed }                               from 'vue';
+import { getRandomAlbums, Album }                                 from '@/utils/importImages';
+import { useRouter }                                              from 'vue-router';
+import { Tag, createTag }                                         from '@/types/TagType';
+import { truncateString }                                         from '@/utils/stringProcessing';
+import { useDeviceStore }                                         from '@/stores/deviceStore';
+import LandingSearch                                              from '@/components/FloatingLabelSearch.vue';
 
 const albums = ref<Album[]>([]);
 
@@ -56,93 +55,6 @@ const loadFont = async () => {
   }
 };
 
-// Cursor circle
-const mouseX = ref<number>(0);
-const mouseY = ref<number>(0);
-
-const secondaryColourRGB = ref<string>('');
-const themeStore = useColourThemeStore();
-const secondaryTheme: string = themeStore.getSecondaryColour();
-
-const hexToRGB = (hex: string): string => {
-  const bigint = parseInt(hex.slice(1), 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  return `${r}, ${g}, ${b}`;
-};
-
-const updateCirclePos = (event: MouseEvent) => {
-  mouseX.value = event.clientX;
-  mouseY.value = event.clientY;
-};
-
-// Get the CSS variable value
-onMounted(() => {
-  secondaryColourRGB.value = hexToRGB(secondaryTheme);
-});
-
-// Reactive circle style with dynamic background
-const circleStyle = computed(() => ({
-  left: `${mouseX.value}px`,
-  top: `${mouseY.value}px`,
-  background: `radial-gradient(circle, rgba(${secondaryColourRGB.value}, 0.8) 0%, rgba(${secondaryColourRGB.value}, 0) 100%)`,
-}));
-
-// Possible optimisation: only operate on visible albums using intersection API.
-// Would half the array size (but still only 50 vs 100)
-const updateAlbum = (element: HTMLElement) => {
-  const rect = element.getBoundingClientRect();
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-  const distance = Math.sqrt(
-    Math.pow(centerX - mouseX.value, 2) + Math.pow(centerY - mouseY.value, 2)
-  );
-  return distance <= 250;
-};
-
-const updateAlbumColours = () => {
-  const albums = document.querySelectorAll('.album-item img');
-  albums.forEach((album) => {
-    if (album instanceof HTMLElement) {
-      if (updateAlbum(album)) {
-        album.classList.add('colour');
-      } else {
-        album.classList.remove('colour');
-      }
-    }
-  });
-};
-
-// Animation frame logic
-let animationFrameId = ref<number | null>(null);
-
-const updateLoop = () => {
-  updateAlbumColours();
-  animationFrameId.value = requestAnimationFrame(updateLoop);
-};
-
-const startUpdateLoop = () => {
-  if (animationFrameId.value === null) {
-    updateLoop();
-  }
-};
-
-const stopUpdateLoop = () => {
-  if (animationFrameId.value !== null) {
-    cancelAnimationFrame(animationFrameId.value);
-    animationFrameId.value = null;
-  }
-};
-
-onMounted(() => {
-  startUpdateLoop();
-});
-
-onUnmounted(() => {
-  stopUpdateLoop();
-});
-
 // Search handling
 const searchResults = ref<any>();
 const searchResultsVisible = ref<boolean>(false);
@@ -187,8 +99,8 @@ const truncateLength = computed(() => {
     </div>
   </Transition>
 
-  <div class="landing-page" @mousemove="updateCirclePos">
-    <div :style="circleStyle" class="circle" v-if="deviceStore.isDesktop"></div>
+  <div class="landing-page">
+    <!-- <div :style="circleStyle" class="circle" v-if="deviceStore.isDesktop"></div> -->
     <div v-for="(_, index) in 5" :key="index" class="carousel-level" :class="`level-${index + 1}`">
       <div class="carousel-track" :class="{ reverse: index % 2 === 1 }" :style="{ animationDuration: `${(index % 2 === 0 ? 40 : 80)}s` }">
         <div v-for="album in getAlbumsForLevel(index)" :key="album.link" class="album-item">
@@ -203,7 +115,6 @@ const truncateLength = computed(() => {
       <h1>TuneTrail</h1>
       <div class="search-container">
         <LandingSearch 
-          :placeholder="'Search and select a song to discover more'" 
           :search-category="'tracks'"
           :search-disabled="false"
           :background-colour="'black'"
@@ -299,7 +210,7 @@ const truncateLength = computed(() => {
 #progress-bar {
   width: 0%;
   height: 100%;
-  background-color: var(--secondary-colour);
+  background-color:#1DB954;
   transition: width 0.3s ease;
 }
 
@@ -335,14 +246,6 @@ const truncateLength = computed(() => {
   margin: 10px 0;
 }
 
-.carousel-level:first-child {
-  margin: 20px 0;
-}
-
-.carousel-level:last-child {
-  margin: 20px 0;
-}
-
 .carousel-track {
   display: flex;
   animation: scroll linear infinite;
@@ -364,7 +267,7 @@ const truncateLength = computed(() => {
   height: 100%;
   object-fit: cover;
   border-radius: 10px;
-  filter: grayscale(95%);
+  filter: grayscale(0%);
   transition: filter 2s ease;
 }
 
@@ -396,7 +299,11 @@ h1 {
   font-size: 9vw;
   font-weight: 900;
   text-align: center;
-  color: var(--secondary-colour);
+  cursor: default;
+  color: white;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.3),
+               0 0 10px rgba(0, 0, 0, 0.3),
+               0 0 15px rgba(0, 0, 0, 0.3);
 }
 
 .gradient-text {

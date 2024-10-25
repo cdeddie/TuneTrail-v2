@@ -103,7 +103,7 @@ const setDropdownRef = (el: Element | ComponentPublicInstance | null, item: stri
 
 <style scoped>
 .user-root {
-  background: var(--secondary-colour);
+  background-color: rgb(33, 33, 33);
   border: 1px solid white;
   display: flex;
   flex-direction: row;
@@ -131,7 +131,7 @@ const setDropdownRef = (el: Element | ComponentPublicInstance | null, item: stri
 
 .icon-container:hover,
 .icon-container.active {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(65, 64, 64, 0.417);
   cursor: pointer;
 }
 

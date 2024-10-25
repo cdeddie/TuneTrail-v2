@@ -235,6 +235,8 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background-color: var(--bg);
+  transition: background-color .5s ease;
 }
 
 .search-container {

@@ -24,7 +24,7 @@ export const useDeviceStore = defineStore('device', () => {
     
     const isMobile = width.value < MOBILE_BREAKPOINT;
     const isTablet = hasTouchScreen && width.value >= MOBILE_BREAKPOINT && width.value <= TABLET_BREAKPOINT;
-    const isDesktop = width.value >= TABLET_BREAKPOINT && width > height;
+    const isDesktop = width.value > TABLET_BREAKPOINT && width.value > height.value;
 
     return { isMobile, isTablet, isDesktop };
   };

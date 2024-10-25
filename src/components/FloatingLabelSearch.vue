@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount }           from 'vue';
 import { fetchSearch }                                      from '../utils/fetchSpotifySearch';
+import { useBackgroundStore }                               from '@/stores/backgroundStore';
 import debounce                                             from 'debounce';
-import { useColourThemeStore }                              from '@/stores/colourThemeStore';
 
 // Search flow with other components
 const props = defineProps<{
-  placeholder: string,
+  placeholder?: string,
   backgroundColour?: string,
   searchCategory: string,
   searchDisabled: boolean,
@@ -89,25 +89,28 @@ const updateElementPosition = () => {
 onMounted(() => {
   updateElementPosition();
   window.addEventListener('resize', updateElementPosition);
+  // Colour for floating label 
+  if (props.backgroundColour) document.documentElement.style.setProperty('--search-background-colour', props.backgroundColour);
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updateElementPosition);
 });
 
-// Colour theme setting
-const themeStore = useColourThemeStore();
-
-// If the prop exists, return it otherwise return primary colour of current theme
-const backgroundColour = computed(() => {
-  return props.backgroundColour ?? themeStore.getPrimaryColour();
+// Colour for floating label
+const backgroundStore = useBackgroundStore();
+watch(() => backgroundStore.backgroundColour, (newBackground) => {
+  if (!props.backgroundColour) document.documentElement.style.setProperty('--search-background-colour', newBackground);
 });
 
-document.documentElement.style.setProperty('--search-background-colour', backgroundColour.value);
-
-watch(() => themeStore.activeThemeId, () => {
-  if (!props.backgroundColour) {
-    document.documentElement.style.setProperty('--search-background-colour', themeStore.getPrimaryColour());
+onMounted(() => {
+  // Colour for floating label 
+  if (props.backgroundColour) {
+   document.documentElement.style.setProperty('--search-background-colour', props.backgroundColour);
+  } else {
+    const computedStyle = getComputedStyle(document.documentElement);
+    const currBackground = computedStyle.getPropertyValue('--bg');
+    document.documentElement.style.setProperty('--search-background-colour', currBackground);
   }
 });
 </script>
@@ -128,9 +131,12 @@ watch(() => themeStore.activeThemeId, () => {
     >
     <label for="" :class="{ 'disabled-input': searchDisabled }">
       <i class="bi bi-search"></i>
-      <span>Search and</span>
-      <i class="bi bi-cursor" style="margin: 0 5px; transform: scaleX(-1);"></i>
-      <span>a song to discover more!</span>
+      <div v-if="placeholder">{{ placeholder }}</div>
+      <div v-else>
+        <span>Search and</span>
+        <i class="bi bi-cursor" style="margin: 0 5px; transform: scaleX(-1);"></i>
+        <span>a song to discover more!</span>
+      </div>
     </label>
   </div>
 </template>
@@ -191,6 +197,7 @@ watch(() => themeStore.activeThemeId, () => {
   top: 0;
   font-size: .8rem;
   background-color: var(--search-background-colour);
+  
 }
 
 .input-group input:focus ~ label i,

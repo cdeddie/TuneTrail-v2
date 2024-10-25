@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick }                from 'vue';
-import { getAverageColour }                                         from '@/types/TagType';
+import { getProminentColour }                                       from '@/types/TagType';
 import { darkOrLightFont }                                          from '@/utils/colourStyle';
 import Swiper                                                       from 'swiper';
 import { EffectCoverflow }                                          from 'swiper/modules';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useBackgroundStore }                                       from '@/stores/backgroundStore';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 
@@ -136,9 +137,9 @@ const initializeSwiper = (): void => {
     allowTouchMove: true,
     spaceBetween: 40,
     coverflowEffect: {
-      rotate: 25,
+      rotate: 30,
       stretch: 0,
-      depth: 50,
+      depth: 100,
       modifier: 1,
       slideShadows: true,
     },
@@ -150,6 +151,9 @@ const initializeSwiper = (): void => {
 
   swiper.on('slideChange', () => {
     currentTrackIndex.value = swiper.activeIndex;
+    if (isPlaying.value) {
+      playPause();
+    }
   });
 }
 
@@ -164,11 +168,15 @@ watch(() => props.recommendationData, async (newValue) => {
 });
 
 // Root background current track prominent colour logic
+const backgroundStore = useBackgroundStore();
 const backgroundColour = ref<string>('');
 const updateBackgroundColour = async () => {
+  if (!props.recommendationData) return;
   try {
     const imgUrl = currentTrack.value.album.images[0]?.url; 
-    backgroundColour.value = await getAverageColour(imgUrl);
+    backgroundColour.value = await getProminentColour(imgUrl);
+    backgroundStore.setBackgroundColour(backgroundColour.value);
+    document.documentElement.style.setProperty('--bg', backgroundColour.value);
   } catch (error) {
     console.error('Error extracting prominent color:', error);
     backgroundColour.value = 'transparent';
@@ -185,7 +193,7 @@ watch(currentTrack, () => {
 </script>
 
 <template>
-  <div class="card-view-root" v-if="props.recommendationData?.tracks" :style="{ backgroundColor: backgroundColour }">
+  <div class="card-view-root" v-if="props.recommendationData?.tracks">
     <div class="album-cover" v-if="tracks.length">
       <div class="swiper">
         <div class="swiper-wrapper">
@@ -216,6 +224,84 @@ watch(currentTrack, () => {
         </span>
       </p>
 
+      <div class="controls">
+        <div class="add-placeholder"></div>
+
+        <div class="main-controls">
+          <button class="backward" @click="playPreviousTrack">
+            <img src="@/assets/backward.svg" :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }">
+          </button>
+
+          <!-- Unfortunately don't know a way to conditionally render tooltip other than this -->
+          <div v-if="currentTrack?.preview_url === null">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <button 
+                    class='play-pause-btn'
+                    :class="{ 'disabled': currentTrack?.preview_url === null }"
+                    :disabled="currentTrack?.preview_url === null" 
+                    @click="playPause"
+                  >
+                    <i 
+                      :class="[
+                        'bi', 
+                        isPlaying ? 'bi-pause-circle-fill' : 'bi-play-circle-fill', 
+                        { 'bi-play-circle-fill': currentTrack?.preview_url === null }
+                      ]" 
+                      id="controlIcon"
+                    ></i>
+                  </button>
+                </TooltipTrigger>
+
+                <TooltipContent>
+                  <p style="text-align: center;">
+                    Spotify does not provide all recommended tracks with a preview audio clip.<br>
+                    Login with your Spotify account to fix.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
+          <div v-else>
+            <button 
+              class='play-pause-btn'
+              :class="{ 'disabled': currentTrack?.preview_url === null, 'svg-dark': darkOrLightFont(backgroundColour) }"
+              :disabled="currentTrack?.preview_url === null" 
+              @click="playPause"
+            >
+              <i 
+                :class="[
+                  'bi', 
+                  isPlaying ? 'bi-pause-circle-fill' : 'bi-play-circle-fill', 
+                  { 'bi-play-circle-fill': currentTrack?.preview_url === null }
+                ]" 
+                id="controlIcon"
+              ></i>
+            </button>
+          </div>
+
+          <button class="forward" @click="playNextTrack">
+            <img src="@/assets/forward.svg" :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }">
+          </button>
+        </div>
+
+        <div class="volume-control">
+          <label for="volume-slider" @click="toggleMute">
+            <i :class="[volumeIconClass, { 'svg-dark': darkOrLightFont(backgroundColour) }]"></i>
+          </label>
+          <input 
+            type="range"
+            :class="{ 'slider-dark': darkOrLightFont(backgroundColour) }" 
+            id="volume-slider" 
+            min="0" 
+            max="100" 
+            v-model="volume"
+          >
+        </div>
+      </div>
+
       <audio 
         ref="audioPlayer" 
         @timeupdate="onTimeUpdate"
@@ -235,113 +321,18 @@ watch(currentTrack, () => {
         @input="onProgressInput" 
       />
     </div>
-
-    <div class="controls">
-      <div class="add-placeholder">
-
-      </div>
-
-      <div class="main-controls">
-        <button class="backward" @click="playPreviousTrack">
-          <img src="@/assets/backward.svg" :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }">
-        </button>
-
-        <!-- Unfortunately don't know a way to conditionally render tooltip other than this -->
-        <div v-if="currentTrack?.preview_url === null">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger as-child>
-                <button 
-                  class='play-pause-btn'
-                  :class="{ 'disabled': currentTrack?.preview_url === null }"
-                  :disabled="currentTrack?.preview_url === null" 
-                  @click="playPause"
-                >
-                  <i 
-                    :class="[
-                      'bi', 
-                      isPlaying ? 'bi-pause-circle-fill' : 'bi-play-circle-fill', 
-                      { 'bi-play-circle-fill': currentTrack?.preview_url === null }
-                    ]" 
-                    id="controlIcon"
-                  ></i>
-                </button>
-              </TooltipTrigger>
-
-              <TooltipContent>
-                <p style="text-align: center;">
-                  Spotify does not provide all recommended tracks with a preview audio clip.<br>
-                  Login with your Spotify account to fix.
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-
-        <div v-else>
-          <button 
-            class='play-pause-btn'
-            :class="{ 'disabled': currentTrack?.preview_url === null, 'svg-dark': darkOrLightFont(backgroundColour) }"
-            :disabled="currentTrack?.preview_url === null" 
-            @click="playPause"
-          >
-            <i 
-              :class="[
-                'bi', 
-                isPlaying ? 'bi-pause-circle-fill' : 'bi-play-circle-fill', 
-                { 'bi-play-circle-fill': currentTrack?.preview_url === null }
-              ]" 
-              id="controlIcon"
-            ></i>
-          </button>
-        </div>
-
-        <button class="forward" @click="playNextTrack">
-          <img src="@/assets/forward.svg" :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }">
-        </button>
-      </div>
-
-      <div class="volume-control">
-        <label for="volume-slider" @click="toggleMute">
-          <i :class="[volumeIconClass, { 'svg-dark': darkOrLightFont(backgroundColour) }]"></i>
-        </label>
-        <input 
-          type="range"
-          :class="{ 'slider-dark': darkOrLightFont(backgroundColour) }" 
-          id="volume-slider" 
-          min="0" 
-          max="100" 
-          v-model="volume"
-        >
-      </div>
-    </div>
   </div>
 </template>
 
 <style scoped>
 .card-view-root {
-  position: relative;
   display: flex;
+  flex-grow: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 0 2vw;
   height: 100%;
   border-radius: 1rem;
-  animation: slidein 120s forwards infinite alternate;
-  transition: background-color .7s ease;
-}
-
-@keyframes slidein {
-  0%,
-  100% {
-    background-position: 20% 0%;
-    background-size: 3400px;
-  }
-  50% {
-    background-position: 100% 0%;
-    background-size: 2400px;
-  }
 }
 
 i {
@@ -349,26 +340,25 @@ i {
 }
 
 .album-cover {
-  width: 90%;
-}
-
-.swiper {
-  width: 100%;
-  padding: 40px 0 100px;
+  display: flex;
+  width: 98%;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
 }
 
 .swiper-slide {
   position: relative;
-  max-width: 200px;
+  max-width: 20vw;
   aspect-ratio: 1/1;
-  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .swiper-slide img {
   object-fit: cover;
   width: 100%;
   height: 100%;
-  -webkit-box-reflect: below -5px linear-gradient(transparent, transparent, rgba(0, 0, 0, 0.4));
+  /* -webkit-box-reflect: below -5px linear-gradient(transparent, transparent, rgba(0, 0, 0, 0.4)); */
   transform-origin: center;
   transform: perspective(800px);
   transition: 0.3s ease-out;
@@ -444,10 +434,10 @@ i {
   -webkit-appearance: none;
   width: 100%;
   height: 3px;
-  width: 20vw;
+  width: 25vw;
   background: white;
   border-radius: 4px;
-  margin: 32px 0 24px;
+  margin: 12px 0 24px;
   cursor: pointer;
 }
 
@@ -525,7 +515,6 @@ i {
 
 #volume-slider {
   appearance: none;
-  -webkit-appearance: none;
   height: 3px;
   background: white;
   border-radius: 4px;

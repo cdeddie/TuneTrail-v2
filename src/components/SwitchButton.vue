@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, }         from 'vue';
 
 const props = defineProps<{
   left: string,
@@ -33,7 +33,7 @@ watch(() => props.right, (newValue) => {
 
 <template>
   <div class="toggle-container">
-    <button 
+    <button
       @click="setActive(left)"
       :class="{ active: activeValue === left }"
     >
@@ -76,7 +76,7 @@ button.active::before {
   left: 2px;
   right: 2px;
   bottom: 2px;
-  background-color: var(--secondary-colour);
+  background-color: rgb(33, 33, 33);
   border-radius: .8rem;
   z-index: -1;
 }
