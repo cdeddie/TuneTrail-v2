@@ -62,6 +62,7 @@ const closeDropdown = (event: MouseEvent) => {
 
 onMounted(() => {
   document.addEventListener('click', closeDropdown);
+  console.log('authStore userDetails: ', authStore.userDetails);
 });
 
 onUnmounted(() => {
@@ -84,7 +85,7 @@ const setDropdownRef = (el: Element | ComponentPublicInstance | null, item: stri
         @click.stop="toggleDropdown(item)"
       >
         <template v-if="item === 'profile' && authStore.isLoggedIn">
-          <img :src="authStore.userDetails?.images[0].url" class="profile-image" alt="Prf" />
+          <img :src="authStore.userDetails?.images[0].url" class="profile-image" />
         </template>
         <template v-else>
           <i :class="`bi bi-${item === 'settings' ? 'gear-wide-connected' : item === 'filters' ? 'funnel' : 'person'}`"></i>
