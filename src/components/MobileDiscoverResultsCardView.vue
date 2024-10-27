@@ -374,7 +374,7 @@ watch(currentTrack, () => {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  border: 3px solid black;
+  border: 2px solid black;
 }
 
 .progress-dark {
