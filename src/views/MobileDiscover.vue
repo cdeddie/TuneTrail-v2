@@ -60,8 +60,7 @@ watch(() => [...tags.value], async (newTags) => {
   try {
     const result = await fetchRecommendations(newTags, filterState);
     if (result) {
-      const { data } = result;
-      recommendationResults.value = data;
+      recommendationResults.value = result;
     }
   } finally {
     recommendationDataLoading.value = false;
@@ -73,8 +72,7 @@ watch(filterState, async () => {
   try {
     const result = await fetchRecommendations(tags.value, filterState);
     if (result) {
-      const { data } = result;
-      recommendationResults.value = data;
+      recommendationResults.value = result;
     }
   } finally {
     recommendationDataLoading.value = false;

@@ -14,7 +14,7 @@ export const useRecommendationFilterStore = defineStore('RecommendationFilterSto
     if (value === 'High') {
       filterState[key] = 100;
     } else if (value === 'Low') {
-      filterState[key] = 20;
+      filterState[key] = 0;
     } else {
       filterState[key] = null;
     }

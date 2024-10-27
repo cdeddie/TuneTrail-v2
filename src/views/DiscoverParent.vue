@@ -15,7 +15,7 @@ const currentComponent = shallowRef(
 watch(
   () => [deviceStore.isMobile, deviceStore.isTabletPortrait], 
   ([newIsMobile, newIsTabletPortrait]) => {
-    console.log(`isMobile: ${newIsMobile}, isTabletPortrait: ${newIsTabletPortrait}`);
+    // console.log(`isMobile: ${newIsMobile}, isTabletPortrait: ${newIsTabletPortrait}`);
     currentComponent.value = newIsMobile || newIsTabletPortrait
       ? MobileRecommendation
       : DesktopRecommendation;

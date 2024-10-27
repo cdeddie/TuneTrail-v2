@@ -23,15 +23,16 @@ const artistImageLoaded = ref<boolean[]>([]);
 
 const searchElement = ref<InstanceType<typeof DiscoverSearch> | null>(null);
 
-// Search handling
-const processSearchResults = () => {
-  if (searchResults.value.tracks.items) {
-    albumImageLoaded.value = new Array(searchResults.value.tracks.items.length).fill(false);
-  }
-  if (searchResults.value.artists?.items) {
-    artistImageLoaded.value = new Array(searchResults.value.artists.items.length).fill(false);
-  }
-};
+// Search handling - not really sure what this is. TODO: Know
+// Used to be called on @search-results in <DiscoverSearch />
+// const processSearchResults = () => {
+//   if (searchResults.value?.tracks.items) {
+//     albumImageLoaded.value = new Array(searchResults.value.tracks.items.length).fill(false);
+//   }
+//   if (searchResults.value?.artists.items) {
+//     artistImageLoaded.value = new Array(searchResults.value.artists.items.length).fill(false);
+//   }
+// };
 
 // Switch button handling
 const handleUpdateActive = (activeValue: string) => {
@@ -73,8 +74,7 @@ watch(() => [...tags.value], async (newTags) => {
   try {
     const result = await fetchRecommendations(newTags, filterState);
     if (result) {
-      const { data } = result;
-      recommendationResults.value = data;
+      recommendationResults.value = result;
     }
   } finally {
     recommendationDataLoading.value = false;
@@ -86,8 +86,7 @@ watch(filterState, async () => {
   try {
     const result = await fetchRecommendations(tags.value, filterState);
     if (result) {
-      const { data } = result;
-      recommendationResults.value = data;
+      recommendationResults.value = result;
     }
   } finally {
     recommendationDataLoading.value = false;
@@ -128,7 +127,7 @@ onMounted(() => {
                       : `Add up to 5 ${searchCategory.toLowerCase()}`"
         :search-category="searchCategory"
         :search-disabled="searchDisabled"
-        @search-results="(newSearchResults: any) => { searchResults = newSearchResults; processSearchResults(); }"
+        @search-results="(newSearchResults: any) => { searchResults = newSearchResults; }"
         @search-results-loading="(newSearchLoading: boolean) => searchLoading = newSearchLoading"
         @search-focused="(newSearchFocused: boolean) => searchFocused = newSearchFocused"
         style="width: 100%; margin-left: 40px;"
@@ -158,7 +157,7 @@ onMounted(() => {
             :key="track.id"
             @click="addTag(track)"
           >
-            <div class="img-placeholder" v-show="!albumImageLoaded[index]"></div>
+            <!-- <div class="img-placeholder" v-show="!albumImageLoaded[index]"></div> -->
             <img 
               :src="track.album.images[1]?.url" 
               class="card-img"
@@ -185,7 +184,7 @@ onMounted(() => {
             v-for="(artist, index) in searchResults.artists?.items"
             @click="addTag(artist)"
           >
-            <div class="img-placeholder" v-show="!artistImageLoaded[index]"></div>
+            <!-- <div class="img-placeholder" v-show="!artistImageLoaded[index]"></div> -->
             <img 
               v-if="artist.images[0]" 
               :src="artist.images[1]?.url" 

@@ -100,7 +100,6 @@ const truncateLength = computed(() => {
   </Transition>
 
   <div class="landing-page">
-    <!-- <div :style="circleStyle" class="circle" v-if="deviceStore.isDesktop"></div> -->
     <div v-for="(_, index) in 5" :key="index" class="carousel-level" :class="`level-${index + 1}`">
       <div class="carousel-track" :class="{ reverse: index % 2 === 1 }" :style="{ animationDuration: `${(index % 2 === 0 ? 40 : 80)}s` }">
         <div v-for="album in getAlbumsForLevel(index)" :key="album.link" class="album-item">

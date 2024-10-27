@@ -15,7 +15,7 @@ const activeValue = computed({
   get: () => {
     const value = filterState.value[props.label];
     if (value === 100) return 'High';
-    if (value === 20) return 'Low';
+    if (value === 0) return 'Low';
     return null;
   },
   set: (newValue: 'High' | 'Low' | null) => {
