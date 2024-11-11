@@ -3,6 +3,11 @@ import { ref, watch, onMounted, onBeforeUnmount }           from 'vue';
 import { fetchSearch }                                      from '../utils/fetchSpotifySearch';
 import { useBackgroundStore }                               from '@/stores/backgroundStore';
 import debounce                                             from 'debounce';
+import { useAuthStore }                                     from '@/stores/authStore';
+import { SpotifyArtistSearchResponse }                      from '@/types/SpotifyArtistSearchResponse';
+import { SpotifyTrackSearchResponse }                       from '@/types/SpotifyTrackSearchResponse';
+
+const authStore = useAuthStore();
 
 // Search flow with other components
 const props = defineProps<{
@@ -13,7 +18,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (event: 'search-results', searchResults: any): void
+  (event: 'search-results', searchResults: SpotifyArtistSearchResponse | SpotifyTrackSearchResponse): void
   (event: 'search-results-loading', searchResultsLoading: boolean): void
   (event: 'search-focused', searchFocused: boolean): void
 }>();
@@ -33,12 +38,12 @@ defineExpose({
 // Spotify Searching
 const searchLoading = ref<boolean>(false);
 const searchQuery = ref<string>('');
-const searchResults = ref<any>();
+const searchResults = ref<SpotifyArtistSearchResponse | SpotifyTrackSearchResponse>();
 
 const debouncedFetchSearch = debounce(async (query: string, category: string) => {
   try {
     searchLoading.value = true;
-    const result = await fetchSearch(query, category);
+    const result = await fetchSearch(query, category, authStore.isLoggedIn);
     searchResults.value = result;
   } catch (error) {
     console.error(error);
@@ -57,7 +62,7 @@ watch(
 );
 
 watch(searchResults, async (newResults, oldResults) => {
-  if (newResults != oldResults) {
+  if (newResults != oldResults && searchResults.value !== undefined) {
     emit('search-results', searchResults.value);
   }
 });

@@ -6,11 +6,12 @@ import Swiper                                           from 'swiper';
 import { EffectCoverflow }                              from 'swiper/modules';
 import { useBackgroundStore }                           from '@/stores/backgroundStore';
 import { truncateString }                               from '@/utils/stringProcessing';
+import { SpotifyRecommendationResponse }                from '@/types/SpotifyRecommendationResponse';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 
 const props = defineProps<{
-  recommendationData: any,
+  recommendationData: SpotifyRecommendationResponse,
 }>();
 
 const isPlaying = ref<boolean>(false);
@@ -28,7 +29,7 @@ const tracks = computed(() => {
   }
 });
 
-const currentTrack = computed(() => tracks.value ? tracks.value[currentTrackIndex.value] : 0);
+const currentTrack = computed(() => tracks.value ? tracks.value[currentTrackIndex.value] : null);
 
 // Audio player logic
 const progressValue = computed(() => {
@@ -134,7 +135,9 @@ watch(() => props.recommendationData, async (newValue) => {
     if (swiper) {
       swiper.destroy();
     }
+    currentTrackIndex.value = 0;
     initializeSwiper();
+    updateBackgroundColour();
   }
 });
 
@@ -155,9 +158,9 @@ const backgroundStore = useBackgroundStore();
 const backgroundColour = ref<string>('');
 
 const updateBackgroundColour = async () => {
-  if (!props.recommendationData) return;
+  if (!currentTrack.value) return;
   try {
-    const imgUrl = currentTrack.value.album.images[0]?.url;
+    const imgUrl = currentTrack.value.album.images[0].url;
     backgroundColour.value = await getProminentColour(imgUrl);
     backgroundStore.setBackgroundColour(backgroundColour.value);
     document.documentElement.style.setProperty('--bg', backgroundColour.value);
@@ -190,9 +193,9 @@ watch(currentTrack, () => {
     </div>
 
     <div class="mobile-player">
-      <div class="track-info">
+      <div class="track-info" v-if="currentTrack">
         <h2 :class="{ 'track-name-dark': darkOrLightFont(backgroundColour) }">
-          <a :href="currentTrack?.uri">{{ truncateString(currentTrack?.name, 32) }}</a>
+          <a :href="currentTrack?.uri">{{ truncateString(currentTrack.name, 32) }}</a>
         </h2>
         <p>
           <span v-for="(artist, index) in currentTrack?.artists" :key="artist.id">
@@ -258,11 +261,12 @@ watch(currentTrack, () => {
         </div>
       </div>
 
-      <audio 
+      <audio
+        v-if="currentTrack?.preview_url"
         ref="audioPlayer" 
         @timeupdate="onTimeUpdate"
         @ended="onEnded"
-        :src="currentTrack?.preview_url"
+        :src="currentTrack.preview_url"
       ></audio>
     </div>
   </div>

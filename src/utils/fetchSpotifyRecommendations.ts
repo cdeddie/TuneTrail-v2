@@ -1,9 +1,10 @@
-import { Tag }                  from '@/types/TagType';
-import { RecommendationFilter } from '@/types/RecommendationType';
+import { Tag }                            from '@/types/TagType';
+import { RecommendationFilter }           from '@/types/RecommendationType';
+import { SpotifyRecommendationResponse }  from '@/types/SpotifyRecommendationResponse';
 
 const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BASE_URL;
 
-export const fetchRecommendations = async (tagObject: Tag[], recObject: RecommendationFilter | undefined) => {
+export const fetchRecommendations = async (tagObject: Tag[], recObject: RecommendationFilter | undefined, isLoggedIn: boolean) => {
 
   if (tagObject.length === 0) return;
 
@@ -21,7 +22,12 @@ export const fetchRecommendations = async (tagObject: Tag[], recObject: Recommen
     const limit = 25; // TODO implement client manipulation
     const seedType = tagObject[0]?.type;
 
-    let url = `${baseUrl}/api/recommendations?limit=${limit}&tags=${tags}&recTargets=${recTargets}&seedType=${seedType}`;
+    let url;
+    if (isLoggedIn) {
+      url = `${baseUrl}/api/recommendation?limit=${limit}&tags=${tags}&recTargets=${recTargets}&seedType=${seedType}`;
+    } else {
+      url = `${baseUrl}/api/public-recommendation?limit=${limit}&tags=${tags}&recTargets=${recTargets}&seedType=${seedType}`;
+    }
 
     const response = await fetch(url, { credentials: 'include' });
 
@@ -29,7 +35,7 @@ export const fetchRecommendations = async (tagObject: Tag[], recObject: Recommen
       throw new Error('Network response was not ok');
     }
 
-    const data: any = await response.json();
+    const data: SpotifyRecommendationResponse = await response.json();
     return data;
   } catch (error) {
     console.error('Error fetching recommendations', error);

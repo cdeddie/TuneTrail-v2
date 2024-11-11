@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import { ref, watch, onMounted }        from 'vue';
-import { useRoute }                     from 'vue-router';
-import DiscoverSearch                   from '@/components/FloatingLabelSearch.vue';
-import SwitchButton                     from '@/components/SwitchButton.vue';
-import UserFlow                         from '@/components/UserFlow.vue';
-import RecommendationResults            from '@/components/DiscoverResults.vue';
-import { Tag, createTag }               from '@/types/TagType';
-import { pickBWTextColour }             from '@/utils/colourStyle';
-import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
-import { fetchRecommendations }         from '@/utils/fetchSpotifyRecommendations';
-import { truncateString }               from '@/utils/stringProcessing';
-import { Skeleton }                     from '@/components/ui/skeleton';
+import { ref, watch, onMounted }          from 'vue';
+import { useRoute }                       from 'vue-router';
+import DiscoverSearch                     from '@/components/FloatingLabelSearch.vue';
+import SwitchButton                       from '@/components/SwitchButton.vue';
+import UserFlow                           from '@/components/UserFlow.vue';
+import RecommendationResults              from '@/components/DiscoverResults.vue';
+import { Tag, createTag }                 from '@/types/TagType';
+import { pickBWTextColour }               from '@/utils/colourStyle';
+import { useRecommendationFilterStore }   from '@/stores/recommendationFilterStore';
+import { fetchRecommendations }           from '@/utils/fetchSpotifyRecommendations';
+import { truncateString }                 from '@/utils/stringProcessing';
+import { Skeleton }                       from '@/components/ui/skeleton';
+import { useAuthStore }                   from '@/stores/authStore';
+import { SpotifyRecommendationResponse }  from '@/types/SpotifyRecommendationResponse';
+
+const authStore = useAuthStore();
 
 const searchCategory = ref<string>('Tracks');
 const searchResults = ref<any>();
@@ -62,17 +66,20 @@ watch(tags, (newTags) => {
   searchDisabled.value = newTags.length >= 5;
 }, { immediate: true, deep: true });
 
-// Recommendation handling
+// RECOMMENDATION HANDLING
 const store = useRecommendationFilterStore();
 const filterState = store.filterState;
 
-const recommendationResults = ref<any>();
+const recommendationResults = ref<SpotifyRecommendationResponse>({
+  tracks: [],
+  seeds: []
+});
 const recommendationDataLoading = ref<boolean>(false);
 
 watch(() => [...tags.value], async (newTags) => {
   recommendationDataLoading.value = true;
   try {
-    const result = await fetchRecommendations(newTags, filterState);
+    const result = await fetchRecommendations(newTags, filterState, authStore.isLoggedIn);
     if (result) {
       recommendationResults.value = result;
     }
@@ -84,7 +91,7 @@ watch(() => [...tags.value], async (newTags) => {
 watch(filterState, async () => {
   recommendationDataLoading.value = true;
   try {
-    const result = await fetchRecommendations(tags.value, filterState);
+    const result = await fetchRecommendations(tags.value, filterState, authStore.isLoggedIn);
     if (result) {
       recommendationResults.value = result;
     }

@@ -4,9 +4,10 @@ import { useDeviceStore }                     from '@/stores/deviceStore';
 import RecommendationResultsListView          from './DiscoverResultsListView.vue';
 import RecommendationResultsCardView          from './DiscoverResultsCardView.vue';
 import MobileRecommendationResultsCardView    from './MobileDiscoverResultsCardView.vue';
+import { SpotifyRecommendationResponse }      from '@/types/SpotifyRecommendationResponse';
 
 defineProps<{
-  recommendationData: any,
+  recommendationData: SpotifyRecommendationResponse,
   recommendationDataLoading: boolean,
 }>();
 

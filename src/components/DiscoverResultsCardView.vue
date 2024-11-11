@@ -8,9 +8,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useBackgroundStore }                                       from '@/stores/backgroundStore';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
+import { SpotifyRecommendationResponse } from '@/types/SpotifyRecommendationResponse';
 
 const props = defineProps<{
-  recommendationData: any,
+  recommendationData: SpotifyRecommendationResponse,
 }>();
 
 const isPlaying = ref<boolean>(false);
@@ -24,7 +25,7 @@ const tracks = computed(() => {
   }
 });
 
-const currentTrack = computed(() => tracks.value ? tracks.value[currentTrackIndex.value] : 0);
+const currentTrack = computed(() => tracks.value ? tracks.value[currentTrackIndex.value] : null);
 
 const audioPlayer = ref<HTMLAudioElement | null>(null);
 const currentTime = ref(0);
@@ -163,7 +164,10 @@ watch(() => props.recommendationData, async (newValue) => {
     if (swiper) {
       swiper.destroy();
     }
+    currentTrackIndex.value = 0;
+    console.log('Index: ', currentTrackIndex.value);
     initializeSwiper();
+    updateBackgroundColour();
   }
 });
 
@@ -171,7 +175,7 @@ watch(() => props.recommendationData, async (newValue) => {
 const backgroundStore = useBackgroundStore();
 const backgroundColour = ref<string>('');
 const updateBackgroundColour = async () => {
-  if (!props.recommendationData) return;
+  if (!currentTrack.value) return;
   try {
     const imgUrl = currentTrack.value.album.images[0]?.url; 
     backgroundColour.value = await getProminentColour(imgUrl);
@@ -219,7 +223,7 @@ watch(currentTrack, () => {
           <span 
             class="track-artist" 
             :class="{ 'track-artist-dark': darkOrLightFont(backgroundColour) }" 
-            v-if="index < currentTrack.artists.length - 1"
+            v-if="currentTrack && index < currentTrack.artists.length - 1"
           >, </span>
         </span>
       </p>
@@ -233,7 +237,7 @@ watch(currentTrack, () => {
           </button>
 
           <!-- Unfortunately don't know a way to conditionally render tooltip other than this -->
-          <div v-if="currentTrack?.preview_url === null">
+          <div v-if="currentTrack && currentTrack.preview_url === null">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger as-child>
@@ -256,8 +260,7 @@ watch(currentTrack, () => {
 
                 <TooltipContent>
                   <p style="text-align: center;">
-                    Spotify does not provide all recommended tracks with a preview audio clip.<br>
-                    Login with your Spotify account to fix.
+                    Approximately 20% of Spotify songs will not have a preview audio clip unfortunately. <br>You can toggle them appearing in recommendations in the settings.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -303,6 +306,7 @@ watch(currentTrack, () => {
       </div>
 
       <audio 
+        v-if="currentTrack?.preview_url"
         ref="audioPlayer" 
         @timeupdate="onTimeUpdate"
         @ended="onEnded"

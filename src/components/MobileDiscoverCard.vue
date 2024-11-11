@@ -2,9 +2,10 @@
 import { ref, onMounted, computed, watch }  from 'vue';
 import { getProminentColour }               from '@/types/TagType';
 import { truncateString }                   from '@/utils/stringProcessing';
+import { Track }                            from '@/types/SpotifyCommonTypes';
 
 const props = defineProps<{
-  track: any,
+  track: Track,
   pauseEvent: boolean,
 }>();
 
@@ -100,6 +101,7 @@ const playPreviousTrack = () => {
       </p>
 
       <audio 
+        v-if="track.preview_url"
         ref="audioPlayer" 
         @timeupdate="onTimeUpdate"
         @ended="onEnded"

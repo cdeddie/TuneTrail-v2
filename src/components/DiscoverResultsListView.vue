@@ -2,9 +2,10 @@
 import { ref, watch, nextTick, onUnmounted }  from 'vue';
 import { truncateString }                     from '@/utils/stringProcessing';
 import { Skeleton }                           from '@/components/ui/skeleton'
+import { SpotifyRecommendationResponse } from '@/types/SpotifyRecommendationResponse';
 
 const props = defineProps<{
-  recommendationData: any,
+  recommendationData: SpotifyRecommendationResponse,
   recommendationDataLoading: boolean,
 }>();
 
@@ -137,7 +138,7 @@ onUnmounted(() => {
 }
 
 .result-card:hover {
-  transform: scale(1.01);
+  background-color: rgba(72, 72, 72, 0.279);
   cursor: pointer;
 }
 
