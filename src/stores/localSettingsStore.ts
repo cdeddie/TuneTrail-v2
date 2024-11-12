@@ -6,25 +6,22 @@ export const useLocalSettingsStore = defineStore('localSettings', () => {
   const excludeNullPreview = ref<boolean>(false);     // Excludes tracks without preview URLs from recommendation results
   const preserveBG = ref<boolean>(false);             // Preserves the background color setting (stops updating bg)
   const backgroundColour = ref<string>('black');      // Background color
+  const audioVolume = ref<number>(50);                // Audio volume
 
   // Load settings from localStorage on store initialization
   onMounted(() => {
     const savedSettings = loadFromLocalStorage<{ 
       excludeNullPreview: boolean; 
       preserveBG: boolean; 
-      backgroundColour: string 
+      backgroundColour: string;
+      audioVolume: number;
     }>('localSettings');
 
     if (savedSettings) {
-      if (typeof savedSettings.excludeNullPreview === 'boolean') {
-        excludeNullPreview.value = savedSettings.excludeNullPreview;
-      }
-      if (typeof savedSettings.preserveBG === 'boolean') {
-        preserveBG.value = savedSettings.preserveBG;
-      }
-      if (typeof savedSettings.backgroundColour === 'string') {
-        backgroundColour.value = savedSettings.backgroundColour;
-      }
+      excludeNullPreview.value = savedSettings.excludeNullPreview;
+      preserveBG.value = savedSettings.preserveBG;
+      backgroundColour.value = savedSettings.backgroundColour;
+      audioVolume.value = savedSettings.audioVolume;
     }
 
     if (preserveBG) {
@@ -32,11 +29,12 @@ export const useLocalSettingsStore = defineStore('localSettings', () => {
     }
   });
 
-  watch([excludeNullPreview, preserveBG, backgroundColour], ([newExcludeNullPreview, newPreserveBG, newBackgroundColour]) => {
+  watch([excludeNullPreview, preserveBG, backgroundColour, audioVolume], ([newExcludeNullPreview, newPreserveBG, newBackgroundColour, newAudioVolume]) => {
     saveToLocalStorage('localSettings', {
       excludeNullPreview: newExcludeNullPreview,
       preserveBG: newPreserveBG,
       backgroundColour: newBackgroundColour,
+      audioVolume: newAudioVolume,
     });
   });
 
@@ -44,5 +42,5 @@ export const useLocalSettingsStore = defineStore('localSettings', () => {
     backgroundColour.value = colour;
   };
 
-  return { excludeNullPreview, preserveBG, backgroundColour, setBackgroundColour };
+  return { excludeNullPreview, preserveBG, backgroundColour, audioVolume, setBackgroundColour };
 });

@@ -23,7 +23,6 @@ const localSettingsStore = useLocalSettingsStore();
 
 const tracks = computed(() => {
   if (props.recommendationData.tracks && localSettingsStore.excludeNullPreview) {
-    console.log('ha')
     let data = [];
     for (let i = 0; i < props.recommendationData.tracks.length; i++) {
       if (data.length == 25) break;
@@ -45,9 +44,9 @@ const currentTrack = computed(() => tracks.value ? tracks.value[currentTrackInde
 const audioPlayer = ref<HTMLAudioElement | null>(null);
 const currentTime = ref(0);
 const TOTAL_DURATION = 30;
-
-const volume = ref(50);
-const previousVolume = ref(50);
+console.log('d', localSettingsStore.audioVolume);
+const volume = ref<number>(localSettingsStore.audioVolume);
+const previousVolume = ref<number>(localSettingsStore.audioVolume);
 
 let swiper: Swiper;
 
@@ -117,9 +116,15 @@ const toggleMute = () => {
   }
 };
 
+watch(() => localSettingsStore.audioVolume, (newVolume) => {
+  volume.value = newVolume;
+  previousVolume.value = newVolume;
+}, { immediate: true });
+
 watch([() => audioPlayer.value, volume], () => {
   if (audioPlayer.value) {
     audioPlayer.value.volume = volume.value / 100;
+    localSettingsStore.audioVolume = volume.value;
   }
 }, { immediate: true });
 
