@@ -4,7 +4,7 @@ import { SpotifyRecommendationResponse }  from '@/types/SpotifyRecommendationRes
 
 const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BASE_URL;
 
-export const fetchRecommendations = async (tagObject: Tag[], recObject: RecommendationFilter | undefined, isLoggedIn: boolean) => {
+export const fetchRecommendations = async (tagObject: Tag[], recObject: RecommendationFilter | undefined, isLoggedIn: boolean, limit: number) => {
 
   if (tagObject.length === 0) return;
 
@@ -19,7 +19,6 @@ export const fetchRecommendations = async (tagObject: Tag[], recObject: Recommen
       recTargets='';
     }
 
-    const limit = 25; // TODO implement client manipulation
     const seedType = tagObject[0]?.type;
 
     let url;

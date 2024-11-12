@@ -39,17 +39,11 @@ const positionDropdown = (dropdown: string) => {
   const dropdownElement = dropdownRefs.value[dropdown];
   if (dropdownElement) {
     const rect = dropdownElement.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    
-    if (rect.right > viewportWidth) {
-      dropdownElement.style.left = 'auto';
-      dropdownElement.style.right = '0';
-      dropdownElement.style.transform = 'translateX(0)';
-    } else {
-      dropdownElement.style.left = '50%';
-      dropdownElement.style.right = 'auto';
-      dropdownElement.style.transform = 'translateX(-50%)';
-    }
+
+    dropdownElement.style.position = 'fixed';
+    dropdownElement.style.right = '10px';
+    dropdownElement.style.left = 'auto';
+    dropdownElement.style.top = `calc(${rect.top}px + 1px)`;
   }
 };
 
@@ -62,7 +56,6 @@ const closeDropdown = (event: MouseEvent) => {
 
 onMounted(() => {
   document.addEventListener('click', closeDropdown);
-  console.log('authStore userDetails: ', authStore.userDetails);
 });
 
 onUnmounted(() => {
@@ -145,8 +138,6 @@ i {
 .dropdown {
   position: absolute;
   top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
   z-index: 10;
   margin-top: 0.5rem;
 }
@@ -166,6 +157,6 @@ i {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: translateX(-50%) translateY(-10px);
+  transform: translateY(-10px);
 }
 </style>

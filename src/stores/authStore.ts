@@ -13,8 +13,6 @@ export const useAuthStore = defineStore('AuthStore', () => {
       const response = await fetch(url, { credentials: 'include' });
       const loginData = await response.json();
 
-      console.log('/status response: ', loginData);
-
       userDetails.value = loginData.spotifyInfo ?? null;
       isLoggedIn.value = loginData.isLoggedIn ?? false;
     } catch (error) {

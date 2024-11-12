@@ -58,6 +58,7 @@ const deviceStore = useDeviceStore();
         class="results-cards" 
         v-else-if="activeIndex === 0" 
         :recommendation-data="recommendationData" 
+        :recommendation-data-loading="recommendationDataLoading"
       />
     </div>
 
@@ -72,6 +73,7 @@ const deviceStore = useDeviceStore();
         class="mobile-results-cards"
         v-else-if="activeIndex === 0"
         :recommendation-data="recommendationData"
+        :recommendation-data-loading="recommendationDataLoading"
       />
     </div>
   </div>

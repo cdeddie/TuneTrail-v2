@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount }           from 'vue';
 import { fetchSearch }                                      from '../utils/fetchSpotifySearch';
-import { useBackgroundStore }                               from '@/stores/backgroundStore';
+import { useLocalSettingsStore }                            from '@/stores/localSettingsStore';
 import debounce                                             from 'debounce';
 import { useAuthStore }                                     from '@/stores/authStore';
 import { SpotifyArtistSearchResponse }                      from '@/types/SpotifyArtistSearchResponse';
@@ -103,18 +103,20 @@ onBeforeUnmount(() => {
 });
 
 // Colour for floating label
-const backgroundStore = useBackgroundStore();
-watch(() => backgroundStore.backgroundColour, (newBackground) => {
-  if (!props.backgroundColour) document.documentElement.style.setProperty('--search-background-colour', newBackground);
+const localSettingsStore = useLocalSettingsStore();
+watch(() => localSettingsStore.backgroundColour, (newBackground) => {
+  if (!props.backgroundColour) {
+    document.documentElement.style.setProperty('--search-background-colour', newBackground);
+  }
 });
 
 onMounted(() => {
   // Colour for floating label 
   if (props.backgroundColour) {
-   document.documentElement.style.setProperty('--search-background-colour', props.backgroundColour);
+    document.documentElement.style.setProperty('--search-background-colour', props.backgroundColour);
   } else {
     const computedStyle = getComputedStyle(document.documentElement);
-    const currBackground = computedStyle.getPropertyValue('--bg');
+    const currBackground = computedStyle.getPropertyValue('--bg') || localSettingsStore.backgroundColour;
     document.documentElement.style.setProperty('--search-background-colour', currBackground);
   }
 });

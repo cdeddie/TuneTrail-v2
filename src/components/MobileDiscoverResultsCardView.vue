@@ -4,14 +4,16 @@ import { getProminentColour }                           from '@/types/TagType';
 import { darkOrLightFont }                              from '@/utils/colourStyle';
 import Swiper                                           from 'swiper';
 import { EffectCoverflow }                              from 'swiper/modules';
-import { useBackgroundStore }                           from '@/stores/backgroundStore';
+import { useLocalSettingsStore }                        from '@/stores/localSettingsStore';
 import { truncateString }                               from '@/utils/stringProcessing';
+import LoadingSpinner                                   from './LoadingSpinner.vue';
 import { SpotifyRecommendationResponse }                from '@/types/SpotifyRecommendationResponse';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 
 const props = defineProps<{
   recommendationData: SpotifyRecommendationResponse,
+  recommendationDataLoading: boolean,
 }>();
 
 const isPlaying = ref<boolean>(false);
@@ -153,17 +155,22 @@ const playPreviousTrack = () => {
   if (isPlaying.value) playPause();
 };
 
-// Background color logic
-const backgroundStore = useBackgroundStore();
+// Root background current track prominent colour logic
+const localSettingsStore = useLocalSettingsStore();
 const backgroundColour = ref<string>('');
 
 const updateBackgroundColour = async () => {
   if (!currentTrack.value) return;
+
   try {
-    const imgUrl = currentTrack.value.album.images[0].url;
+    const imgUrl = currentTrack.value.album.images[0]?.url;
     backgroundColour.value = await getProminentColour(imgUrl);
-    backgroundStore.setBackgroundColour(backgroundColour.value);
-    document.documentElement.style.setProperty('--bg', backgroundColour.value);
+
+    if (!localSettingsStore.preserveBG) {
+      // Update the background colour in the store and CSS variable
+      localSettingsStore.backgroundColour = backgroundColour.value;
+      document.documentElement.style.setProperty('--bg', backgroundColour.value);
+    }
   } catch (error) {
     console.error('Error extracting prominent color:', error);
     backgroundColour.value = 'transparent';
@@ -180,7 +187,7 @@ watch(currentTrack, () => {
 </script>
 
 <template>
-  <div class="mobile-card-view" v-if="props.recommendationData?.tracks">
+  <div class="mobile-card-view" v-if="!props.recommendationDataLoading && props.recommendationData">
     <div class="swiper">
       <div class="swiper-wrapper">
         <div v-for="(track) in tracks" :key="track.id" class="swiper-slide">
@@ -256,8 +263,8 @@ watch(currentTrack, () => {
       <div class="preview-error" v-if="currentTrack?.preview_url === null">
         <div :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }">
           <i class="bi bi-info-circle"></i>
-          Spotify does not provide all recommended tracks with a preview audio clip.
-          Login with your Spotify account to fix.
+          20-50% of Spotify songs don't have a preview audio clip.
+          <br>You can toggle them appearing in the settings.
         </div>
       </div>
 
@@ -269,6 +276,9 @@ watch(currentTrack, () => {
         :src="currentTrack.preview_url"
       ></audio>
     </div>
+  </div>
+  <div v-else-if="recommendationDataLoading" style="width: 100vw; display: flex; justify-content: center; overflow: hidden;">
+    <LoadingSpinner :use-colors="false" style="margin-top: 20vh;" />
   </div>
 </template>
 

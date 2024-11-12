@@ -4,7 +4,7 @@ import { useRoute }                       from 'vue-router';
 import DiscoverSearch                     from '@/components/FloatingLabelSearch.vue';
 import SwitchButton                       from '@/components/SwitchButton.vue';
 import UserFlow                           from '@/components/UserFlow.vue';
-import RecommendationResults              from '@/components/DiscoverResults.vue';
+import DiscoverResults                    from '@/components/DiscoverResults.vue';
 import { Tag, createTag }                 from '@/types/TagType';
 import { pickBWTextColour }               from '@/utils/colourStyle';
 import { useRecommendationFilterStore }   from '@/stores/recommendationFilterStore';
@@ -77,9 +77,10 @@ const recommendationResults = ref<SpotifyRecommendationResponse>({
 const recommendationDataLoading = ref<boolean>(false);
 
 watch(() => [...tags.value], async (newTags) => {
+  if (newTags.length === 0) return;
   recommendationDataLoading.value = true;
   try {
-    const result = await fetchRecommendations(newTags, filterState, authStore.isLoggedIn);
+    const result = await fetchRecommendations(newTags, filterState, authStore.isLoggedIn, 50);
     if (result) {
       recommendationResults.value = result;
     }
@@ -91,7 +92,7 @@ watch(() => [...tags.value], async (newTags) => {
 watch(filterState, async () => {
   recommendationDataLoading.value = true;
   try {
-    const result = await fetchRecommendations(tags.value, filterState, authStore.isLoggedIn);
+    const result = await fetchRecommendations(tags.value, filterState, authStore.isLoggedIn, 50);
     if (result) {
       recommendationResults.value = result;
     }
@@ -229,7 +230,7 @@ onMounted(() => {
     </div>
 
     <UserFlow class="user-flow-parent" />
-    <RecommendationResults 
+    <DiscoverResults 
       :recommendation-data="recommendationResults" 
       :recommendation-data-loading="recommendationDataLoading"
     />
@@ -348,6 +349,7 @@ onMounted(() => {
 }
 
 .tag-container {
+  border: 1px solid white;
   margin-top: 10px;
   max-height: 5vh;
   display: flex;
@@ -374,7 +376,7 @@ onMounted(() => {
 }
 
 .tag-container img {
-  height: 5vh;
+  height: calc(5vh - 2px);
   border-radius: .5rem 0 0 .5rem;
 }
 

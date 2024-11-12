@@ -122,14 +122,14 @@ onUnmounted(() => {
 .result-card {
   display: flex;
   flex-direction: row;
-  padding: 5px 0;
+  padding: 4px 0;
+  box-sizing: border-box;
   align-items: center;
-  background-clip: content-box;
   min-height: 90px;
   
   opacity: 0;
   transform: translateY(30px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity 0.5s ease, transform 0.5s ease, background-color .3s ease;
 }
 
 .result-card.visible {
@@ -142,24 +142,25 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
-.result-card:first-child {
-  padding-top: 10px;
+.result-card:hover .card-img {
+  transform: scale(1.15);
 }
 
 .result-card:last-child {
-  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .card-img {
   height: 80px;
   border-radius: .2rem;
+  transition: transform 0.3s ease;
 }
 
 .card-info {
   display: flex;
   flex-direction: column;
   margin-top: auto;
-  margin-left: 10px;
+  margin-left: 16px;
   color: white;
 }
 

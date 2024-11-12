@@ -65,7 +65,7 @@ const recommendationDataLoading = ref<boolean>(false);
 watch(() => [...tags.value], async (newTags) => {
   recommendationDataLoading.value = true;
   try {
-    const result = await fetchRecommendations(newTags, filterState, authStore.isLoggedIn);
+    const result = await fetchRecommendations(newTags, filterState, authStore.isLoggedIn, 50);
     if (result) {
       recommendationResults.value = result;
     }
@@ -77,7 +77,7 @@ watch(() => [...tags.value], async (newTags) => {
 watch(filterState, async () => {
   recommendationDataLoading.value = true;
   try {
-    const result = await fetchRecommendations(tags.value, filterState, authStore.isLoggedIn);
+    const result = await fetchRecommendations(tags.value, filterState, authStore.isLoggedIn, 50);
     if (result) {
       recommendationResults.value = result;
     }
@@ -192,7 +192,7 @@ onMounted(() => {
           :style="{ backgroundColor: convertRgbToRgba(tag.colour, 0.5) }"
         >
           <img v-if="tag.image != ''" :src="tag.image">
-          <span v-if="tag.image != ''" :style="{ color: pickBWTextColour(tag.colour) }">{{ tag.name }}</span>
+          <span v-if="tag.image != ''" :style="{ color: pickBWTextColour(tag.colour) }">{{ truncateString(tag.name, 15) }}</span>
           <i v-else class="bi bi-person-fill img-alt"></i>
           <i 
             class="fa fa-times-circle"

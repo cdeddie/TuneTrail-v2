@@ -5,20 +5,35 @@ import { darkOrLightFont }                                          from '@/util
 import Swiper                                                       from 'swiper';
 import { EffectCoverflow }                                          from 'swiper/modules';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useBackgroundStore }                                       from '@/stores/backgroundStore';
+import { useLocalSettingsStore }                                    from '@/stores/localSettingsStore';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
-import { SpotifyRecommendationResponse } from '@/types/SpotifyRecommendationResponse';
+import { SpotifyRecommendationResponse }                            from '@/types/SpotifyRecommendationResponse';
+import LoadingSpinner                                               from './LoadingSpinner.vue';
 
 const props = defineProps<{
   recommendationData: SpotifyRecommendationResponse,
+  recommendationDataLoading: boolean,
 }>();
 
 const isPlaying = ref<boolean>(false);
 const currentTrackIndex = ref<number>(0);
 
+const localSettingsStore = useLocalSettingsStore();
+
 const tracks = computed(() => {
-  if (props.recommendationData && props.recommendationData.tracks) {
+  if (props.recommendationData.tracks && localSettingsStore.excludeNullPreview) {
+    console.log('ha')
+    let data = [];
+    for (let i = 0; i < props.recommendationData.tracks.length; i++) {
+      if (data.length == 25) break;
+      const curr = props.recommendationData.tracks[i];
+      if (curr.preview_url !== null && curr.preview_url !== undefined) {
+        data.push(curr);
+      }
+    }
+    return data;
+  } else if (props.recommendationData.tracks && !localSettingsStore.excludeNullPreview) {
     return props.recommendationData.tracks;
   } else {
     return [];
@@ -165,27 +180,41 @@ watch(() => props.recommendationData, async (newValue) => {
       swiper.destroy();
     }
     currentTrackIndex.value = 0;
-    console.log('Index: ', currentTrackIndex.value);
     initializeSwiper();
+    if (isPlaying.value) playPause();
     updateBackgroundColour();
   }
 });
 
 // Root background current track prominent colour logic
-const backgroundStore = useBackgroundStore();
 const backgroundColour = ref<string>('');
+
 const updateBackgroundColour = async () => {
   if (!currentTrack.value) return;
+
   try {
-    const imgUrl = currentTrack.value.album.images[0]?.url; 
+    const imgUrl = currentTrack.value.album.images[0]?.url;
     backgroundColour.value = await getProminentColour(imgUrl);
-    backgroundStore.setBackgroundColour(backgroundColour.value);
-    document.documentElement.style.setProperty('--bg', backgroundColour.value);
+
+    if (!localSettingsStore.preserveBG) {
+      // Update the background colour in the store and CSS variable
+      localSettingsStore.backgroundColour = backgroundColour.value;
+      document.documentElement.style.setProperty('--bg', backgroundColour.value);
+    }
   } catch (error) {
     console.error('Error extracting prominent color:', error);
     backgroundColour.value = 'transparent';
   }
 };
+
+// When user deselects preserve bg option, need to update bg to current track
+watch(() => localSettingsStore.preserveBG, (newValue) => {
+  if (!newValue) {
+    localSettingsStore.backgroundColour = backgroundColour.value;
+    document.documentElement.style.setProperty('--bg', backgroundColour.value);
+  }
+});
+
 
 onMounted(() => {
   updateBackgroundColour();
@@ -197,7 +226,7 @@ watch(currentTrack, () => {
 </script>
 
 <template>
-  <div class="card-view-root" v-if="props.recommendationData?.tracks">
+  <div class="card-view-root" v-if="!props.recommendationDataLoading && props.recommendationData">
     <div class="album-cover" v-if="tracks.length">
       <div class="swiper">
         <div class="swiper-wrapper">
@@ -260,7 +289,7 @@ watch(currentTrack, () => {
 
                 <TooltipContent>
                   <p style="text-align: center;">
-                    Approximately 20% of Spotify songs will not have a preview audio clip unfortunately. <br>You can toggle them appearing in recommendations in the settings.
+                    Anywhere from 20-50% of Spotify songs will not have a preview audio clip unfortunately. <br>You can toggle them appearing in the settings.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -326,6 +355,9 @@ watch(currentTrack, () => {
       />
     </div>
   </div>
+  <div v-else-if="recommendationDataLoading" style="width: 100vw; display: flex; justify-content: center; overflow: hidden;">
+    <LoadingSpinner :use-colors="false" style="margin-top: 20vh;" />
+  </div>
 </template>
 
 <style scoped>
@@ -345,7 +377,7 @@ i {
 
 .album-cover {
   display: flex;
-  width: 98%;
+  max-width: 98vw;
   flex-grow: 1;
   justify-content: center;
   align-items: center;
