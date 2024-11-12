@@ -44,7 +44,7 @@ const currentTrack = computed(() => tracks.value ? tracks.value[currentTrackInde
 const audioPlayer = ref<HTMLAudioElement | null>(null);
 const currentTime = ref(0);
 const TOTAL_DURATION = 30;
-console.log('d', localSettingsStore.audioVolume);
+
 const volume = ref<number>(localSettingsStore.audioVolume);
 const previousVolume = ref<number>(localSettingsStore.audioVolume);
 
