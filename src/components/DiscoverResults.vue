@@ -94,6 +94,7 @@ const deviceStore = useDeviceStore();
 .results-list {
   margin-left: calc(25vw + 40px);
   margin-right: 25vw;
+  width: calc(50vw - 40px);
 }
 
 .results-card {

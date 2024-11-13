@@ -143,7 +143,7 @@ onUnmounted(() => {
 }
 
 .result-card:hover .card-img {
-  transform: scale(1.15);
+  transform: scale(1.135);
 }
 
 .result-card:last-child {

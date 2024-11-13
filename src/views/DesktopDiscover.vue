@@ -138,7 +138,7 @@ onMounted(() => {
         @search-results="(newSearchResults: any) => { searchResults = newSearchResults; }"
         @search-results-loading="(newSearchLoading: boolean) => searchLoading = newSearchLoading"
         @search-focused="(newSearchFocused: boolean) => searchFocused = newSearchFocused"
-        style="width: 100%; margin-left: 40px;"
+        style="width: 75%; margin-left: 40px;"
       />
       <SwitchButton 
         ref="switchElement"
@@ -252,7 +252,6 @@ onMounted(() => {
   padding-top: 3vh;
   display: flex;
   flex-direction: row;
-  gap: 0;
 }
 
 .search-results {
