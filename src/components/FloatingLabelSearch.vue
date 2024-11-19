@@ -220,6 +220,10 @@ onMounted(() => {
 
 /* Responsiveness */
 @media(max-width: 1450px) {
+  .input-group {
+    height: 6.5vh;
+  }
+
   .input-group input+label {
     font-size: 1.2rem;
   }

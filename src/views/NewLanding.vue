@@ -424,13 +424,13 @@ h1 {
 }
 
 /* Resposiveness */
-@media (max-width: 1280px) {
+@media (max-width: 1450px) {
   .search-result-card {
-    height: 8.5vh;
+    height: 9.5vh;
   }
 
   .card-img {
-    height: 5vh;
+    height: 6.5vh;
   }
 }
 
