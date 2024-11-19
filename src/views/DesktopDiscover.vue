@@ -90,6 +90,7 @@ watch(() => [...tags.value], async (newTags) => {
 }, { deep: true });
 
 watch(filterState, async () => {
+  if (tags.value.length === 0) return;
   recommendationDataLoading.value = true;
   try {
     const result = await fetchRecommendations(tags.value, filterState, authStore.isLoggedIn, 50);
