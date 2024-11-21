@@ -2,12 +2,13 @@
 import { ref, onMounted }                 from 'vue';
 import { RecommendationFilter }           from '@/types/RecommendationType';
 import FilterSwitchButton                 from './FilterSwitchButton.vue';
-import { useRecommendationFilterStore }   from '@/stores/recommendationFilterStore';
+import { useRecommendationStore }         from '@/stores/recommendationStore';
 import { useAuthStore }                   from '@/stores/authStore';
+import { useLocalSettingsStore }          from '@/stores/localSettingsStore';
 
 // Filters
-const store = useRecommendationFilterStore();
-const filterState = store.filterState;
+const recommendationStore = useRecommendationStore();
+const filterState = recommendationStore.filterState;
 
 const capitalizeFirstLetter = (key: keyof RecommendationFilter): string => {
   const str = key as string;
@@ -56,10 +57,14 @@ const logoutAndRefresh = async () => {
     console.error('Error logging out:', error);
   }
 }
+
+// Settings
+const localSettingsStore = useLocalSettingsStore();
 </script>
 
 <template>
   <div class="filters">
+    <span class="settings-title" style="margin-left: calc(2 * var(--button-element-left));">Filters</span>
     <div v-for="(_value, key) in filterState" :key="key" class="filter-item">
       <div class="filter-label">{{ capitalizeFirstLetter(key) }}</div>
       <div class="filter-switch-wrapper" ref="buttonElement">
@@ -72,7 +77,19 @@ const logoutAndRefresh = async () => {
   </div>
 
   <div class="settings-drawer">
+    <span class="settings-title">Settings</span>
+    
+    <label class="checkbox-container">
+      <input type="checkbox" v-model="localSettingsStore.preserveBG">
+      <span class="checkmark"></span>
+      <span style="user-select: none;">Preserve current background colour</span>
+    </label>
 
+    <label class="checkbox-container">
+      <input type="checkbox" v-model="localSettingsStore.excludeNullPreview">
+      <span class="checkmark"></span>
+      <span style="user-select: none;">Exclude songs without preview audio</span>
+    </label>
   </div>
 
   <hr style="margin: 5px calc(2 * var(--button-element-left)) 10px calc(2 * var(--button-element-left)); border: 1.5px solid black">
@@ -119,14 +136,6 @@ const logoutAndRefresh = async () => {
   transition: 1s background-color ease;
 }
 
-/* Colour settings */
-
-.settings-drawer {
-  padding: 7px;
-  border-radius: .95rem;
-  color: white;
-}
-
 /* Auth */
 .auth-drawer {
   width: 40vw;
@@ -166,5 +175,67 @@ const logoutAndRefresh = async () => {
 .log {
   display: flex;
   flex-direction: row;
+}
+
+/* Settings */
+.settings-drawer {
+  padding: 7px;
+  border-radius: .95rem;
+  color: white;
+  padding: 7px;
+  margin-left: calc(2 * var(--button-element-left));
+}
+
+.settings-title {
+  color: white;
+  font-size: 1.4rem;
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+/* CHECKBOX STYLING */
+.checkbox-container input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+
+.checkbox-container .checkmark {
+  position: relative;
+  height: 20px;
+  width: 20px;
+  border: 2px solid #ffffff;
+  border-radius: 4px;
+  margin-right: 10px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.checkbox-container .checkmark::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid rgb(0, 0, 0);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.checkbox-container input[type="checkbox"]:checked + .checkmark {
+  background-color: #ffffff;
+  border-color: #ffffff;
+}
+
+.checkbox-container input[type="checkbox"]:checked + .checkmark::after {
+  opacity: 1;
 }
 </style>

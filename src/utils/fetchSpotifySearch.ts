@@ -6,14 +6,16 @@ export const fetchSearch = async(query: string, searchCategory: string, isLogged
     return;
   }
 
+  console.log(searchCategory);
+
   try {
-    const sanitizedQuery = encodeURIComponent(query?.toLowerCase());
+    const sanitizedQuery = encodeURIComponent(query.toLowerCase());
     // TODO: Handle user login (future). Also value needs to be between Songs and Artists
     let url;
     if (isLoggedIn) {
-      url = `${baseUrl}/api/search?query=${sanitizedQuery}&type=${searchCategory?.toLowerCase().slice(0, -1)}`;
+      url = `${baseUrl}/api/search?query=${sanitizedQuery}&type=${searchCategory.toLowerCase().slice(0, -1)}`;
     } else {
-      url = `${baseUrl}/api/public-search?query=${sanitizedQuery}&type=${searchCategory?.toLowerCase().slice(0, -1)}`;
+      url = `${baseUrl}/api/public-search?query=${sanitizedQuery}&type=${searchCategory.toLowerCase().slice(0, -1)}`;
     }
     const response = await fetch(url, { credentials: 'include' });
 
@@ -21,7 +23,7 @@ export const fetchSearch = async(query: string, searchCategory: string, isLogged
       throw new Error('Network response was not ok');
     }
 
-    const data: any = await response.json();
+    const data: SpotifyApi.TrackSearchResponse | SpotifyApi.ArtistSearchResponse = await response.json();
     return data;
   } catch (error) {
     console.error("Failed to fetch data:", error);

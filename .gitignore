@@ -33,5 +33,6 @@ Preview.vue
 *.cy*
 cypress.config*
 /.VSCodeCounter
+/mocks
 
 .env

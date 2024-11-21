@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, onMounted }        from 'vue';
-import { useRoute }                     from 'vue-router';
-import DiscoverSearch                   from '@/components/FloatingLabelSearch.vue';
-import RecommendationResults            from '@/components/DiscoverResults.vue';
-import DrawerSettings                   from '@/components/DrawerSettings.vue'; 
-import { Tag, createTag }               from '@/types/TagType';
-import { useAuthStore }                 from '@/stores/authStore';
-import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
-import { fetchRecommendations }         from '@/utils/fetchSpotifyRecommendations';
-import { pickBWTextColour }             from '@/utils/colourStyle';
-import { truncateString }               from '@/utils/stringProcessing';
-import { VisuallyHidden }               from 'radix-vue';
+import { ref }                                  from 'vue';
+import DiscoverSearch                           from '@/components/FloatingLabelSearch.vue';
+import DrawerSettings                           from '@/components/DrawerSettings.vue'; 
+import { useRecommendationStore }               from '@/stores/recommendationStore';
+import { pickBWTextColour, convertRgbToRgba }   from '@/utils/colourStyle';
+import { truncateString }                       from '@/utils/stringProcessing';
+import { VisuallyHidden }                       from 'radix-vue';
 import {
   Drawer,
   DrawerContent,
@@ -19,95 +14,33 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
-import { SpotifyRecommendationResponse } from '@/types/SpotifyRecommendationResponse';
 
-const authStore = useAuthStore();
-
-const searchCategory = ref<string>('Tracks');
-const searchResults = ref<any>();
+const searchResults = ref<SpotifyApi.TrackSearchResponse>();
 const searchLoading = ref<boolean>(false);
 const searchFocused = ref<boolean>(false);
 const searchDisabled = ref<boolean>(false);
 
 const searchElement = ref<InstanceType<typeof DiscoverSearch> | null>(null);
 
-// Tag handling
-const tags = ref<Tag[]>([]);
-
-const addTag = async(item: any) => {
-  const tag = await createTag(item);
-
-  if (tags.value.some((t) => t.id === tag.id)) {
-    return;
-  }
-
-  tags.value.push(tag);
-};
-
-const removeTag = (tag: Tag) => {
-  tags.value = tags.value.filter((t) => t.id !== tag.id);
-};
-
-watch(tags, (newTags) => {
-  searchDisabled.value = newTags.length >= 5;
-}, { immediate: true, deep: true });
-
 // RECOMMENDATION HANDLING
-const store = useRecommendationFilterStore();
-const filterState = store.filterState;
+const recommendationStore = useRecommendationStore();
 
-const recommendationResults = ref<SpotifyRecommendationResponse>({
-  tracks: [],
-  seeds: []
-});
-const recommendationDataLoading = ref<boolean>(false);
-
-watch(() => [...tags.value], async (newTags) => {
-  recommendationDataLoading.value = true;
-  try {
-    const result = await fetchRecommendations(newTags, filterState, authStore.isLoggedIn, 50);
-    if (result) {
-      recommendationResults.value = result;
-    }
-  } finally {
-    recommendationDataLoading.value = false;
-  }
-}, { deep: true });
-
-watch(filterState, async () => {
-  recommendationDataLoading.value = true;
-  try {
-    const result = await fetchRecommendations(tags.value, filterState, authStore.isLoggedIn, 50);
-    if (result) {
-      recommendationResults.value = result;
-    }
-  } finally {
-    recommendationDataLoading.value = false;
-  }
-}, { deep: true });
-
-// Utils
-const convertRgbToRgba = (rgb: string, opacity: number): string => {
-  const [r, g, b] = rgb.slice(4, -1).split(',').map(Number);
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+function isTrackSearchResponse(
+  value: SpotifyApi.ArtistSearchResponse | SpotifyApi.TrackSearchResponse
+): value is SpotifyApi.TrackSearchResponse {
+  return (value as SpotifyApi.TrackSearchResponse).tracks !== undefined;
 }
 
-// Handling query from landing page
-const route = useRoute();
-const landingTag = ref<Tag>();
-
-onMounted(() => {
-  if (route.query.tag) {
-    try {
-      landingTag.value = JSON.parse(route.query.tag as string);
-      if (landingTag.value) {
-        tags.value.push(landingTag.value);
-      }
-    } catch (e) {
-      console.error('Failed to parse tag from query:', e);
-    }
+function handleSearchResults(
+  newSearchResults: SpotifyApi.ArtistSearchResponse | SpotifyApi.TrackSearchResponse
+) {
+  if (isTrackSearchResponse(newSearchResults)) {
+    searchResults.value = newSearchResults; // Safe assignment
+  } else {
+    console.error('Received non-track search response');
   }
-});
+}
+
 </script>
 
 <template>
@@ -115,12 +48,10 @@ onMounted(() => {
     <div class="search-container">
       <DiscoverSearch 
         ref="searchElement"
-        :placeholder="searchDisabled ? 
-                      'Maximum number reached' 
-                      : `Add up to 5 ${searchCategory}`"
-        :search-category="searchCategory"
+        :placeholder="searchDisabled ? 'Maximum number reached' : `Add up to 5 tracks`"
+        :search-category="'Tracks'"
         :search-disabled="searchDisabled"
-        @search-results="(newSearchResults: any) => searchResults = newSearchResults"
+        @search-results="handleSearchResults"
         @search-results-loading="(newSearchLoading: boolean) => searchLoading = newSearchLoading"
         @search-focused="(newSearchFocused: boolean) => searchFocused = newSearchFocused"
         style="width: 80%; margin-right: 10px;"
@@ -150,7 +81,8 @@ onMounted(() => {
         <div 
           class="search-result-card" 
           v-for="(track) in searchResults.tracks?.items"
-          @click="addTag(track)"
+          :key="track.id"
+          @click="recommendationStore.addTrackTag(track)"
         >
           <img :src="track.album.images[1]?.url" class="card-img">
           <div class="card-info">
@@ -166,27 +98,12 @@ onMounted(() => {
           </div>
         </div>
       </div>
-
-      <div class="artists-results" v-else-if="searchResults?.artists">
-        <div 
-          class="search-result-card" 
-          v-for="(artist) in searchResults.artists?.items"
-          @click="addTag(artist)"
-        >
-          <img v-if="artist.images[0]" :src="artist.images[1]?.url" class="card-img">
-          <i v-else class="bi bi-person-fill img-alt"></i>
-          <div class="card-info">
-            <span class="result-title">{{ truncateString(artist.name, 25) }}</span>
-            <span class="result-subtitle">{{ artist.genres[0] }}</span>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="tags-scroll-container">
       <div class="tag-parent">
         <div 
-          v-for="(tag) in tags" 
+          v-for="(tag) in recommendationStore.currentTags" 
           :key="tag.id" 
           class="tag-container" 
           :style="{ backgroundColor: convertRgbToRgba(tag.colour, 0.5) }"
@@ -197,17 +114,14 @@ onMounted(() => {
           <i 
             class="fa fa-times-circle"
             aria-hidden="true" 
-            @click="removeTag(tag)"
+            @click="recommendationStore.removeTrackTag(tag)"
             :style="{ color: pickBWTextColour(tag.colour) }"
           ></i>
         </div>
       </div>
     </div>
 
-    <RecommendationResults 
-      :recommendation-data="recommendationResults" 
-      :recommendation-data-loading="recommendationDataLoading"
-    />
+    
   </div>
 </template>
 
@@ -341,13 +255,13 @@ onMounted(() => {
 
 @keyframes popout {
   from{transform:scale(0)}
-  80%{transform:scale(1.2)}
+  80%{transform:scale(1.1)}
   to{transform:scale(1)}
 }
 
 @-webkit-keyframes popout {
   from{-webkit-transform:scale(0)}
-  80%{-webkit-transform:scale(1.2)}
+  80%{-webkit-transform:scale(1.1)}
   to{-webkit-transform:scale(1)}
 }
 

@@ -4,8 +4,6 @@ import { fetchSearch }                                      from '../utils/fetch
 import { useLocalSettingsStore }                            from '@/stores/localSettingsStore';
 import debounce                                             from 'debounce';
 import { useAuthStore }                                     from '@/stores/authStore';
-import { SpotifyArtistSearchResponse }                      from '@/types/SpotifyArtistSearchResponse';
-import { SpotifyTrackSearchResponse }                       from '@/types/SpotifyTrackSearchResponse';
 
 const authStore = useAuthStore();
 
@@ -18,7 +16,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (event: 'search-results', searchResults: SpotifyArtistSearchResponse | SpotifyTrackSearchResponse): void
+  (event: 'search-results', searchResults: SpotifyApi.ArtistSearchResponse | SpotifyApi.TrackSearchResponse): void
   (event: 'search-results-loading', searchResultsLoading: boolean): void
   (event: 'search-focused', searchFocused: boolean): void
 }>();
@@ -38,7 +36,7 @@ defineExpose({
 // Spotify Searching
 const searchLoading = ref<boolean>(false);
 const searchQuery = ref<string>('');
-const searchResults = ref<SpotifyArtistSearchResponse | SpotifyTrackSearchResponse>();
+const searchResults = ref<SpotifyApi.ArtistSearchResponse | SpotifyApi.TrackSearchResponse>();
 
 const debouncedFetchSearch = debounce(async (query: string, category: string) => {
   try {
@@ -52,14 +50,16 @@ const debouncedFetchSearch = debounce(async (query: string, category: string) =>
   }
 }, 500);
 
-watch(
-  () => [searchQuery.value, props.searchCategory],
-  ([newQuery, newCategory], [oldQuery, oldCategory]) => {
-    if (newQuery !== oldQuery || newCategory !== oldCategory) {
-      debouncedFetchSearch(newQuery, newCategory.toLowerCase());
-    }
+// Change this to only query value
+watch(() => searchQuery.value, (newQuery, oldQuery) => {
+  if (newQuery !== oldQuery) {
+    debouncedFetchSearch(newQuery, props.searchCategory.toLowerCase());
   }
-);
+});
+
+watch(() => props.searchCategory, () => {
+  clearSearchQuery();
+});
 
 watch(searchResults, async (newResults, oldResults) => {
   if (newResults != oldResults && searchResults.value !== undefined) {
@@ -220,10 +220,6 @@ onMounted(() => {
 
 /* Responsiveness */
 @media(max-width: 1450px) {
-  .input-group {
-    height: 6.5vh;
-  }
-
   .input-group input+label {
     font-size: 1.2rem;
   }
@@ -249,7 +245,7 @@ onMounted(() => {
 
 @media(max-width: 480px) {
   .input-group input+label {
-    font-size: .85rem;
+    font-size: 1.05rem;
   }
 
   .input-group input:focus,

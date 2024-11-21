@@ -7,7 +7,7 @@ type DeviceInfo = {
   isDesktop:  boolean;
 }
 
-export const useDeviceStore = defineStore('device', () => {
+export const useDeviceStore = defineStore('DeviceStore', () => {
   const width = ref<number>(window.innerWidth);
   const height = ref<number>(window.innerHeight);
 

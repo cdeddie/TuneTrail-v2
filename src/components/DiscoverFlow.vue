@@ -1,17 +1,25 @@
 <script setup lang="ts">
-import { ref }                                from 'vue';
-import { useDeviceStore }                     from '@/stores/deviceStore';
-import RecommendationResultsListView          from './DiscoverResultsListView.vue';
-import RecommendationResultsCardView          from './DiscoverResultsCardView.vue';
-import MobileRecommendationResultsCardView    from './MobileDiscoverResultsCardView.vue';
-import { SpotifyRecommendationResponse }      from '@/types/SpotifyRecommendationResponse';
+import { ref } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
+import RefreshIcon from '@/assets/refresh.svg';
 
-defineProps<{
-  recommendationData: SpotifyRecommendationResponse,
-  recommendationDataLoading: boolean,
-}>();
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import SpotifyLoginButton from './SpotifyLoginButton.vue';
+import NewDiscoverResults from './NewDiscoverResults.vue';
+import { fetchRecommendations } from '@/utils/fetchSpotifyRecommendations';
+import { useRecommendationStore } from '@/stores/recommendationStore';
 
-// Button logic (choose between list or card view)
+const authStore = useAuthStore();
+const recommendationStore = useRecommendationStore();
+
 const activeIndex = ref(0);
 const hoveredIndex = ref<number | null>(null);
 
@@ -24,15 +32,27 @@ const buttons = [
   { path: "M1.37397 5.74794C2.13836 5.74794 2.74794 5.13836 2.74794 4.37397C2.74794 3.61925 2.13836 3 1.37397 3C0.619255 3 0 3.61925 0 4.37397C0 5.13836 0.619255 5.74794 1.37397 5.74794ZM5.92163 5.30285H19.0614C19.5839 5.30285 20 4.89647 20 4.37397C20 3.85148 19.5936 3.44509 19.0614 3.44509H5.92163C5.4088 3.44509 4.99274 3.85148 4.99274 4.37397C4.99274 4.89647 5.39913 5.30285 5.92163 5.30285ZM1.37397 11.6986C2.13836 11.6986 2.74794 11.089 2.74794 10.3246C2.74794 9.56991 2.13836 8.95065 1.37397 8.95065C0.619255 8.95065 0 9.56991 0 10.3246C0 11.089 0.619255 11.6986 1.37397 11.6986ZM5.92163 11.2535H19.0614C19.5839 11.2535 20 10.8471 20 10.3246C20 9.80213 19.5936 9.39574 19.0614 9.39574H5.92163C5.4088 9.39574 4.99274 9.80213 4.99274 10.3246C4.99274 10.8471 5.39913 11.2535 5.92163 11.2535ZM1.37397 17.6493C2.13836 17.6493 2.74794 17.0397 2.74794 16.2753C2.74794 15.5206 2.13836 14.9013 1.37397 14.9013C0.619255 14.9013 0 15.5206 0 16.2753C0 17.0397 0.619255 17.6493 1.37397 17.6493ZM5.92163 17.2042H19.0614C19.5839 17.2042 20 16.7978 20 16.2753C20 15.7528 19.5936 15.3464 19.0614 15.3464H5.92163C5.4088 15.3464 4.99274 15.7528 4.99274 16.2753C4.99274 16.7978 5.39913 17.2042 5.92163 17.2042Z" },
 ];
 
-// Mobile reactiveness
-const deviceStore = useDeviceStore();
+const refreshRecommendations = async() => {
+  recommendationStore.recommendationDataLoading = true;
+  try {
+    const result = await fetchRecommendations(recommendationStore.currentTags, recommendationStore.filterState, authStore.isLoggedIn, 50);
+    if (recommendationStore.activeCategory === 'Tracks') {
+      recommendationStore.trackRecommendations = result;
+    } else {
+      recommendationStore.artistRecommendations = result;
+    }
+  } finally {
+    recommendationStore.recommendationDataLoading = false;
+  }
+};
 </script>
 
 <template>
-  <div class="results-root">
+  <div class="discover-flow">
     <div class="results-filters">
       <div class="results-display-buttons">
         <button
+          class="display-button"
           v-for="(btn, index) in buttons"
           :key="index"
           :class="{ active: activeIndex === index}"
@@ -46,66 +66,57 @@ const deviceStore = useDeviceStore();
         </button>
       </div>
     </div>
-    
-    <div class="results-container" v-if="!deviceStore.isMobile">
-      <RecommendationResultsListView 
-        class="results-list" 
-        v-if="activeIndex === 1" 
-        :recommendation-data="recommendationData" 
-        :recommendation-data-loading="recommendationDataLoading"
-      />
-      <RecommendationResultsCardView 
-        class="results-cards" 
-        v-else-if="activeIndex === 0" 
-        :recommendation-data="recommendationData" 
-        :recommendation-data-loading="recommendationDataLoading"
-      />
-    </div>
 
-    <div class="mobile-results" v-else style="color: white;">
-      <RecommendationResultsListView 
-        class="mobile-results-list"
-        v-if="activeIndex === 1" 
-        :recommendation-data="recommendationData" 
-        :recommendation-data-loading="recommendationDataLoading"
-      />
-      <MobileRecommendationResultsCardView 
-        class="mobile-results-cards"
-        v-else-if="activeIndex === 0"
-        :recommendation-data="recommendationData"
-        :recommendation-data-loading="recommendationDataLoading"
-      />
+    <div class="results-sorting">
+      <!-- Login prompt modal -->
+      <div v-if="!authStore.isLoggedIn">
+        <Dialog>
+          <DialogTrigger>
+            <div class="refresh-recommendations">
+              <img
+                :src="RefreshIcon"
+                alt="R"
+                class="refresh-icon"
+              />
+            </div>
+          </DialogTrigger>
+          <DialogContent class="custom-dialog">
+            <DialogHeader>
+              <DialogTitle>Login with Spotify to refresh recommendations</DialogTitle>
+              <DialogDescription>
+                <br>
+                Once logged in with Spotify, the server makes requests to the Spotify database 
+                using your own account, which means you can send many more requests.
+              </DialogDescription>
+            </DialogHeader>
+
+            <DialogFooter>
+              <SpotifyLoginButton />
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div v-else class="refresh-recommendations" @click="refreshRecommendations">
+        <img
+          :src="RefreshIcon"
+          alt="R"
+          class="refresh-icon"
+        />
+      </div>
     </div>
   </div>
+
+  <NewDiscoverResults :active-index="activeIndex" />
 </template>
 
 <style scoped>
-.results-container {
+.discover-flow {
   display: flex;
-  flex-grow: 1;
-}
-
-.results-root {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.results-list {
-  margin-left: calc(25vw + 40px);
-  margin-right: 25vw;
-  width: calc(50vw - 40px);
-}
-
-.results-card {
-  display: flex;
-  flex-grow: 1;
-  height: 100%;
-}
-
-.results-filters {
-  margin-left: calc(25vw + 40px);
+  flex-direction: row;
+  margin-left: calc(var(--search-element-left));
   margin-top: 2vh;
+  margin-right: 25vw;
 }
 
 .results-display-buttons {
@@ -114,7 +125,7 @@ const deviceStore = useDeviceStore();
 
 .results-display-buttons button {
   background-color: transparent;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   border: none;
   cursor: pointer;
   padding: 5px;
@@ -122,19 +133,23 @@ const deviceStore = useDeviceStore();
   margin-right: 5px;
 }
 
-button svg {
+.display-button svg {
   filter: invert(100%);
-  transition: filter 0.5s ease;
+  transition: filter 0.5s ease, background-color 0.5s ease;
 }
 
-button.active {
-  background-color: white;
-  border-radius: .5rem;
+.display-button.active svg, .display-button:hover svg {
+  filter: brightness(0);
 }
 
-button:hover {
+.display-button.active {
   background-color: white;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
+}
+
+.display-button:hover {
+  background-color: white;
+  border-radius: 0.5rem;
   transition: background-color 0.5s ease;
 }
 
@@ -142,43 +157,46 @@ button:hover {
   filter: brightness(0);
 }
 
-@media (max-width: 1300px) {
-  .results-list {
-    margin-left: calc(8vw + 40px);
-    margin-right: 17vw;
-  }
+.refresh-recommendations {
+  padding: 2px;
+  display: inline-block;
+  border-radius: .5rem;
+  background-color: transparent;
+  transition: background-color 0.5s ease;
+  cursor: pointer;
+}
 
-  .results-filters {
-    margin-left: calc(8vw + 40px);
-    margin-top: 1vh;
+.refresh-icon {
+  display: block;
+  width: 25px;
+  height: 25px;
+  filter: invert(100%);
+  transition: filter 0.5s ease;
+}
+
+.refresh-recommendations:hover {
+  background-color: white;
+}
+
+.refresh-recommendations:hover .refresh-icon {
+  filter: brightness(0);  /* I think add svg filters to this for disabled */
+}
+
+@media (max-width: 1400px) {
+  .discover-flow {
+    margin-right: 20vw;
   }
 }
 
-@media (max-width: 1050px) {
-  .results-container {
-    margin-bottom: 0;
-  }
-}
-
-@media (max-width: 1000px) {
-  .results-filters {
-    margin-left: 4vw;
+@media (max-width: 480px) {
+  .spotify-login {
+    width: 30vw;
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  .results-list {
-    margin-left: 4vw;
+  .discover-flow {
+    margin-top: .5vh;
   }
-}
-
-/* ----- Mobile view ----- */
-
-.mobile-results-list {
-  margin: 0 4vw;
-  display: flex;
-  flex-grow: 1;
-}
-
-.mobile-results-cards {
-  flex: 1;
 }
 </style>

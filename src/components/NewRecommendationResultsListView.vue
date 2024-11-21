@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { ref, watch, nextTick, onUnmounted }  from 'vue';
-import { truncateString }                     from '@/utils/stringProcessing';
-import { Skeleton }                           from '@/components/ui/skeleton'
-import { SpotifyRecommendationResponse } from '@/types/SpotifyRecommendationResponse';
+import { 
+  ref, 
+  watch, 
+  nextTick, 
+  onUnmounted, 
+  computed } from 'vue';
+import { truncateString }         from '@/utils/stringProcessing';
+import { Skeleton }               from '@/components/ui/skeleton'
+import { useRecommendationStore } from '@/stores/recommendationStore';
+import { useDeviceStore }         from '@/stores/deviceStore';
 
-const props = defineProps<{
-  recommendationData: SpotifyRecommendationResponse,
-  recommendationDataLoading: boolean,
-}>();
+const recommendationStore = useRecommendationStore();
+const deviceStore = useDeviceStore();
 
 // Intersection observer logic
 const cardRefs = ref<HTMLElement[]>([]);
-
-watch(() => props.recommendationData, () => {
-  cardRefs.value = [];
-});
 
 const observer: IntersectionObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
@@ -24,7 +24,7 @@ const observer: IntersectionObserver = new IntersectionObserver((entries) => {
   });
 });
 
-watch(() => props.recommendationData, () => {
+watch(() => recommendationStore.currentRecommendations, () => {
   // Clear existing refs
   cardRefs.value = [];
   
@@ -41,22 +41,36 @@ watch(() => props.recommendationData, () => {
 onUnmounted(() => {
   observer.disconnect();
 });
+
+const truncateLength = computed(() => {
+  if (deviceStore.width < 480) {
+    return 25;
+  } else {
+    return 70;
+  }
+});
 </script>
 
 <template>
   <div class="list-view">
-    <div class="skeleton-container" v-for="index in 25" :key="index" v-if="recommendationDataLoading">
-      <Skeleton class="skeleton skeleton-album"/>
-      <div class="skeleton-details">
-        <Skeleton class="skeleton skeleton-title"/>
-        <Skeleton class="skeleton skeleton-subtitle"/>
+    <div v-if="recommendationStore.recommendationDataLoading">
+      <div class="skeleton-container" v-for="index in 25" :key="index">
+        <Skeleton class="skeleton skeleton-album"/>
+        <div class="skeleton-details">
+          <Skeleton class="skeleton skeleton-title"/>
+          <Skeleton class="skeleton skeleton-subtitle"/>
+        </div>
       </div>
     </div>
     
-    <div class="results-loaded" v-else-if="recommendationData">
+    <div 
+      class="results-loaded" 
+      v-else-if="recommendationStore.currentRecommendations !== undefined 
+      && !Array.isArray(recommendationStore.currentRecommendations)"
+    >
       <a
         class="result-card" 
-        v-for="(track, index) in recommendationData?.tracks"
+        v-for="(track, index) in recommendationStore.currentRecommendations.tracks"
         :key="track.id"
         :ref="(el) => { if (el) cardRefs[index] = el as HTMLElement }"
         :href="track.external_urls.spotify"
@@ -64,7 +78,7 @@ onUnmounted(() => {
       >
         <img :src="track.album.images[1]?.url" class="card-img">
         <div class="card-info">
-          <span class="result-title">{{ track.name }}</span>
+          <span class="result-title">{{ truncateString(track.name, truncateLength) }}</span>
           <span class="result-subtitle">
             <i 
               v-if="track.explicit"
@@ -83,6 +97,8 @@ onUnmounted(() => {
 .list-view {
   display: flex;
   flex-direction: column;
+  margin-left: calc(var(--search-element-left));
+  width: 45vw;
 }
 
 .skeleton {
@@ -173,13 +189,12 @@ onUnmounted(() => {
 .result-subtitle {
   font-size: 1rem;
   font-weight: 550;
-  color: #c1c1c1;
+  color: #d8d8d8;
 }
 
-@media (max-width: 1300px) {
-  .results-root {
-    margin-left: 21vw;
-    margin-right: 17vw;
+@media (max-width: 1400px) {
+  .list-view {
+    width: 55vw;
   }
 
   .result-title {
@@ -191,7 +206,9 @@ onUnmounted(() => {
   }
 }
 
-@media (max-width: 1000px) {
-
+@media (max-width: 480px) {
+  .list-view {
+    width: 95vw;
+  }
 }
 </style>

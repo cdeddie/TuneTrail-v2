@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { RecommendationFilter }         from '@/types/RecommendationType';
 import FilterSwitchButton               from './FilterSwitchButton.vue';
-import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
+import { useRecommendationStore } from '@/stores/recommendationStore';
 
 // Contains filter state info for recommendations
 
-const store = useRecommendationFilterStore();
+const store = useRecommendationStore();
 const filterState = store.filterState;
 
 const capitalizeFirstLetter = (key: keyof RecommendationFilter): string => {

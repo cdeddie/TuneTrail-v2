@@ -2,9 +2,9 @@
 import { computed }                     from 'vue';
 import { storeToRefs }                  from 'pinia';
 import type { RecommendationFilter }    from '@/types/RecommendationType';
-import { useRecommendationFilterStore } from '@/stores/recommendationFilterStore';
+import { useRecommendationStore } from '@/stores/recommendationStore';
 
-const store = useRecommendationFilterStore();
+const store = useRecommendationStore();
 const { filterState } = storeToRefs(store);
 
 const props = defineProps<{

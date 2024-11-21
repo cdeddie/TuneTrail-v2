@@ -8,32 +8,30 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useLocalSettingsStore }                                    from '@/stores/localSettingsStore';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
-import { SpotifyRecommendationResponse }                            from '@/types/SpotifyRecommendationResponse';
 import LoadingSpinner                                               from './LoadingSpinner.vue';
+import { useRecommendationStore } from '@/stores/recommendationStore';
 
-const props = defineProps<{
-  recommendationData: SpotifyRecommendationResponse,
-  recommendationDataLoading: boolean,
-}>();
+const recommendationStore = useRecommendationStore();
+const localSettingsStore = useLocalSettingsStore();
 
 const isPlaying = ref<boolean>(false);
 const currentTrackIndex = ref<number>(0);
 
-const localSettingsStore = useLocalSettingsStore();
-
 const tracks = computed(() => {
-  if (props.recommendationData.tracks && localSettingsStore.excludeNullPreview) {
-    let data = [];
-    for (let i = 0; i < props.recommendationData.tracks.length; i++) {
-      if (data.length == 25) break;
-      const curr = props.recommendationData.tracks[i];
-      if (curr.preview_url !== null && curr.preview_url !== undefined) {
-        data.push(curr);
+  if (recommendationStore.currentRecommendations !== undefined && !Array.isArray(recommendationStore.currentRecommendations)) {
+    if (localSettingsStore.excludeNullPreview) {
+      let data = [];
+      for (let i = 0; i < recommendationStore.currentRecommendations.tracks.length; i++) {
+        if (data.length == 25) break;
+        const curr = recommendationStore.currentRecommendations.tracks[i];
+        if (curr.preview_url !== null && curr.preview_url !== undefined) {
+          data.push(curr);
+        }
       }
+      return data;
+    } else {
+      return recommendationStore.currentRecommendations.tracks;
     }
-    return data;
-  } else if (props.recommendationData.tracks && !localSettingsStore.excludeNullPreview) {
-    return props.recommendationData.tracks;
   } else {
     return [];
   }
@@ -178,7 +176,7 @@ const initializeSwiper = (): void => {
   });
 }
 
-watch(() => props.recommendationData, async (newValue) => {
+watch(() => recommendationStore.currentRecommendations, async (newValue) => {
   if (newValue) {
     await nextTick();
     if (swiper) {
@@ -228,10 +226,33 @@ onMounted(() => {
 watch(currentTrack, () => {
   updateBackgroundColour();
 });
+
+// For weird laggy stuff when switching category
+const categoryLoading = ref<boolean>(false);
+
+watch(() => recommendationStore.activeCategory, async (newValue) => {
+  categoryLoading.value = true;
+  setTimeout(async() => {
+    categoryLoading.value = false;
+    if (newValue) {
+      await nextTick();
+      if (swiper) {
+        swiper.destroy();
+      }
+      currentTrackIndex.value = 0;
+      initializeSwiper();
+      if (isPlaying.value) playPause();
+      updateBackgroundColour();
+    }
+  }, 250);
+});
 </script>
 
 <template>
-  <div class="card-view-root" v-if="!props.recommendationDataLoading && props.recommendationData">
+  <div v-if="categoryLoading || recommendationStore.recommendationDataLoading" style="width: 100vw; display: flex; justify-content: center; overflow: hidden;">
+    <LoadingSpinner :use-colors="false" style="margin-top: 20vh;" />
+  </div>
+  <div class="card-view-root" v-else-if="!recommendationStore.recommendationDataLoading && recommendationStore.currentRecommendations">
     <div class="album-cover" v-if="tracks.length">
       <div class="swiper">
         <div class="swiper-wrapper">
@@ -360,15 +381,11 @@ watch(currentTrack, () => {
       />
     </div>
   </div>
-  <div v-else-if="recommendationDataLoading" style="width: 100vw; display: flex; justify-content: center; overflow: hidden;">
-    <LoadingSpinner :use-colors="false" style="margin-top: 20vh;" />
-  </div>
 </template>
 
 <style scoped>
 .card-view-root {
   display: flex;
-  flex-grow: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -381,6 +398,8 @@ i {
 }
 
 .album-cover {
+  margin-top: auto;
+  margin-bottom: auto;
   display: flex;
   max-width: 98vw;
   flex-grow: 1;

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { ref, watch, onMounted } from 'vue';
 import { saveToLocalStorage, loadFromLocalStorage } from '@/utils/localStorageUtils';
 
-export const useLocalSettingsStore = defineStore('localSettings', () => {
+export const useLocalSettingsStore = defineStore('LocalSettings', () => {
   const excludeNullPreview = ref<boolean>(false);     // Excludes tracks without preview URLs from recommendation results
   const preserveBG = ref<boolean>(false);             // Preserves the background color setting (stops updating bg)
   const backgroundColour = ref<string>('black');      // Background color
@@ -24,7 +24,7 @@ export const useLocalSettingsStore = defineStore('localSettings', () => {
       audioVolume.value = savedSettings.audioVolume;
     }
 
-    if (preserveBG) {
+    if (preserveBG.value) {
       document.documentElement.style.setProperty('--bg', backgroundColour.value);
     }
   });

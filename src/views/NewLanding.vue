@@ -2,10 +2,10 @@
 import { ref, onMounted, computed }                               from 'vue';
 import { getRandomAlbums, Album }                                 from '@/utils/importImages';
 import { useRouter }                                              from 'vue-router';
-import { Tag, createTag }                                         from '@/types/TagType';
 import { truncateString }                                         from '@/utils/stringProcessing';
 import { useDeviceStore }                                         from '@/stores/deviceStore';
 import LandingSearch                                              from '@/components/FloatingLabelSearch.vue';
+import { useRecommendationStore }                                 from '@/stores/recommendationStore';
 
 const albums = ref<Album[]>([]);
 
@@ -56,17 +56,33 @@ const loadFont = async () => {
 };
 
 // Search handling
-const searchResults = ref<any>();
+function isTrackSearchResponse(
+  value: SpotifyApi.ArtistSearchResponse | SpotifyApi.TrackSearchResponse
+): value is SpotifyApi.TrackSearchResponse {
+  return (value as SpotifyApi.TrackSearchResponse).tracks !== undefined;
+}
+
+function handleSearchResults(
+  newSearchResults: SpotifyApi.ArtistSearchResponse | SpotifyApi.TrackSearchResponse
+) {
+  if (isTrackSearchResponse(newSearchResults)) {
+    searchResults.value = newSearchResults; // Safe assignment
+  } else {
+    console.error('Received non-track search response');
+  }
+}
+
+const recommendationStore = useRecommendationStore();
+const searchResults = ref<SpotifyApi.TrackSearchResponse>();
 const searchResultsVisible = ref<boolean>(false);
 
 const router = useRouter(); // For redirect to /discover
 
-const navigateToTarget = async (track: any) => {
-  const tag: Tag = await createTag(track);
+const navigateToTarget = async (track: SpotifyApi.TrackObjectFull) => {
+  recommendationStore.addTrackTag(track);
 
   router.push({ 
     path: '/discover',
-    query: { tag: JSON.stringify(tag) }
   });
 };
 
@@ -117,7 +133,7 @@ const truncateLength = computed(() => {
           :search-category="'tracks'"
           :search-disabled="false"
           :background-colour="'black'"
-          @search-results="(newSearchResults: any) => searchResults = newSearchResults"
+          @search-results="handleSearchResults"
           @search-focused="(searchFocusedVal: boolean) => searchResultsVisible = searchFocusedVal"
           style="margin: 0px;"
         />
@@ -131,6 +147,7 @@ const truncateLength = computed(() => {
                 <div 
                   class="search-result-card" 
                   v-for="(track) in searchResults?.tracks.items"
+                  :key="track.id"
                   @click="navigateToTarget(track)" 
                 >
                   <img :src="track.album.images[1]?.url" class="card-img">

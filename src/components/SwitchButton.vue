@@ -59,9 +59,8 @@ watch(() => props.right, (newValue) => {
   display: flex;
   border: 1.5px solid white;
   border-radius: 1rem;
-  padding: 3px;
   width: fit-content;
-  min-height: 5vh;
+  height: 5vh;
   overflow: hidden;
 }
 
@@ -87,5 +86,11 @@ button {
   border-radius: 0.8rem;
   transition: transform 0.3s ease;
   z-index: 0;
+}
+
+@media (max-height: 870px) {
+  button {
+    padding: 5px 20px;
+  }
 }
 </style>

@@ -1,42 +1,52 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick, computed }    from 'vue';
-import { getProminentColour }                           from '@/types/TagType';
-import { darkOrLightFont }                              from '@/utils/colourStyle';
-import Swiper                                           from 'swiper';
-import { EffectCoverflow }                              from 'swiper/modules';
-import { useLocalSettingsStore }                        from '@/stores/localSettingsStore';
-import { truncateString }                               from '@/utils/stringProcessing';
-import LoadingSpinner                                   from './LoadingSpinner.vue';
-import { SpotifyRecommendationResponse }                from '@/types/SpotifyRecommendationResponse';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
+import { getProminentColour } from '@/types/TagType';
+import { darkOrLightFont } from '@/utils/colourStyle';
+import Swiper                                                       from 'swiper';
+import { EffectCoverflow }                                          from 'swiper/modules';
+import { useLocalSettingsStore } from '@/stores/localSettingsStore';
+import { useRecommendationStore } from '@/stores/recommendationStore';
+import { truncateString } from '@/utils/stringProcessing';
+import LoadingSpinner from './LoadingSpinner.vue';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 
-const props = defineProps<{
-  recommendationData: SpotifyRecommendationResponse,
-  recommendationDataLoading: boolean,
-}>();
+const recommendationStore = useRecommendationStore();
+const localSettingsStore = useLocalSettingsStore();
 
 const isPlaying = ref<boolean>(false);
 const currentTrackIndex = ref<number>(0);
-const audioPlayer = ref<HTMLAudioElement | null>(null);
-const currentTime = ref(0);
-const TOTAL_DURATION = 30;
-const volume = ref(50);
 
 const tracks = computed(() => {
-  if (props.recommendationData && props.recommendationData.tracks) {
-    return props.recommendationData.tracks;
+  if (
+    recommendationStore.currentRecommendations !== undefined &&
+    !Array.isArray(recommendationStore.currentRecommendations)
+  ) {
+    if (localSettingsStore.excludeNullPreview) {
+      let data = [];
+      for (let i = 0; i < recommendationStore.currentRecommendations.tracks.length; i++) {
+        if (data.length === 25) break;
+        const curr = recommendationStore.currentRecommendations.tracks[i];
+        if (curr.preview_url) {
+          data.push(curr);
+        }
+      }
+      return data;
+    } else {
+      return recommendationStore.currentRecommendations.tracks;
+    }
   } else {
     return [];
   }
 });
 
-const currentTrack = computed(() => tracks.value ? tracks.value[currentTrackIndex.value] : null);
+const currentTrack = computed(() => (tracks.value.length ? tracks.value[currentTrackIndex.value] : null));
 
-// Audio player logic
-const progressValue = computed(() => {
-  return Math.round(currentTime.value * 10);
-});
+const audioPlayer = ref<HTMLAudioElement | null>(null);
+const currentTime = ref(0);
+const TOTAL_DURATION = 30;
+
+const progressValue = computed(() => Math.round(currentTime.value * 10));
 
 const playPause = () => {
   if (audioPlayer.value) {
@@ -71,34 +81,28 @@ const onEnded = () => {
   isPlaying.value = false;
 };
 
-// Volume control
-// const toggleMute = () => {
-//   if (volume.value > 0) {
-//     previousVolume.value = volume.value;
-//     volume.value = 0;
-//   } else {
-//     volume.value = previousVolume.value > 0 ? previousVolume.value : 50;
-//   }
-// };
+const playNextTrack = () => {
+  currentTrackIndex.value = (currentTrackIndex.value + 1) % tracks.value.length;
+  swiper.slideNext();
+  if (isPlaying.value) playPause();
+};
 
-// const volumeIconClass = computed(() => {
-//   if (volume.value == 0) return 'bi bi-volume-mute-fill';
-//   return volume.value < 50 ? 'bi bi-volume-down-fill' : 'bi bi-volume-up-fill';
-// });
+const playPreviousTrack = () => {
+  currentTrackIndex.value = (currentTrackIndex.value - 1 + tracks.value.length) % tracks.value.length;
+  swiper.slidePrev();
+  if (isPlaying.value) playPause();
+};
 
-watch([() => audioPlayer.value, volume], () => {
-  if (audioPlayer.value) {
-    audioPlayer.value.volume = volume.value / 100;
-  }
-}, { immediate: true });
-
-// Core swiper logic
+// Swiper Instance
 let swiper: Swiper;
 
+// Initialize Swiper on Mounted
 onMounted(() => {
   initializeSwiper();
+  updateBackgroundColour();
 });
 
+// Initialize Swiper Function
 const initializeSwiper = (): void => {
   swiper = new Swiper('.swiper', {
     modules: [EffectCoverflow],
@@ -131,32 +135,21 @@ const initializeSwiper = (): void => {
   });
 };
 
-watch(() => props.recommendationData, async (newValue) => {
+// // Watch for Recommendations Change to Reinitialize Swiper
+watch(() => recommendationStore.currentRecommendations, async (newValue) => {
   if (newValue) {
     await nextTick();
     if (swiper) {
-      swiper.destroy();
+      swiper.destroy(true, true);
     }
     currentTrackIndex.value = 0;
     initializeSwiper();
+    if (isPlaying.value) playPause();
     updateBackgroundColour();
   }
 });
 
-const playNextTrack = () => {
-  currentTrackIndex.value = (currentTrackIndex.value + 1) % tracks.value.length;
-  swiper.slideNext();
-  if (isPlaying.value) playPause();
-};
-
-const playPreviousTrack = () => {
-  currentTrackIndex.value = (currentTrackIndex.value - 1 + tracks.value.length) % tracks.value.length;
-  swiper.slidePrev();
-  if (isPlaying.value) playPause();
-};
-
-// Root background current track prominent colour logic
-const localSettingsStore = useLocalSettingsStore();
+// Background Color Logic
 const backgroundColour = ref<string>('');
 
 const updateBackgroundColour = async () => {
@@ -167,7 +160,6 @@ const updateBackgroundColour = async () => {
     backgroundColour.value = await getProminentColour(imgUrl);
 
     if (!localSettingsStore.preserveBG) {
-      // Update the background colour in the store and CSS variable
       localSettingsStore.backgroundColour = backgroundColour.value;
       document.documentElement.style.setProperty('--bg', backgroundColour.value);
     }
@@ -176,6 +168,13 @@ const updateBackgroundColour = async () => {
     backgroundColour.value = 'transparent';
   }
 };
+
+watch(() => localSettingsStore.preserveBG, (newValue) => {
+  if (!newValue) {
+    localSettingsStore.backgroundColour = backgroundColour.value;
+    document.documentElement.style.setProperty('--bg', backgroundColour.value);
+  }
+});
 
 onMounted(() => {
   updateBackgroundColour();
@@ -186,107 +185,134 @@ watch(currentTrack, () => {
 });
 </script>
 
+
 <template>
-  <div class="mobile-card-view" v-if="!props.recommendationDataLoading && props.recommendationData">
+  <div
+    class="mobile-card-view"
+    v-if="!recommendationStore.recommendationDataLoading && recommendationStore.currentRecommendations"
+  >
+    <!-- Swiper Carousel -->
     <div class="swiper">
       <div class="swiper-wrapper">
         <div v-for="(track) in tracks" :key="track.id" class="swiper-slide">
-          <img :src="track.album.images[0]?.url" />
+          <img :src="track.album.images[0]?.url" alt="Album Cover" />
           <div class="overlay">
-            <a :href="track.external_urls.spotify" target="_blank"></a>
+            <a :href="track.external_urls.spotify" target="_blank" rel="noopener noreferrer"></a>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Music Player Controls -->
     <div class="mobile-player">
+      <!-- Track Information -->
       <div class="track-info" v-if="currentTrack">
         <h2 :class="{ 'track-name-dark': darkOrLightFont(backgroundColour) }">
-          <a :href="currentTrack?.uri">{{ truncateString(currentTrack.name, 32) }}</a>
+          <a :href="currentTrack?.uri" target="_blank" rel="noopener noreferrer">
+            {{ truncateString(currentTrack.name, 32) }}
+          </a>
         </h2>
         <p>
           <span v-for="(artist, index) in currentTrack?.artists" :key="artist.id">
-            <a 
+            <a
               class="track-artist"
               :class="{ 'track-artist-dark': darkOrLightFont(backgroundColour) }"
               :href="artist.uri"
-            >{{ artist.name }}</a>
-            <span 
-              class="track-artist" 
-              :class="{ 'track-artist-dark': darkOrLightFont(backgroundColour) }" 
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ artist.name }}
+            </a>
+            <span
+              class="track-artist"
+              :class="{ 'track-artist-dark': darkOrLightFont(backgroundColour) }"
               v-if="index < currentTrack.artists.length - 1"
-            >, </span>
+            >
+              ,
+            </span>
           </span>
         </p>
       </div>
 
+      <!-- Playback Controls -->
       <div class="controls">
-        <button class="backward" @click="playPreviousTrack">
-          <img src="@/assets/backward.svg" :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }">
+        <button class="backward" @click="playPreviousTrack" aria-label="Previous Track">
+          <img src="@/assets/backward.svg" :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }" alt="Previous" />
         </button>
 
-        <button 
+        <button
           class="play-pause-btn"
-          :class="{ 'disabled': currentTrack?.preview_url === null, 'svg-dark': darkOrLightFont(backgroundColour) }"
-          :disabled="currentTrack?.preview_url === null" 
+          :class="{ 'disabled': !currentTrack?.preview_url, 'svg-dark': darkOrLightFont(backgroundColour) }"
+          :disabled="!currentTrack?.preview_url"
           @click="playPause"
+          aria-label="Play/Pause"
         >
-          <i 
+          <i
             :class="[
-              'bi', 
-              isPlaying ? 'bi-pause-circle-fill' : 'bi-play-circle-fill', 
-              { 'bi-play-circle-fill': currentTrack?.preview_url === null }
-            ]" 
+              'bi',
+              isPlaying ? 'bi-pause-circle-fill' : 'bi-play-circle-fill',
+              { 'bi-play-circle-fill': !currentTrack?.preview_url },
+            ]"
             id="controlIcon"
           ></i>
         </button>
 
-        <button class="forward" @click="playNextTrack">
-          <img src="@/assets/forward.svg" :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }">
+        <button class="forward" @click="playNextTrack" aria-label="Next Track">
+          <img src="@/assets/forward.svg" :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }" alt="Next" />
         </button>
       </div>
 
+      <!-- Progress Bar -->
       <div class="progress-container">
-        <input 
-          id="progress" 
-          :class="{ 'disabled': currentTrack?.preview_url === null, 'progress-dark': darkOrLightFont(backgroundColour) }"
-          type="range" 
+        <input
+          id="progress"
+          :class="{ 'disabled': !currentTrack?.preview_url, 'progress-dark': darkOrLightFont(backgroundColour) }"
+          type="range"
           :min="0"
           :max="300"
           :step="1"
           :value="progressValue"
-          :disabled="currentTrack?.preview_url === null" 
-          @input="onProgressInput" 
+          :disabled="!currentTrack?.preview_url"
+          @input="onProgressInput"
+          aria-label="Track Progress"
         />
       </div>
 
-      <div class="preview-error" v-if="currentTrack?.preview_url === null">
+      <!-- Preview Error Message -->
+      <div class="preview-error" v-if="!currentTrack?.preview_url">
         <div :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }">
           <i class="bi bi-info-circle"></i>
           20-50% of Spotify songs don't have a preview audio clip.
-          <br>You can toggle them appearing in the settings.
+          <br />You can toggle them appearing in the settings.
         </div>
       </div>
 
+      <!-- Audio Element -->
       <audio
         v-if="currentTrack?.preview_url"
-        ref="audioPlayer" 
+        ref="audioPlayer"
         @timeupdate="onTimeUpdate"
         @ended="onEnded"
         :src="currentTrack.preview_url"
       ></audio>
     </div>
   </div>
-  <div v-else-if="recommendationDataLoading" style="width: 100vw; display: flex; justify-content: center; overflow: hidden;">
+
+  <!-- Loading Spinner -->
+  <div
+    v-else-if="recommendationStore.recommendationDataLoading"
+    class="loading-container"
+  >
     <LoadingSpinner :use-colors="false" style="margin-top: 20vh;" />
   </div>
 </template>
+
 
 <style scoped>
 .preview-error {
   text-align: center;
   padding: 15px;
-  font-size: .65rem;
+  font-size: 0.65rem;
   color: rgb(215, 215, 215);
 }
 
@@ -320,7 +346,6 @@ watch(currentTrack, () => {
 .swiper-slide img {
   width: 100%;
   height: 100%;
-  
 }
 
 .swiper-3d {
@@ -415,14 +440,16 @@ watch(currentTrack, () => {
   font-size: 2.5rem;
 }
 
-.forward img, .backward img {
+.forward img,
+.backward img {
   height: 32px;
   width: 32px;
   filter: invert(100);
 }
 
 .svg-dark {
-  filter: brightness(0) saturate(100%) invert(9%) sepia(8%) saturate(1278%) hue-rotate(316deg) brightness(95%) contrast(85%) !important;
+  filter: brightness(0) saturate(100%) invert(9%) sepia(8%) saturate(1278%) hue-rotate(316deg)
+    brightness(95%) contrast(85%) !important;
 }
 
 button.disabled i {
@@ -447,5 +474,27 @@ button.disabled i {
 
 .controls button:nth-child(2):is(:hover, :focus-visible) {
   transform: scale(1.25);
+}
+
+/* Loading Container */
+.loading-container {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Responsive Adjustments if Needed */
+@media (max-width: 1300px) {
+  #progress {
+    margin: 12px 0;
+  }
+}
+
+@media (max-width: 1050px) {
+  .mobile-card-view {
+    margin: 0;
+    border-radius: 0;
+  }
 }
 </style>
