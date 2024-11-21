@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import { saveToLocalStorage, loadFromLocalStorage } from '@/utils/localStorageUtils';
 
 export const useLocalSettingsStore = defineStore('LocalSettings', () => {
@@ -9,25 +9,23 @@ export const useLocalSettingsStore = defineStore('LocalSettings', () => {
   const audioVolume = ref<number>(50);                // Audio volume
 
   // Load settings from localStorage on store initialization
-  onMounted(() => {
-    const savedSettings = loadFromLocalStorage<{ 
-      excludeNullPreview: boolean; 
-      preserveBG: boolean; 
-      backgroundColour: string;
-      audioVolume: number;
-    }>('localSettings');
+  const savedSettings = loadFromLocalStorage<{ 
+    excludeNullPreview: boolean; 
+    preserveBG: boolean; 
+    backgroundColour: string;
+    audioVolume: number;
+  }>('localSettings');
 
-    if (savedSettings) {
-      excludeNullPreview.value = savedSettings.excludeNullPreview;
-      preserveBG.value = savedSettings.preserveBG;
-      backgroundColour.value = savedSettings.backgroundColour;
-      audioVolume.value = savedSettings.audioVolume;
-    }
+  if (savedSettings) {
+    excludeNullPreview.value = savedSettings.excludeNullPreview;
+    preserveBG.value = savedSettings.preserveBG;
+    backgroundColour.value = savedSettings.backgroundColour;
+    audioVolume.value = savedSettings.audioVolume;
+  }
 
-    if (preserveBG.value) {
-      document.documentElement.style.setProperty('--bg', backgroundColour.value);
-    }
-  });
+  if (preserveBG.value) {
+    document.documentElement.style.setProperty('--bg', backgroundColour.value);
+  }
 
   watch([excludeNullPreview, preserveBG, backgroundColour, audioVolume], ([newExcludeNullPreview, newPreserveBG, newBackgroundColour, newAudioVolume]) => {
     saveToLocalStorage('localSettings', {

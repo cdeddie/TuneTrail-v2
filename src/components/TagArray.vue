@@ -20,7 +20,7 @@ const removeTag = (tag: Tag) => {
       </div>
     </div>
 
-    <div v-else>
+    <div class="tag-array" v-else>
       <div
         v-for="(tag) in recommendationStore.currentTags"
         :key="tag.id"
@@ -59,6 +59,11 @@ const removeTag = (tag: Tag) => {
 .prompt {
   margin-top: 2.5vh;
   color: rgba(228, 228, 228, 0.689);
+}
+
+.tag-array {
+  display: flex;
+  flex-direction: row;
 }
 
 .tag-container {

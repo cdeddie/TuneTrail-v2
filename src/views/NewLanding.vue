@@ -79,6 +79,7 @@ const searchResultsVisible = ref<boolean>(false);
 const router = useRouter(); // For redirect to /discover
 
 const navigateToTarget = async (track: SpotifyApi.TrackObjectFull) => {
+  recommendationStore.trackTags.length = 0;
   recommendationStore.addTrackTag(track);
 
   router.push({ 

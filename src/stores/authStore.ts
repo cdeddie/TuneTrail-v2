@@ -5,7 +5,7 @@ const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BAS
 
 export const useAuthStore = defineStore('AuthStore', () => {
   const isLoggedIn = ref<boolean>(false);
-  const userDetails = ref<any>(null);
+  const userDetails = ref<SpotifyApi.UserObjectPublic | null>();
 
   const checkLoginStatus = async () => {
     try {

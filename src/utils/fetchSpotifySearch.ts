@@ -6,8 +6,6 @@ export const fetchSearch = async(query: string, searchCategory: string, isLogged
     return;
   }
 
-  console.log(searchCategory);
-
   try {
     const sanitizedQuery = encodeURIComponent(query.toLowerCase());
     // TODO: Handle user login (future). Also value needs to be between Songs and Artists

@@ -46,26 +46,3 @@ export const createArtistTag = async(artist: SpotifyApi.ArtistObjectFull): Promi
     colour: await getProminentColour(imageUrl),
   }
 };
-
-export const createTag = async(item: any): Promise<Tag> => {
-  // Only artists have genres
-  if ('genres' in item) {
-    const imageUrl = item.images?.[2]?.url || item.images?.[1]?.url || '';
-    return {
-      type: 'Artist',
-      id: item.id || '',
-      name: item.name || '',
-      image: item.images?.[1]?.url || '',
-      colour: imageUrl ? await getProminentColour(imageUrl) : '',
-    };
-  } else {
-    const imageUrl = item.album?.images?.[1]?.url || '';
-    return {
-      type: 'Track',
-      id: item.id,
-      name: item.name,
-      image: imageUrl,
-      colour: imageUrl ? await getProminentColour(imageUrl) : '',
-    };
-  }
-};

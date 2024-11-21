@@ -10,6 +10,10 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import LoadingSpinner                                               from './LoadingSpinner.vue';
 import { useRecommendationStore } from '@/stores/recommendationStore';
+import volumeOff from '@/assets/volume-off.svg';
+import volumeLow from '@/assets/volume-low.svg';
+import volumeMedium from '@/assets/volume-medium.svg';
+import volumeHigh from '@/assets/volume-high.svg';
 
 const recommendationStore = useRecommendationStore();
 const localSettingsStore = useLocalSettingsStore();
@@ -18,7 +22,7 @@ const isPlaying = ref<boolean>(false);
 const currentTrackIndex = ref<number>(0);
 
 const tracks = computed(() => {
-  if (recommendationStore.currentRecommendations !== undefined && !Array.isArray(recommendationStore.currentRecommendations)) {
+  if (recommendationStore.currentRecommendations != undefined && !Array.isArray(recommendationStore.currentRecommendations)) {
     if (localSettingsStore.excludeNullPreview) {
       let data = [];
       for (let i = 0; i < recommendationStore.currentRecommendations.tracks.length; i++) {
@@ -126,17 +130,16 @@ watch([() => audioPlayer.value, volume], () => {
   }
 }, { immediate: true });
 
-const volumeIconClass = computed(() => {
-  let result:string;
-  if (volume.value == 0) {
-    result = 'bi bi-volume-mute-fill';
-  } else if (volume.value < 50) {
-    result = 'bi bi-volume-down-fill';
+const volumeIconSrc = computed(() => {
+  if (volume.value <= 0) {
+    return volumeOff;
+  } else if (volume.value < 33) {
+    return volumeLow;
+  } else if (volume.value < 66) {
+    return volumeMedium;
   } else {
-    result = 'bi bi-volume-up-fill';
+    return volumeHigh;
   }
-
-  return result;
 });
 
 // Vue component produced from https://codepen.io/ecemgo/pen/vYPadZz
@@ -253,7 +256,7 @@ watch(() => recommendationStore.activeCategory, async (newValue) => {
     <LoadingSpinner :use-colors="false" style="margin-top: 20vh;" />
   </div>
   <div class="card-view-root" v-else-if="!recommendationStore.recommendationDataLoading && recommendationStore.currentRecommendations">
-    <div class="album-cover" v-if="tracks.length">
+    <div class="album-cover" v-if="tracks?.length">
       <div class="swiper">
         <div class="swiper-wrapper">
           <div v-for="(track) in tracks" :key="track.id" class="swiper-slide">
@@ -347,7 +350,7 @@ watch(() => recommendationStore.activeCategory, async (newValue) => {
 
         <div class="volume-control">
           <label for="volume-slider" @click="toggleMute">
-            <i :class="[volumeIconClass, { 'svg-dark': darkOrLightFont(backgroundColour) }]"></i>
+            <img class="volume-icon" :src="volumeIconSrc" :class="{ 'svg-dark': darkOrLightFont(backgroundColour) }">
           </label>
           <input 
             type="range"
@@ -563,9 +566,10 @@ i {
   cursor: pointer;
 }
 
-.volume-control i {
-  font-size: 1.75rem;
-  margin-right: 4px;
+.volume-icon {
+  height: 1.75rem;
+  margin-right: 6px;
+  filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(213deg) brightness(104%) contrast(101%);
 }
 
 .volume-control:hover #volume-slider {
