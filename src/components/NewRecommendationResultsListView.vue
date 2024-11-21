@@ -70,7 +70,7 @@ const truncateLength = computed(() => {
     >
       <a
         class="result-card" 
-        v-for="(track, index) in recommendationStore.currentRecommendations.tracks"
+        v-for="(track, index) in recommendationStore.currentRecommendations?.tracks"
         :key="track.id"
         :ref="(el) => { if (el) cardRefs[index] = el as HTMLElement }"
         :href="track.external_urls.spotify"

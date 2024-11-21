@@ -19,8 +19,7 @@ const currentTrackIndex = ref<number>(0);
 
 const tracks = computed(() => {
   if (
-    recommendationStore.currentRecommendations !== undefined &&
-    !Array.isArray(recommendationStore.currentRecommendations)
+    recommendationStore.currentRecommendations != undefined && !Array.isArray(recommendationStore.currentRecommendations)
   ) {
     if (localSettingsStore.excludeNullPreview) {
       let data = [];

@@ -75,13 +75,13 @@ export const useRecommendationStore = defineStore('RecommendationStore', () => {
 
   // -------- RECOMMENDATIONS -------- //
   // Note that all recommendations responses will be tracks
-  const trackRecommendations = ref<SpotifyApi.RecommendationsObject | null>(null);
+  const trackRecommendations = ref<SpotifyApi.RecommendationsObject>();
   const savedTrackRecommendations = loadFromLocalStorage<SpotifyApi.RecommendationsObject>('trackRecommendations');
   if (savedTrackRecommendations) {
     trackRecommendations.value = savedTrackRecommendations;
   }
 
-  const artistRecommendations = ref<SpotifyApi.RecommendationsObject | null>(null);
+  const artistRecommendations = ref<SpotifyApi.RecommendationsObject>();
   const savedArtistRecommendations = loadFromLocalStorage<SpotifyApi.RecommendationsObject>('artistRecommendations');
   if (savedArtistRecommendations) {
     artistRecommendations.value = savedArtistRecommendations;
