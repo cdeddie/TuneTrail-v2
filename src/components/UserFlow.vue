@@ -77,7 +77,7 @@ const setDropdownRef = (el: Element | ComponentPublicInstance | null, item: stri
         :class="{ active: activeDropdown === item }"
         @click.stop="toggleDropdown(item)"
       >
-        <template v-if="authStore.userDetails && authStore.userDetails.images && authStore.userDetails.images.length > 0">
+        <template v-if="item === 'profile' && authStore.userDetails && authStore.userDetails.images && authStore.userDetails.images.length > 0">
           <img :src="authStore.userDetails?.images[0].url" class="profile-image" />
         </template>
         <template v-else>

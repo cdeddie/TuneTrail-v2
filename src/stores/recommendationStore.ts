@@ -77,21 +77,17 @@ export const useRecommendationStore = defineStore('RecommendationStore', () => {
   // Note that all recommendations responses will be tracks
   const trackRecommendations = ref<SpotifyApi.RecommendationsObject>();
   const savedTrackRecommendations = loadFromLocalStorage<SpotifyApi.RecommendationsObject>('trackRecommendations');
-  if (savedTrackRecommendations) {
+  if (savedTrackRecommendations && trackTags.value.length > 0) {
     trackRecommendations.value = savedTrackRecommendations;
   }
 
   const artistRecommendations = ref<SpotifyApi.RecommendationsObject>();
   const savedArtistRecommendations = loadFromLocalStorage<SpotifyApi.RecommendationsObject>('artistRecommendations');
-  if (savedArtistRecommendations) {
+  if (savedArtistRecommendations && artistTags.value.length > 0) {
     artistRecommendations.value = savedArtistRecommendations;
   }
 
   const recommendationDataLoading = ref<boolean>(false);
-  const savedRecommendationDataLoading = loadFromLocalStorage<boolean>('recommendationDataLoading');
-  if (savedRecommendationDataLoading !== null) {
-    recommendationDataLoading.value = savedRecommendationDataLoading;
-  }
 
   // Tracks the tags of the current activeCategory
   const currentTags = computed(() => {
