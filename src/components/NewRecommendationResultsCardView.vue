@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick }                from 'vue';
-import { getProminentColour }                                       from '@/types/TagType';
+import { getProminentColour }                                       from "@/utils/colourStyle";
 import { darkOrLightFont }                                          from '@/utils/colourStyle';
 import Swiper                                                       from 'swiper';
 import { EffectCoverflow }                                          from 'swiper/modules';

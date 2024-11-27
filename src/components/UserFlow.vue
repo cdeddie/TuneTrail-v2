@@ -50,16 +50,19 @@ const positionDropdown = (dropdown: string) => {
 const closeDropdown = (event: MouseEvent) => {
   const target = event.target as Element;
   if (!target.closest('.user-root')) {
+    if (filterDialogOpen.value === true) {
+      return;
+    }
     activeDropdown.value = null;
   }
 };
 
 onMounted(() => {
-  document.addEventListener('click', closeDropdown);
+  document.addEventListener('mousedown', closeDropdown);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', closeDropdown);
+  document.removeEventListener('mousedown', closeDropdown);
 });
 
 const setDropdownRef = (el: Element | ComponentPublicInstance | null, item: string) => {
@@ -67,6 +70,8 @@ const setDropdownRef = (el: Element | ComponentPublicInstance | null, item: stri
     dropdownRefs.value[item] = el as HTMLElement;
   }
 };
+
+const filterDialogOpen = ref<boolean>(false);
 </script>
 
 <template>
@@ -86,7 +91,7 @@ const setDropdownRef = (el: Element | ComponentPublicInstance | null, item: stri
       </div>
       <transition name="fade">
         <div v-if="activeDropdown === item" class="dropdown" :ref="el => setDropdownRef(el, item)">
-          <FilterDropdown v-if="item === 'filters'" />
+          <FilterDropdown v-model="filterDialogOpen" v-if="item === 'filters'" />
           <SettingsDropdown v-if="item === 'settings'" />
           <AuthDropdown v-if="item === 'profile'" />
         </div>

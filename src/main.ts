@@ -9,7 +9,21 @@ import { createWebHistory, createRouter } from 'vue-router';
 import DiscoverParent                     from '@/views/DiscoverParent.vue';
 import NewLanding                         from './views/NewLanding.vue';
 
-async function initializeApp() {
+// For maintaining previous recommendation data after login
+if (window.location.search.includes('spotifyLogin=true')) {
+  sessionStorage.setItem('spotifyLogin', 'true');
+
+  const url = new URL(window.location.href);
+  url.searchParams.delete('spotifyLogin');
+  window.history.replaceState(null, '', url.toString());
+} else {
+  const removalKeys = ['trackTags', 'artistTags', 'trackRecommendations', 'artistRecommendations'];
+  removalKeys.forEach((key) => {
+    localStorage.removeItem(key);
+  });
+}
+
+const initializeApp = async() => {
   const app = createApp(App);
 
   const pinia = createPinia();

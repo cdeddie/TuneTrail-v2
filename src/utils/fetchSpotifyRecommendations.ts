@@ -1,5 +1,7 @@
 import { Tag }                            from '@/types/TagType';
 import { RecommendationFilter }           from '@/types/RecommendationType';
+import { useLocalSettingsStore }          from '@/stores/localSettingsStore';
+import { getProminentColour }             from './colourStyle';
 
 const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BASE_URL;
 
@@ -8,6 +10,7 @@ export const fetchRecommendations = async (tagObject: Tag[], recObject: Recommen
   if (tagObject.length === 0) return;
 
   try {
+    const localSettingsStore = useLocalSettingsStore();
     const tags = encodeURIComponent(JSON.stringify(tagObject.map(tag => tag.id)));
 
     const recTargets = recObject ? stringifyFilters(recObject) : '';
@@ -24,6 +27,8 @@ export const fetchRecommendations = async (tagObject: Tag[], recObject: Recommen
     }
 
     const data: SpotifyApi.RecommendationsObject = await response.json();
+    const newBgColour = await getProminentColour(data.tracks[0].album.images[0].url);
+    localSettingsStore.setBackgroundColour(newBgColour);
     return data;
   } catch (error) {
     console.error('Error fetching recommendations', error);

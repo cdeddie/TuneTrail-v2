@@ -1,4 +1,3 @@
-// recommendationStore.ts
 import { defineStore } from 'pinia';
 import { RecommendationFilter } from '@/types/RecommendationType';
 import { computed, reactive, ref, watch } from 'vue';
@@ -14,15 +13,41 @@ export const useRecommendationStore = defineStore('RecommendationStore', () => {
   const activeCategory = ref<string>('Tracks');
 
   const trackTags = ref<Tag[]>([]);
-  const savedTrackTags = loadFromLocalStorage<Tag[]>('trackTags');
-  if (savedTrackTags) {
-    trackTags.value = savedTrackTags;
-  }
-
   const artistTags = ref<Tag[]>([]);
-  const savedArtistTags = loadFromLocalStorage<Tag[]>('artistTags');
-  if (savedArtistTags) {
-    artistTags.value = savedArtistTags;
+  const filterState = reactive<RecommendationFilter>({
+    popularity: null,
+    energy: null,
+    happiness: null,
+    danceability: null,
+  });
+  const trackRecommendations = ref<SpotifyApi.RecommendationsObject>();
+  const artistRecommendations = ref<SpotifyApi.RecommendationsObject>();
+  const recommendationDataLoading = ref<boolean>(false);
+
+  // Check if the refresh is due to Spotify login
+  const isSpotifyLogin = sessionStorage.getItem('spotifyLogin') === 'true';
+
+  if (isSpotifyLogin) {
+    const savedTrackTags = loadFromLocalStorage<Tag[]>('trackTags');
+    if (savedTrackTags) trackTags.value = savedTrackTags;
+
+    const savedArtistTags = loadFromLocalStorage<Tag[]>('artistTags');
+    if (savedArtistTags) artistTags.value = savedArtistTags;
+
+    const savedFilterState = loadFromLocalStorage<RecommendationFilter>('filterState');
+    if (savedFilterState) Object.assign(filterState, savedFilterState);
+
+    const savedTrackRecommendations = loadFromLocalStorage<SpotifyApi.RecommendationsObject>('trackRecommendations');
+    if (savedTrackRecommendations && savedTrackTags != null && savedTrackTags?.length > 0) {
+      trackRecommendations.value = savedTrackRecommendations;
+    }
+
+    const savedArtistRecommendations = loadFromLocalStorage<SpotifyApi.RecommendationsObject>('artistRecommendations');
+    if (savedArtistRecommendations && savedArtistTags != null && savedArtistTags?.length > 0) {
+      artistRecommendations.value = savedArtistRecommendations;
+    }
+
+    sessionStorage.removeItem('spotifyLogin');
   }
 
   const addTrackTag = async (track: SpotifyApi.TrackObjectFull) => {
@@ -49,20 +74,6 @@ export const useRecommendationStore = defineStore('RecommendationStore', () => {
     artistTags.value = artistTags.value.filter((t) => t.id !== tag.id);
   };
 
-  // -------- FILTERS -------- //
-  const filterState = reactive<RecommendationFilter>({
-    popularity: null,
-    energy: null,
-    happiness: null,
-    danceability: null,
-  });
-
-  // Load filterState from storage if available
-  const savedFilterState = loadFromLocalStorage<RecommendationFilter>('filterState');
-  if (savedFilterState) {
-    Object.assign(filterState, savedFilterState);
-  }
-
   const updateFilterValue = (key: keyof RecommendationFilter, value: string | null) => {
     if (value === 'High') {
       filterState[key] = 100;
@@ -72,22 +83,6 @@ export const useRecommendationStore = defineStore('RecommendationStore', () => {
       filterState[key] = null;
     }
   };
-
-  // -------- RECOMMENDATIONS -------- //
-  // Note that all recommendations responses will be tracks
-  const trackRecommendations = ref<SpotifyApi.RecommendationsObject>();
-  const savedTrackRecommendations = loadFromLocalStorage<SpotifyApi.RecommendationsObject>('trackRecommendations');
-  if (savedTrackRecommendations && trackTags.value.length > 0) {
-    trackRecommendations.value = savedTrackRecommendations;
-  }
-
-  const artistRecommendations = ref<SpotifyApi.RecommendationsObject>();
-  const savedArtistRecommendations = loadFromLocalStorage<SpotifyApi.RecommendationsObject>('artistRecommendations');
-  if (savedArtistRecommendations && artistTags.value.length > 0) {
-    artistRecommendations.value = savedArtistRecommendations;
-  }
-
-  const recommendationDataLoading = ref<boolean>(false);
 
   // Tracks the tags of the current activeCategory
   const currentTags = computed(() => {
@@ -152,7 +147,6 @@ export const useRecommendationStore = defineStore('RecommendationStore', () => {
   }, { deep: true });
 
   // -------- PERSISTENCE -------- //
-  // Tags Persistence
   watch(trackTags, (newVal) => {
     saveToLocalStorage('trackTags', newVal);
   }, { deep: true });
@@ -161,12 +155,10 @@ export const useRecommendationStore = defineStore('RecommendationStore', () => {
     saveToLocalStorage('artistTags', newVal);
   }, { deep: true });
 
-  // Filters Persistence
   watch(filterState, (newVal) => {
     saveToLocalStorage('filterState', newVal);
   }, { deep: true });
 
-  // Recommendations Persistence
   watch(trackRecommendations, (newVal) => {
     if (newVal) {
       saveToLocalStorage('trackRecommendations', newVal);
@@ -202,5 +194,5 @@ export const useRecommendationStore = defineStore('RecommendationStore', () => {
     artistRecommendations,
     currentRecommendations,
     recommendationDataLoading
-  }
+  };
 });
