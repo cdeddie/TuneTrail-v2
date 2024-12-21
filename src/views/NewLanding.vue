@@ -146,7 +146,7 @@ const handleContinue = () => {
 
       <div v-else class="mobile-continue">
         <button class="custom-button" @click="handleContinue">
-          <div>Continue</div>
+          <div>Continue <i style="margin-left: 4px;" class="bi bi-arrow-right"></i></div>
         </button>
       </div>
 
@@ -453,7 +453,6 @@ h1 {
 
 /* Mobile styles */
 .mobile-continue {
-  margin-top: 10vh;
   margin-left: auto;
   margin-right: auto;
   display: flex;
@@ -469,7 +468,7 @@ h1 {
   font-weight: 600;
   border-radius: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.05);
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.925);
   color: black;
   cursor: pointer;
 }
