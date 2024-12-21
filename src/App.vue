@@ -1,11 +1,15 @@
 <script setup lang="ts">
-
+import { TooltipProvider } from 'radix-vue';
+import { Toaster} from 'vue-sonner';
 </script>
 
 <template>
-  <main class="app-root">
-    <RouterView />
-  </main>
+  <Toaster closeButton :visibleToasts="1" />
+  <TooltipProvider>
+    <main class="app-root">
+      <RouterView />
+    </main>
+  </TooltipProvider>
 </template>
 
 <style scoped>

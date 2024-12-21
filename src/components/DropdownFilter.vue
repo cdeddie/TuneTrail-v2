@@ -66,7 +66,9 @@ const dialogOpen = computed({
                       However, while you might expect only obscure songs with a low popularity setting, some recommendations may still appear relatively popular. 
                       This is because Spotify's algorithm does not guarantee exact matches but trends towards the specified target. 
                       <br><br>
-                      On average, when the filter is set to "low," the recommended songs have a popularity score of around 30, while with the "high" filter, the average is closer to 70.
+                      On average, when the filter is set to "low," the recommended songs have a popularity score closer to 30, while with the "high" filter, the average is closer to 70.
+                      Depending on the popularity of the track/artist seeds, this may vary.
+                      This is the same with other filters.
                     </div>
                     <br>
                     <div>

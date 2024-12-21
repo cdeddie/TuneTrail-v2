@@ -99,6 +99,10 @@ const truncateLength = computed(() => {
   } 
   return 50;
 });
+
+const handleContinue = () => {
+  router.push('/discover');
+};
 </script>
 
 <template>
@@ -129,7 +133,7 @@ const truncateLength = computed(() => {
 
     <div class="landing-content">
       <h1>TuneTrail</h1>
-      <div class="search-container">
+      <div class="search-container" v-if="deviceStore.isDesktop">
         <LandingSearch 
           :search-category="'tracks'"
           :search-disabled="false"
@@ -138,6 +142,12 @@ const truncateLength = computed(() => {
           @search-focused="(searchFocusedVal: boolean) => searchResultsVisible = searchFocusedVal"
           style="margin: 0px;"
         />
+      </div>
+
+      <div v-else class="mobile-continue">
+        <button class="custom-button" @click="handleContinue">
+          <div>Continue</div>
+        </button>
       </div>
 
       <div class="search-results">
@@ -439,6 +449,29 @@ h1 {
   height: 30vh;
   margin-left: 40px;
   margin-top: 15vh;
+}
+
+/* Mobile styles */
+.mobile-continue {
+  margin-top: 10vh;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.custom-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: black;
+  cursor: pointer;
 }
 
 /* Resposiveness */

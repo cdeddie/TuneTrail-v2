@@ -5,6 +5,10 @@ import { getProminentColour }             from './colourStyle';
 
 const baseUrl = import.meta.env.MODE === 'development' ? DEV_BASE_URL : PROD_BASE_URL;
 
+interface CustomRecommendationsObject extends SpotifyApi.RecommendationsObject {
+  tracksLiked?: string[];
+}
+
 export const fetchRecommendations = async (tagObject: Tag[], recObject: RecommendationFilter | undefined, isLoggedIn: boolean, limit: number) => {
 
   if (tagObject.length === 0) return;
@@ -26,7 +30,7 @@ export const fetchRecommendations = async (tagObject: Tag[], recObject: Recommen
       throw new Error('Network response was not ok');
     }
 
-    const data: SpotifyApi.RecommendationsObject = await response.json();
+    const data: CustomRecommendationsObject = await response.json();
     const newBgColour = await getProminentColour(data.tracks[0].album.images[0].url);
     localSettingsStore.setBackgroundColour(newBgColour);
     return data;

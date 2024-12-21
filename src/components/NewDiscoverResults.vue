@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MobileDiscoverResultsCardView from './MobileDiscoverResultsCardView.vue';
-import NewRecommendationResultsCardView from './NewRecommendationResultsCardView.vue';
+import RecommendationResultsCardView from './RecommendationResultsCardView.vue';
 import NewRecommendationResultsListView from './NewRecommendationResultsListView.vue';
 import { useDeviceStore } from '@/stores/deviceStore';
 
@@ -16,7 +16,7 @@ const props = defineProps<{
       <NewRecommendationResultsListView />
     </div>
     <div class="card-dt" v-else-if="props.activeIndex === 0">
-      <NewRecommendationResultsCardView />
+      <RecommendationResultsCardView />
     </div>
   </div>
 

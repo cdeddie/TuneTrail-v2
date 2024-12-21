@@ -6,6 +6,11 @@ import { useAuthStore } from './authStore';
 import { fetchRecommendations } from '@/utils/fetchSpotifyRecommendations';
 import { loadFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
 
+// tracksLiked contains the ids of the liked tracks within the current Recommendations Object
+interface CustomRecommendationsObject extends SpotifyApi.RecommendationsObject {
+  tracksLiked?: string[];
+}
+
 export const useRecommendationStore = defineStore('RecommendationStore', () => {
   const authStore = useAuthStore();
 
@@ -20,8 +25,8 @@ export const useRecommendationStore = defineStore('RecommendationStore', () => {
     happiness: null,
     danceability: null,
   });
-  const trackRecommendations = ref<SpotifyApi.RecommendationsObject>();
-  const artistRecommendations = ref<SpotifyApi.RecommendationsObject>();
+  const trackRecommendations = ref<CustomRecommendationsObject>();
+  const artistRecommendations = ref<CustomRecommendationsObject>();
   const recommendationDataLoading = ref<boolean>(false);
 
   // Check if the refresh is due to Spotify login
@@ -37,12 +42,12 @@ export const useRecommendationStore = defineStore('RecommendationStore', () => {
     const savedFilterState = loadFromLocalStorage<RecommendationFilter>('filterState');
     if (savedFilterState) Object.assign(filterState, savedFilterState);
 
-    const savedTrackRecommendations = loadFromLocalStorage<SpotifyApi.RecommendationsObject>('trackRecommendations');
+    const savedTrackRecommendations = loadFromLocalStorage<CustomRecommendationsObject>('trackRecommendations');
     if (savedTrackRecommendations && savedTrackTags != null && savedTrackTags?.length > 0) {
       trackRecommendations.value = savedTrackRecommendations;
     }
 
-    const savedArtistRecommendations = loadFromLocalStorage<SpotifyApi.RecommendationsObject>('artistRecommendations');
+    const savedArtistRecommendations = loadFromLocalStorage<CustomRecommendationsObject>('artistRecommendations');
     if (savedArtistRecommendations && savedArtistTags != null && savedArtistTags?.length > 0) {
       artistRecommendations.value = savedArtistRecommendations;
     }
@@ -102,6 +107,17 @@ export const useRecommendationStore = defineStore('RecommendationStore', () => {
       return artistRecommendations.value;
     } else {
       return null;
+    }
+  });
+
+  // Set that includes the IDs of all liked songs in the currentRecommendations for logged in users
+  const likedTracksSet = ref<Set<string>>(new Set<string>());
+
+  watch(currentRecommendations, (newRecommendations) => {
+    if (newRecommendations?.tracksLiked) {
+      likedTracksSet.value = new Set(newRecommendations.tracksLiked);
+    } else {
+      likedTracksSet.value.clear();
     }
   });
 
@@ -193,6 +209,7 @@ export const useRecommendationStore = defineStore('RecommendationStore', () => {
     trackRecommendations,
     artistRecommendations,
     currentRecommendations,
+    likedTracksSet,
     recommendationDataLoading
   };
 });
