@@ -137,7 +137,7 @@ const autoplayLogic = async() => {
 <template>
   <div class="controls">
     <div class="left-controls">
-      <Tooltip>
+      <Tooltip :delay-duration="0">
         <TooltipTrigger class="auto-play-tooltip">
           <div class="auto-play-control">
             <button @click="autoplay = !autoplay" class="auto-play-button">
@@ -160,7 +160,7 @@ const autoplayLogic = async() => {
 
       <!-- If no preview audio exists for the current track -->
       <div v-if="currentTrack?.preview_url === null" class="play-pause-btn">
-        <Tooltip>
+        <Tooltip :delay-duration="0">
           <TooltipTrigger>
             <img src="@/assets/play-circle-fill.svg" class="svg-grey svg-disabled">
           </TooltipTrigger>
@@ -190,7 +190,7 @@ const autoplayLogic = async() => {
     </div>
 
     <div class="right-controls">
-      <Tooltip>
+      <Tooltip :delay-duration="0">
         <TooltipTrigger>
           <AnimatedHeart :current-track="currentTrack" />
         </TooltipTrigger>
